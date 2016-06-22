@@ -18,7 +18,9 @@ namespace CpvrLab.VirtualTable {
 
         protected PlayerInput _playerInput;
         
-
+        // todo:    use a unified naming scheme across all classes used for this project
+        //          for the methods that can be used by subclasses. Maybe start isn't such a good idea
+        //          we should maybe use an initialize method that gets called by start in the 
         protected virtual void Start()
         {
             GameManager.instance.AddPlayer(this);

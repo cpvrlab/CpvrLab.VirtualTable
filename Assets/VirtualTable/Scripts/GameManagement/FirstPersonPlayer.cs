@@ -12,6 +12,7 @@ namespace CpvrLab.VirtualTable {
         public float pickupRange;
         public Transform attachPoint;
         protected Transform head;
+        protected GameObject _currentlyEquipped = null;
 
         protected override void Start()
         {
@@ -21,8 +22,18 @@ namespace CpvrLab.VirtualTable {
 
         void Update()
         {
-            // pickup objects
-            HandlePickup();
+            if(_currentlyEquipped != null) {
+                if(Input.GetKeyDown(KeyCode.E)) {
+                    UnequipItem(_currentlyEquipped.GetComponent<EquippableItem>());
+                    var rb = _currentlyEquipped.GetComponent<Rigidbody>();
+                    rb.isKinematic = false;
+                    _currentlyEquipped = null;
+                }
+            }
+            else {
+                // pickup objects
+                HandlePickup();
+            }
         }
 
         void HandlePickup()
@@ -49,6 +60,8 @@ namespace CpvrLab.VirtualTable {
             if(Input.GetKeyDown(KeyCode.E)) {
                 // call base class equip so that the item receives input
                 EquipItem(equippable);
+
+                _currentlyEquipped = equippable.gameObject;
 
                 // add the item to our player
                 hit.transform.SetParent(attachPoint, false);
