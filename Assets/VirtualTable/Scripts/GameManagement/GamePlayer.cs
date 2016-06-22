@@ -14,7 +14,7 @@ namespace CpvrLab.VirtualTable {
         // prevent the player from using any equipped items
         public bool lockItemUse = false;
 
-        protected List<EquippableItem> _equippedItems;
+        protected List<EquippableItem> _equippedItems = new List<EquippableItem>();
 
         protected PlayerInput _playerInput;
         
@@ -22,6 +22,11 @@ namespace CpvrLab.VirtualTable {
         protected virtual void Start()
         {
             GameManager.instance.AddPlayer(this);
+            _playerInput = GetComponent<PlayerInput>();
+
+            if(_playerInput == null) {
+                Debug.LogError("GamePlayer: Couldn't find a PlayerInput component attached to the GamePlayer GameObject!");
+            }
         }
 
         protected void EquipItem(EquippableItem ei)

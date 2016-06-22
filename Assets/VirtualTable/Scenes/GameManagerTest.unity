@@ -231,6 +231,18 @@ Prefab:
       propertyPath: reverbZoneMixCustomCurve.m_RotationOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
+      propertyPath: m_UseHeadBob
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 2}
   m_IsPrefabParent: 0
@@ -252,8 +264,19 @@ MonoBehaviour:
   lockEquippedItems: 0
   lockPickup: 0
   lockItemUse: 0
-  pickupRange: 2
+  pickupRange: 3
   attachPoint: {fileID: 227505025}
+--- !u!114 &99035737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 99035735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 090e7a96ac0b3344098ba2f469e1a670, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &227505024
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +285,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 227505025}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: EquipAttachPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -767,7 +790,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11444958, guid: a0cc482d2da03784692568b56c77c234, type: 2}
       propertyPath: level
-      value: 25
+      value: -1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a0cc482d2da03784692568b56c77c234, type: 2}
@@ -943,7 +966,19 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 148708, guid: 93eaacdebc01d84468c3793c838b9e06, type: 2}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 192418, guid: 93eaacdebc01d84468c3793c838b9e06, type: 2}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 6534408, guid: 93eaacdebc01d84468c3793c838b9e06, type: 2}
+    - {fileID: 6510482, guid: 93eaacdebc01d84468c3793c838b9e06, type: 2}
+    - {fileID: 6576688, guid: 93eaacdebc01d84468c3793c838b9e06, type: 2}
+    - {fileID: 6574982, guid: 93eaacdebc01d84468c3793c838b9e06, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 93eaacdebc01d84468c3793c838b9e06, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1137608173 stripped
@@ -965,18 +1000,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &1137608177
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1137608173}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1264814639
 GameObject:
   m_ObjectHideFlags: 0
@@ -1239,7 +1262,7 @@ GameObject:
   - 33: {fileID: 1609602323}
   - 65: {fileID: 1609602322}
   - 23: {fileID: 1609602321}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Arm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
