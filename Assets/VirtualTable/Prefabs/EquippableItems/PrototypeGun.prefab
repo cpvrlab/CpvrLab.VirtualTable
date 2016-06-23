@@ -9,10 +9,26 @@ GameObject:
   m_Component:
   - 4: {fileID: 481052}
   - 33: {fileID: 3389308}
-  - 65: {fileID: 6534408}
   - 23: {fileID: 2365894}
   m_Layer: 0
   m_Name: notch
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &136922
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 442028}
+  - 33: {fileID: 3389986}
+  - 23: {fileID: 2370292}
+  m_Layer: 0
+  m_Name: bead
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27,6 +43,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 417876}
   - 114: {fileID: 11494124}
+  - 54: {fileID: 5447806}
   m_Layer: 0
   m_Name: PrototypeGun
   m_TagString: Equippable
@@ -76,10 +93,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 448622}
   - 33: {fileID: 3355752}
-  - 65: {fileID: 6574982}
   - 23: {fileID: 2396182}
   m_Layer: 0
-  m_Name: bead
+  m_Name: trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -127,7 +143,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 497702}
   - 33: {fileID: 3326902}
-  - 65: {fileID: 6510482}
   - 23: {fileID: 2326176}
   m_Layer: 0
   m_Name: notch (2)
@@ -145,7 +160,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 422928}
   - 33: {fileID: 3383408}
-  - 65: {fileID: 6576688}
   - 23: {fileID: 2369168}
   m_Layer: 0
   m_Name: notch (1)
@@ -188,7 +202,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 137884}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.95, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 491042}
@@ -219,18 +233,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 494266}
   m_RootOrder: 1
---- !u!4 &448622
+--- !u!4 &442028
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 151328}
+  m_GameObject: {fileID: 136922}
   m_LocalRotation: {x: 0.7071068, y: 2.842171e-14, z: 2.842171e-14, w: 0.7071067}
   m_LocalPosition: {x: 0, y: 0.0872, z: 0.1254}
   m_LocalScale: {x: 0.002081807, y: 0.0028757935, z: 0.011282353}
   m_Children: []
   m_Father: {fileID: 491042}
   m_RootOrder: 3
+--- !u!4 &448622
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 151328}
+  m_LocalRotation: {x: 0.5735765, y: 0, z: 0, w: 0.819152}
+  m_LocalPosition: {x: 0, y: 0.033899996, z: 0.0344}
+  m_LocalScale: {x: 0.0080658775, y: 0.0035128717, z: 0.03306256}
+  m_Children: []
+  m_Father: {fileID: 491042}
+  m_RootOrder: 4
 --- !u!4 &469896
 Transform:
   m_ObjectHideFlags: 1
@@ -268,6 +294,7 @@ Transform:
   - {fileID: 420528}
   - {fileID: 469896}
   - {fileID: 494266}
+  - {fileID: 442028}
   - {fileID: 448622}
   m_Father: {fileID: 417876}
   m_RootOrder: 0
@@ -402,6 +429,32 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
+--- !u!23 &2370292
+MeshRenderer:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 136922}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_SubsetIndices: 
+  m_StaticBatchRoot: {fileID: 0}
+  m_UseLightProbes: 1
+  m_ReflectionProbeUsage: 1
+  m_ProbeAnchor: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
 --- !u!23 &2382154
 MeshRenderer:
   m_ObjectHideFlags: 1
@@ -496,60 +549,34 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 131276}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!65 &6510482
-BoxCollider:
+--- !u!33 &3389986
+MeshFilter:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 178712}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!65 &6534408
-BoxCollider:
+  m_GameObject: {fileID: 136922}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &5447806
+Rigidbody:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 131276}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
+  m_GameObject: {fileID: 137884}
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!65 &6574982
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 151328}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!65 &6575038
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 167898}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!65 &6576688
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 184786}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
@@ -580,6 +607,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachPoint: {fileID: 405882}
+  trigger: {fileID: 448622}
+  triggerAnglePressed: 95
+  triggerAngleReleased: 70
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
