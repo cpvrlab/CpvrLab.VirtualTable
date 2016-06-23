@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace CpvrLab.VirtualTable {
 
-    public class PrototypeGun : EquippableItem {
+    public class PrototypeGun : UsableItem {
 
         public Transform trigger;
         public float triggerAnglePressed;

@@ -10,23 +10,26 @@ namespace CpvrLab.VirtualTable {
         [Header("First Person Properties")]
         [Range(0.5f, 3f)]
         public float pickupRange;
-        public Transform attachPoint;
+        public GameObject attachPoint;
         protected Transform head;
-        protected GameObject _currentlyEquipped = null;
+        protected UsableItem _currentlyEquipped = null;
+        protected FirstPersonPlayerInput _playerInput;
 
         protected override void Start()
         {
             base.Start();
             head = Camera.main.transform;
+            _playerInput = GetComponent<FirstPersonPlayerInput>();
+            // register the input slot with the base class
+            AddInputSlot(_playerInput);
         }
 
         void Update()
         {
             if(_currentlyEquipped != null) {
                 if(Input.GetKeyDown(KeyCode.E)) {
-                    UnequipItem(_currentlyEquipped.GetComponent<EquippableItem>());
-                    var rb = _currentlyEquipped.GetComponent<Rigidbody>();
-                    rb.isKinematic = false;
+                    UnequipItem(_currentlyEquipped); // remove item from equipped input slot
+                    _currentlyEquipped.Detach(); // drop the item
                     _currentlyEquipped = null;
                 }
             }
@@ -47,29 +50,24 @@ namespace CpvrLab.VirtualTable {
                 return;
 
             // todo: store the tags in some kind of const global variable!
-            // check if the hit object is equippable
-            if(!hit.transform.CompareTag("Equippable"))
+            // check if the hit object is usable
+            if(!hit.transform.CompareTag("UsableItem"))
                 return;
 
-            // check if the object has the required equippableitem component attached
-            var equippable = hit.transform.GetComponent<EquippableItem>();
-            if(equippable == null)
+            // check if the object has the required UsableItem component attached
+            var usableItem = hit.transform.GetComponent<UsableItem>();
+            if(usableItem == null)
                 return;
 
             // finally check if we should pick the object up
             if(Input.GetKeyDown(KeyCode.E)) {
-                // call base class equip so that the item receives input
-                EquipItem(equippable);
-
-                _currentlyEquipped = equippable.gameObject;
-
-                // add the item to our player
-                hit.transform.SetParent(attachPoint, false);
-                hit.transform.localPosition = Vector3.zero;
-                hit.transform.localRotation = Quaternion.identity;
-                hit.transform.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+                EquipItem(_playerInput, usableItem); // add the item to our input slot
+                usableItem.Attach(attachPoint); // attach the item to our "hand" object
+                _currentlyEquipped = usableItem;
             }
         }
+        
+
     } // class
 
 } // namespace

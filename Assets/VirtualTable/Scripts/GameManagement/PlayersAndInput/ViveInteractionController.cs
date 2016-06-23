@@ -8,19 +8,19 @@ namespace CpvrLab.VirtualTable {
 
     public delegate void InteractionEventHandler(object sender, GameObject target);
 
-    // todo:    separation of equippable and holdable items is tedious
+    // todo:    separation of usable and movable items is tedious
     //          could this be simplified?
     // 
-    // note:    at the moment only equippable items work
+    // note:    at the moment only usable items work
     [RequireComponent(typeof(SphereCollider))]
     public class ViveInteractionController : MonoBehaviour {
 
-        public event InteractionEventHandler EquippableItemPickedUp;
-        public event InteractionEventHandler EquippableItemDropped;
-        public event InteractionEventHandler HoldableItemPickedUp;
-        public event InteractionEventHandler HoldableItemDropped;
+        public event InteractionEventHandler UsableItemPickedUp;
+        public event InteractionEventHandler UsableItemDropped;
+        public event InteractionEventHandler MovableItemPickedUp;
+        public event InteractionEventHandler MovableItemDropped;
         
-        public float pickupRadius = 0.2f;
+        public float pickupRadius = 0.1f;
         private SteamVR_Controller.Device _device;
 
         // currently holding an item?
@@ -47,21 +47,21 @@ namespace CpvrLab.VirtualTable {
                 return;
             
             // todo: store these tags in a global common file as static const etc...
-            bool equippable = other.attachedRigidbody.CompareTag("Equippable");
-            bool holdable = other.attachedRigidbody.CompareTag("Holdable");
+            bool usable = other.attachedRigidbody.CompareTag("UsableItem");
+            bool moveable = other.attachedRigidbody.CompareTag("MovableItem");
             
-            if(!equippable && !holdable)
+            if(!usable && !moveable)
                 return;
 
             if(holdingItem)
                 return;
             
                         
-            if(equippable) {
+            if(usable) {
                 _currentlyEquipped = other.attachedRigidbody.gameObject;
 
-                if(EquippableItemPickedUp != null)
-                    EquippableItemPickedUp(this, _currentlyEquipped);
+                if(UsableItemPickedUp != null)
+                    UsableItemPickedUp(this, _currentlyEquipped);
 
                 // add the item to our player
                 _currentlyEquipped.transform.SetParent(transform, false);
@@ -79,8 +79,8 @@ namespace CpvrLab.VirtualTable {
                     _currentlyEquipped.transform.SetParent(null, true);
                     _currentlyEquipped.transform.gameObject.GetComponent<Rigidbody>().isKinematic = false;
 
-                    if(EquippableItemDropped != null)
-                        EquippableItemDropped(this, _currentlyEquipped);
+                    if(UsableItemDropped != null)
+                        UsableItemDropped(this, _currentlyEquipped);
 
                     _currentlyEquipped = null;
                 }

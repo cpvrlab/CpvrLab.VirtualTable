@@ -2,7 +2,7 @@
 using System.Collections;
 
 namespace CpvrLab.VirtualTable {
-    public class HoldableItem : MonoBehaviour {
+    public class MoveableItem : MonoBehaviour {
 
         // Use this for initialization
         void Start()

@@ -10,16 +10,18 @@ namespace CpvrLab.VirtualTable {
     //          Or we could implement actual 3d brush strokes. Not sure yet. Has to be decided
     //          when we implement the light painting game.
     //          As of now this is just a proof of concept
-    public class LightPainter : EquippableItem {
+    public class LightPainter : UsableItem {
 
         public float deltaPaint = 0.01f;
         public Transform paintPoint;
+        public bool clearOnDrop = true;
 
         private List<Vector3> _currentLinePoints = new List<Vector3>();
         private LineRenderer _currentLine;
         private bool _pointsChanged;
         private List<GameObject> _lines = new List<GameObject>();
         private bool _drawing = false;
+
 
         void Start()
         {
@@ -82,10 +84,13 @@ namespace CpvrLab.VirtualTable {
             _currentLine.SetColors(color, color);
         }
 
-        protected override void OnUnequip()
+        // clear the drawing when this item is dropped
+        public override void OnUnequip()
         {
             base.OnUnequip();
-            Clear();
+
+            if(clearOnDrop)
+                Clear();
         }
 
         IEnumerator UpdateCurrentLine()

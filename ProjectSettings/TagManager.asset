@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Equippable
-  - Holdable
+  - UsableItem
+  - MoveableItem
   layers:
   - Default
   - TransparentFX
