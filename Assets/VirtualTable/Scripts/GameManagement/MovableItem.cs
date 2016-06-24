@@ -2,6 +2,8 @@
 using System.Collections;
 
 namespace CpvrLab.VirtualTable {
+
+    [RequireComponent(typeof(Rigidbody))]
     public class MovableItem : MonoBehaviour {
         // todo:    implement functionality to be grabbed
         //          one should be able to grab an object already held by someone
@@ -14,5 +16,15 @@ namespace CpvrLab.VirtualTable {
         //          by a specific GamePlayer. However that functionality should be implemented
         //          in a child class. The base class should provide the necessary methods
         //          to achieve that altered functionality.
+
+        public void Attach(Rigidbody rb)
+        {
+            
+        }
+
+        public void Detach(Rigidbody rb)
+        {
+
+        }
     }
 }
