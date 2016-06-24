@@ -2,6 +2,8 @@
 using System.Collections;
 
 namespace CpvrLab.VirtualTable {
+
+    [RequireComponent(typeof(Rigidbody))]
     public class UsableItem : MonoBehaviour {
 
         public Transform attachPoint;

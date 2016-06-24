@@ -94,6 +94,7 @@ namespace CpvrLab.VirtualTable {
             //       best way would be to add the functionality into holdable item
             //       attach a fixed joint (or maybe a loose joint with the object hanging around?)
             //       anyway, what is   
+
         }
 
         void ReleaseMovableItem(MovableItem item)
