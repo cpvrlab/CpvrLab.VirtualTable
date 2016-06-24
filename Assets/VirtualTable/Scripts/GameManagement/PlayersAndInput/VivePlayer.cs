@@ -11,6 +11,8 @@ namespace CpvrLab.VirtualTable
     {
 
         [Header("Vive Player Properties")]
+        public bool isRightHanded = true;
+
         // unsure if these variables are necessary 
         protected ViveInteractionController _leftInteraction;
         protected ViveInteractionController _rightInteraction;
@@ -50,6 +52,12 @@ namespace CpvrLab.VirtualTable
             if (_rightInput == null)
                 _rightInput = right.AddComponent<VivePlayerInput>();
 
+            // add input slots to base class
+            AddInputSlot(_leftInput);
+            AddInputSlot(_rightInput);
+
+            _leftInput.trackedObj = leftTrackedObj;
+            _rightInput.trackedObj = rightTrackedObj;
 
             _leftInteraction.UsableItemPickedUp += ItemPickedUp;
             _rightInteraction.UsableItemPickedUp += ItemPickedUp;
@@ -62,17 +70,35 @@ namespace CpvrLab.VirtualTable
             // todo:     this implementation is crap. but at the moment I'm still unsure if we even need to tell
             //           the base GamePlayer class about our equipped items or not
             if (_leftInteraction.Equals(sender))
-                EquipItem(_leftInput, target.GetComponent<UsableItem>());
+                Equip(_leftInput, target.GetComponent<UsableItem>());
             else
-                EquipItem(_rightInput, target.GetComponent<UsableItem>());
+                Equip(_rightInput, target.GetComponent<UsableItem>());
         }
 
         void ItemDropped(object sender, GameObject target)
         {
-            UnequipItem(target.GetComponent<UsableItem>());
+            Unequip(target.GetComponent<UsableItem>());
+        }
+        
+        protected override PlayerInput GetMainInput()
+        {
+            if(isRightHanded)
+                return _rightInput;
+            else
+                return _leftInput;
         }
 
+        protected override void OnEquip(PlayerInput input, UsableItem item)
+        {
+            // todo:    I reall don't like this implementation, review this after having some games working.
+            input.gameObject.GetComponent<ViveInteractionController>().AttachItem(item);
+        }
 
+        protected override void OnUnequip(PlayerInput input, UsableItem item)
+        {
+            Debug.Log("OnUnequip");
+            input.gameObject.GetComponent<ViveInteractionController>().DetachItem(item);
+        }
     } // class
 
 } // namespace

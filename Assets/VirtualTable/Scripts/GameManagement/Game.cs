@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System;
 
 namespace CpvrLab.VirtualTable {
 
@@ -20,8 +21,13 @@ namespace CpvrLab.VirtualTable {
         public GamePlayer player;
     }
 
+    // todo:    for now a Game is a MonoBehaviour so that we can edit it easier in the editor
+    //          but it would be great if we could edit the game rules etc in a custom list editor
+    //          in the game manager editor itself where each game exposes its settings
+    //          via a property drawer.
+    public abstract class Game : MonoBehaviour {
 
-    public abstract class Game {
+        public event Action<Game> GameFinished;
 
         protected bool _usingCustomScene = false;
         protected string _customSceneName = "";
@@ -42,10 +48,17 @@ namespace CpvrLab.VirtualTable {
         {
             var element = _playerData.Find(e => e.player == player);
 
-            if(element != null)
+            if(element == null)
                 _playerData.Add(CreatePlayerData(player));
             else
                 Debug.LogWarning("Game WARNING: Careful, someone tried to add an already existing player to our list!");
+        }
+
+        public void AddPlayers(GamePlayer[] players)
+        {
+            foreach(var p in players) {
+                AddPlayer(p);
+            }
         }
 
         // remove player from game player list
@@ -59,9 +72,25 @@ namespace CpvrLab.VirtualTable {
                 Debug.LogWarning("Game WARNING: Careful, someone tried to remove a player that is not in the list!");
         }
 
+        public void RemovePlayers(GamePlayer[] players)
+        {
+            foreach(var p in players) {
+                RemovePlayer(p);
+            }
+        }
+
+        public void RemoveAllPlayers()
+        {
+            foreach(var p in _playerData)
+                RemovePlayer(p.player);
+        }
+
         private GamePlayerData CreatePlayerData(GamePlayer player)
         {
-            return CreatePlayerDataImpl(player);
+            var data = CreatePlayerDataImpl(player);
+            data.player = player;
+
+            return data;
         }
 
         protected abstract GamePlayerData CreatePlayerDataImpl(GamePlayer player);
@@ -73,6 +102,9 @@ namespace CpvrLab.VirtualTable {
                 SceneManager.LoadScene(_customSceneName);
             }
 
+            // reset game time
+            _gameTime = 0.0f;
+
             OnInitialize();
         }
 
@@ -80,16 +112,17 @@ namespace CpvrLab.VirtualTable {
         public void Stop()
         {
             OnStop();
-        }
 
-        public void Update()
-        {
-            OnUpdate();
+            // notify others about the game ending
+            if(GameFinished != null)
+                GameFinished(this);
         }
-
+        
         protected virtual void OnInitialize() { }
         protected virtual void OnStop() { }
-        protected virtual void OnUpdate() { }
+        public virtual void OnUpdate() {
+            _gameTime += Time.fixedDeltaTime;
+        }
     }
 
 }

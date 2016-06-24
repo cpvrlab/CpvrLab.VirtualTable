@@ -40,66 +40,114 @@ namespace CpvrLab.VirtualTable
         //          we should maybe use an initialize method that gets called by start in the 
         protected virtual void Start()
         {
+            // add ourselves to the current game manager
             GameManager.instance.AddPlayer(this);
         }
-
-        // equip an item to a specific input slot
-        protected void EquipItem(PlayerInput input, UsableItem item)
+        
+        protected InputSlot FindInputSlot(UsableItem item)
         {
-            var slot = _inputSlots.Find(x => x.input == input);
-            if (slot == null)
-            {
-                Debug.LogError("GamePlayer: Trying to add an item to a non existant input slot");
-                return;
-            }
+            return _inputSlots.Find(x => x.item == item);
+        }
 
-            // don't allow the user to equip an item to a slot with already an item present
-            if (slot.item != null)
-            {
-                Debug.LogError("GamePlayer: Trying to equip an item to a slot with already an item equipped!");
+        protected InputSlot FindInputSlot(PlayerInput input)
+        {
+            return _inputSlots.Find(x => x.input == input);
+        }
+
+        protected bool IsItemEquipped(UsableItem item)
+        {
+            return FindInputSlot(item) != null;
+        }
+
+        protected bool IsInputSlotAssigned(PlayerInput input)
+        {
+            return FindInputSlot(input) != null;
+        }
+
+        // equip an item and assign it to a specific player input
+        public void Equip(PlayerInput input, UsableItem item, bool unequipIfOccupied = false)
+        {
+            var slot = FindInputSlot(input);
+            if(slot == null) {
+                Debug.LogWarning("GamePlayer: Trying to add an item to a non existant input slot");
                 return;
             }
             
+            // already an item equipped to that slot
+            if(slot.item != null) {
+                if(!unequipIfOccupied)
+                    return;
 
+                // unequip the current item
+                Unequip(slot.item);
+            }
+
+            // assign new the item to the slot
             slot.item = item;
 
-            // notify the item
+            // notify the concrete class and the item
+            OnEquip(input, item);
             item.OnEquip(input);
         }
 
-        protected void UnequipItem(UsableItem item)
+        // equip an item to the main input slot
+        public void Equip(UsableItem item, bool unequipIfOccupied = false)
+        {
+            Equip(GetMainInput(), item, unequipIfOccupied);
+        }
+
+        public void Unequip(UsableItem item)
         {
             var slot = _inputSlots.Find(x => x.item == item);
-            if (slot == null)
-            {
-                Debug.LogError("GamePlayer: Trying to unequip an item that wasn't equipped!");
+            if(slot == null) {
+                Debug.LogWarning("GamePlayer: Trying to unequip an item that wasn't equipped!");
                 return;
             }
 
             slot.item = null;
-            
-            // notify the item
+
+            // notify the concrete class and the item
+            OnUnequip(slot.input, item);
             item.OnUnequip();
         }
 
-        protected UsableItem GetItemInSlot(PlayerInput input)
+        // unequip an item assigned to a specific slot
+        public void UnequipItemFrom(PlayerInput input)
         {
-            var slot = _inputSlots.Find(x => x.input == input);
-            return slot.item;
+            var slot = FindInputSlot(input);
+            if(slot.item == null || !IsItemEquipped(slot.item))
+                return;
+
+            Unequip(slot.item);
         }
 
-        protected virtual void OnEquipItem(UsableItem item) { }
-        protected virtual void OnUnequipItem(UsableItem item) { }
-
+        // unequips all equipped items
+        public void UnequipAll()
+        {
+            foreach(var slot in _inputSlots) {
+                if(slot.item != null) {
+                    Unequip(slot.item);
+                }
+            }
+        }
 
         // register a new input slot with the base class
         protected void AddInputSlot(PlayerInput input)
         {
+            if(IsInputSlotAssigned(input)) {
+                Debug.LogError("GamePlayer: Trying to add an player input that is already assigned to an input slot!");
+                return;
+            }
+
             var inputSlot = new InputSlot();
             inputSlot.input = input;
 
             _inputSlots.Add(inputSlot);
         }
+
+        protected abstract void OnEquip(PlayerInput input, UsableItem item);
+        protected abstract void OnUnequip(PlayerInput input, UsableItem item);
+        protected abstract PlayerInput GetMainInput();
     }
 
 }

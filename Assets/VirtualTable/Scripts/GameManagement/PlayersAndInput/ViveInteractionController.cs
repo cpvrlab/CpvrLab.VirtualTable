@@ -48,9 +48,9 @@ namespace CpvrLab.VirtualTable {
             
             // todo: store these tags in a global common file as static const etc...
             bool usable = other.attachedRigidbody.CompareTag("UsableItem");
-            bool moveable = other.attachedRigidbody.CompareTag("MovableItem");
+            bool movable = other.attachedRigidbody.CompareTag("MovableItem");
             
-            if(!usable && !moveable)
+            if(!usable && !movable)
                 return;
 
             if(holdingItem)
@@ -58,17 +58,11 @@ namespace CpvrLab.VirtualTable {
             
                         
             if(usable) {
-                _currentlyEquipped = other.attachedRigidbody.gameObject;
-
+                // notify listeners about the pickup
+                // this will trigger a AttachItem to be called by VivePlayer
+                // because the item will be registered with the GamePlayer base class
                 if(UsableItemPickedUp != null)
-                    UsableItemPickedUp(this, _currentlyEquipped);
-
-                // add the item to our player
-                _currentlyEquipped.transform.SetParent(transform, false);
-                _currentlyEquipped.transform.localPosition = Vector3.zero;
-                _currentlyEquipped.transform.localRotation = Quaternion.Euler(90, 0, 0);
-                _currentlyEquipped.GetComponent<Rigidbody>().isKinematic = true;
-
+                    UsableItemPickedUp(this, other.attachedRigidbody.gameObject);
             }
         }
 
@@ -76,15 +70,27 @@ namespace CpvrLab.VirtualTable {
         {
             if(_device.GetPressDown(EVRButtonId.k_EButton_Grip)) {
                 if(holdingItem) {
-                    _currentlyEquipped.transform.SetParent(null, true);
-                    _currentlyEquipped.transform.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-
+                    // notify listeners about the pickup
+                    // this will trigger a Unattach to be called by VivePlayer
+                    // because the item will be registered with the GamePlayer base class
                     if(UsableItemDropped != null)
                         UsableItemDropped(this, _currentlyEquipped);
-
-                    _currentlyEquipped = null;
                 }
             }
+        }
+
+        public void AttachItem(UsableItem item)
+        {
+            // attach the item to this gameObject
+            item.Attach(gameObject);
+            item.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            _currentlyEquipped = item.gameObject;
+        }
+
+        public void DetachItem(UsableItem item)
+        {
+            item.Detach();
+            _currentlyEquipped = null;
         }
     }
 }

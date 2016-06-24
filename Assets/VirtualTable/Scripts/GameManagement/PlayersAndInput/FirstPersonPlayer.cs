@@ -13,6 +13,7 @@ namespace CpvrLab.VirtualTable {
         public GameObject attachPoint;
         protected Transform head;
         protected UsableItem _currentlyEquipped = null;
+        protected MovableItem _currentlyHolding = null;
         protected FirstPersonPlayerInput _playerInput;
 
         protected override void Start()
@@ -28,18 +29,20 @@ namespace CpvrLab.VirtualTable {
         {
             if(_currentlyEquipped != null) {
                 if(Input.GetKeyDown(KeyCode.E)) {
-                    UnequipItem(_currentlyEquipped); // remove item from equipped input slot
-                    _currentlyEquipped.Detach(); // drop the item
-                    _currentlyEquipped = null;
+                    Unequip(_currentlyEquipped); // remove item from equipped input slot
                 }
             }
+            if(_currentlyHolding != null) {
+                if(Input.GetKeyUp(KeyCode.E))
+                    ReleaseMovableItem(_currentlyHolding);
+            }
             else {
-                // pickup objects
-                HandlePickup();
+                // handle object pickups
+                HandleItemInteractions();
             }
         }
 
-        void HandlePickup()
+        void HandleItemInteractions()
         {
             Ray ray = new Ray(head.position, head.forward);
 
@@ -50,24 +53,71 @@ namespace CpvrLab.VirtualTable {
                 return;
 
             // todo: store the tags in some kind of const global variable!
-            // check if the hit object is usable
-            if(!hit.transform.CompareTag("UsableItem"))
-                return;
+            if(hit.transform.CompareTag("UsableItem")) {
+                HandleUsableItem(hit);
+            }
+            
+            // todo: store the tags in some kind of const global variable!
+            if(hit.transform.CompareTag("MovableItem")) {
+                HandleMovableItem(hit);
+            }
+        }
 
+        void HandleUsableItem(RaycastHit hit)
+        {
             // check if the object has the required UsableItem component attached
             var usableItem = hit.transform.GetComponent<UsableItem>();
             if(usableItem == null)
-                return;
+                return;            
 
-            // finally check if we should pick the object up
+            // Do we want to pick the item up?
             if(Input.GetKeyDown(KeyCode.E)) {
-                EquipItem(_playerInput, usableItem); // add the item to our input slot
-                usableItem.Attach(attachPoint); // attach the item to our "hand" object
-                _currentlyEquipped = usableItem;
+                Equip(usableItem);
             }
         }
-        
 
+        void HandleMovableItem(RaycastHit hit)
+        {
+            // check if the object has the required MovableItem component attached
+            var movableItem = hit.transform.GetComponent<MovableItem>();
+            if(movableItem == null)
+                return;
+
+            if(Input.GetKeyDown(KeyCode.E)) {
+                GrabMovableItem(movableItem);
+            }
+        }
+
+        void GrabMovableItem(MovableItem item)
+        {
+            // todo: grab the object
+            //       best way would be to add the functionality into holdable item
+            //       attach a fixed joint (or maybe a loose joint with the object hanging around?)
+            //       anyway, what is   
+        }
+
+        void ReleaseMovableItem(MovableItem item)
+        {
+
+        }
+
+        protected override PlayerInput GetMainInput()
+        {
+            return _playerInput;
+        }
+
+        protected override void OnEquip(PlayerInput input, UsableItem item)
+        {
+            // perform custom equip actions
+            item.Attach(attachPoint); // attach the item to our "hand" object
+            _currentlyEquipped = item;
+        }
+
+        protected override void OnUnequip(PlayerInput input, UsableItem item)
+        {
+            item.Detach(); // drop the item
+            _currentlyEquipped = null;
+        }
     } // class
 
 } // namespace

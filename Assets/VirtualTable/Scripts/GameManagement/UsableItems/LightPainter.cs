@@ -47,10 +47,7 @@ namespace CpvrLab.VirtualTable {
                 var pos = paintPoint.position;
 
                 if(_currentLinePoints.Count == 0 || Vector3.Distance(prevPosition, pos) > deltaPaint) {
-                    _pointsChanged = true;
-
                     _currentLinePoints.Add(pos);
-
                 }
             }
 
@@ -104,8 +101,6 @@ namespace CpvrLab.VirtualTable {
                     _currentLine.SetVertexCount(_currentLinePoints.Count);
                     _currentLine.SetPositions(_currentLinePoints.ToArray());
                     _currentLinePoints.RemoveAt(_currentLinePoints.Count - 1);
-
-                    _pointsChanged = false;
 
                     yield return null;
                 }

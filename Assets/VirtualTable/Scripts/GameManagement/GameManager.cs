@@ -8,7 +8,7 @@ namespace CpvrLab.VirtualTable {
         public static GameManager instance { get { return _instance; } }
         private static GameManager _instance = null;
 
-        protected List<Game> _games = new List<Game>();
+        public Game[] games;
         protected Game _currentGame;
 
         // list of players currently able to play
@@ -39,19 +39,34 @@ namespace CpvrLab.VirtualTable {
                 Debug.LogError("GameManager: Trying to register the same player twice!");
         }
 
+        public void AddPlayers(GamePlayer[] players)
+        {
+            foreach(var p in players) {
+                AddPlayer(p);
+            }
+        }
+
         public void RemovePlayer(GamePlayer player)
         {
             _players.Remove(player);
         }
 
+        public void RemovePlayers(GamePlayer[] players)
+        {
+            foreach(var p in players) {
+                RemovePlayer(p);
+            }
+        }
+
+
         public void StartGame(int index)
         {
-            if(index < 0 && _games.Count <= index) {
+            if(index < 0 && games.Length <= index) {
                 Debug.LogError("GameManager: Trying to load a game with an invalid index.");
                 return;
             }
 
-            StartGame(_games[index]);
+            StartGame(games[index]);
         }
 
         // todo:    allow for graceful starting and stopping of games
@@ -64,6 +79,8 @@ namespace CpvrLab.VirtualTable {
 
             _currentGame = game;
             _currentGame.Initialize();
+
+            _currentGame.GameFinished += GameFinished;
         }
 
         void StopGame(Game game)
@@ -74,11 +91,16 @@ namespace CpvrLab.VirtualTable {
             _currentGame.Stop();
         }
 
-        void Update()
+        protected virtual void GameFinished(Game game)
+        {
+            _currentGame = null;
+        }
+
+        void FixedUpdate()
         {
             // advance current game logic
             if(_currentGame != null)
-                _currentGame.Update();
+                _currentGame.OnUpdate();
         }
 
     }

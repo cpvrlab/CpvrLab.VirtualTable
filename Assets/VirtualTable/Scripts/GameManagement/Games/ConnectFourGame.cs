@@ -27,7 +27,7 @@ namespace CpvrLab.VirtualTable {
             Debug.Log("ConnectFourGame: Initialized");
         }
 
-        protected override void OnUpdate()
+        public override void OnUpdate()
         {
             base.OnUpdate();
         }
