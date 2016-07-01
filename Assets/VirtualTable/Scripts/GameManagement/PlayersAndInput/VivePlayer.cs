@@ -20,9 +20,9 @@ namespace CpvrLab.VirtualTable
         protected VivePlayerInput _leftInput;
         protected VivePlayerInput _rightInput;
 
-        protected override void Start()
+        public override void OnStartLocalPlayer()
         {
-            base.Start();
+            base.OnStartLocalPlayer();
 
             var controllerManager = GetComponent<SteamVR_ControllerManager>();
 
@@ -94,9 +94,11 @@ namespace CpvrLab.VirtualTable
             input.gameObject.GetComponent<ViveInteractionController>().AttachItem(item);
         }
 
-        protected override void OnUnequip(PlayerInput input, UsableItem item)
+        protected override void OnUnequip(UsableItem item)
         {
+            // temporary solution
             Debug.Log("OnUnequip");
+            var input = FindInputSlot(item).input;
             input.gameObject.GetComponent<ViveInteractionController>().DetachItem(item);
         }
     } // class

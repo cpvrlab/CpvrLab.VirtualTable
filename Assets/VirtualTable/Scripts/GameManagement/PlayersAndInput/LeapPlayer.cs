@@ -15,7 +15,7 @@ namespace CpvrLab.VirtualTable {
             throw new NotImplementedException();
         }
 
-        protected override void OnUnequip(PlayerInput input, UsableItem item)
+        protected override void OnUnequip(UsableItem item)
         {
             throw new NotImplementedException();
         }

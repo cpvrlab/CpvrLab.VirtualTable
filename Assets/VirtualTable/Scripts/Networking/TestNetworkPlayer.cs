@@ -9,6 +9,11 @@ namespace CpvrLab.VirtualTable {
     // print everything
     public class TestNetworkPlayer : NetworkBehaviour {
 
+        public void SetName()
+        {
+
+        }
+
         private void Log(string msg)
         {
             Debug.Log("NetworkPlayer(" + netId + ", " + (isLocalPlayer ? "local" : "remote") + "): " + msg);

@@ -8,6 +8,25 @@ namespace CpvrLab.VirtualTable {
     // test class to see how unity's networkmanager works
     public class VTNetworkManager : NetworkManager {
 
+        //public NetworkPlayer playerPrefab;
+
+        protected NetworkPlayer _playerInstance;
+
+        void Start()
+        {
+            //LogFilter.currentLogLevel = (int)LogFilter.FilterLevel.Debug;
+
+        }
+
+        public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+        {
+            base.OnServerAddPlayer(conn, playerControllerId);
+            //playerPrefab
+        }
+
+
+
+        /*
         public override NetworkClient StartHost()
         {
             Debug.Log("NetworkManager: StartHost");
@@ -139,7 +158,7 @@ namespace CpvrLab.VirtualTable {
         {
             Debug.Log("NetworkManager: OnStopServer");
             base.OnStopServer();
-        }
+        }*/
     }
 
 }

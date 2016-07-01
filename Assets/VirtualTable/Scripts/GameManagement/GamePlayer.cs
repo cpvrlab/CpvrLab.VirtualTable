@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections.Generic;
+using System.Collections;
 
-namespace CpvrLab.VirtualTable
-{
+namespace CpvrLab.VirtualTable {
 
     // todo:    review the necessaty and function of this class
     //          it seems like the item equip handling could easily
@@ -13,12 +14,10 @@ namespace CpvrLab.VirtualTable
     //          Would it be better if we moved all the equip code into the
     //          UsableItem class?
     //
-    public abstract class GamePlayer : MonoBehaviour
-    {
+    public abstract class GamePlayer : NetworkBehaviour {
 
         // defines an input slot that can serve an usable item with input
-        protected class InputSlot
-        {
+        protected class InputSlot {
             public PlayerInput input;
             public UsableItem item = null;
         }
@@ -38,12 +37,20 @@ namespace CpvrLab.VirtualTable
         // todo:    use a unified naming scheme across all classes used for this project
         //          for the methods that can be used by subclasses. Maybe start isn't such a good idea
         //          we should maybe use an initialize method that gets called by start in the 
-        protected virtual void Start()
+        public override void OnStartServer()
         {
             // add ourselves to the current game manager
             GameManager.instance.AddPlayer(this);
         }
         
+        protected InputSlot GetInputSlot(int index)
+        {
+            if(index < 0 || _inputSlots.Count <= index)
+                return null;
+
+            return _inputSlots[index];
+        }
+
         protected InputSlot FindInputSlot(UsableItem item)
         {
             return _inputSlots.Find(x => x.item == item);
@@ -72,7 +79,7 @@ namespace CpvrLab.VirtualTable
                 Debug.LogWarning("GamePlayer: Trying to add an item to a non existant input slot");
                 return;
             }
-            
+
             // already an item equipped to that slot
             if(slot.item != null) {
                 if(!unequipIfOccupied)
@@ -85,9 +92,8 @@ namespace CpvrLab.VirtualTable
             // assign new the item to the slot
             slot.item = item;
 
-            // notify the concrete class and the item
-            OnEquip(input, item);
-            item.OnEquip(input);
+            // notify everyone about the equipped item
+            CmdOnEquip(item.gameObject);
         }
 
         // equip an item to the main input slot
@@ -95,6 +101,7 @@ namespace CpvrLab.VirtualTable
         {
             Equip(GetMainInput(), item, unequipIfOccupied);
         }
+
 
         public void Unequip(UsableItem item)
         {
@@ -105,10 +112,9 @@ namespace CpvrLab.VirtualTable
             }
 
             slot.item = null;
-
-            // notify the concrete class and the item
-            OnUnequip(slot.input, item);
-            item.OnUnequip();
+            
+            // notify everyone about the unequipped item
+            CmdOnUnequip(item.gameObject);
         }
 
         // unequip an item assigned to a specific slot
@@ -131,6 +137,73 @@ namespace CpvrLab.VirtualTable
             }
         }
 
+
+        [Command] private void CmdOnEquip(GameObject item) {
+            // assign authority to the equipped item
+            item.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
+            //item.GetComponent<NetworkTransform>().enabled = false;
+
+            RpcOnEquip(item);
+        }
+        [ClientRpc] public void RpcOnEquip(GameObject item)
+        {
+            var usableItem = item.GetComponent<UsableItem>();
+            PlayerInput input = null;
+            
+            if(usableItem == null) {
+                Debug.LogError("GamePlayer.RpcOnEquip(): Can't find attached UsableItem component!");
+                return;
+            }
+
+            // get the player input component from the input slot
+            // if we're the local player
+            if(isLocalPlayer) {
+                var slot = FindInputSlot(usableItem);
+                if(slot != null) {
+                    input = slot.input;
+
+                    usableItem.OnEquip(this, input);
+                }
+            }
+                        
+            OnEquip(input, usableItem);
+        }
+
+        [Command] private void CmdOnUnequip(GameObject item) {
+            
+            RpcOnUnequip(item);
+            // revoke client authority after a set amount of seconds
+            // todo:    there is no guarantee that our set timer 
+            //          is enough for all clients to have run
+            //          the item's deninitialize calls that may happen
+            //          in UsableItem.OnUnequip. We should find a better
+            //          way to revoke the clients authority w
+            //StartCoroutine(RemoveClientAuthorityTimed());
+        }
+        [ClientRpc] public void RpcOnUnequip(GameObject item) {
+            var usableItem = item.GetComponent<UsableItem>();
+            PlayerInput input = null;
+
+            if(usableItem == null) {
+                Debug.LogError("GamePlayer.RpcOnEquip(): Can't find attached UsableItem component!");
+                return;
+            }
+
+            // call the unequip hook of the concrete GamePlayer
+            OnUnequip(usableItem);
+
+            // if we're the local player make sure the item is properly unequipped
+            // and stripped of its client authority
+            if(isLocalPlayer) {
+                var slot = FindInputSlot(usableItem);
+                if(slot != null)
+                    input = slot.input;
+
+                usableItem.OnUnequip();
+                usableItem.ReleaseAuthority();
+            }
+        }
+
         // register a new input slot with the base class
         protected void AddInputSlot(PlayerInput input)
         {
@@ -146,7 +219,7 @@ namespace CpvrLab.VirtualTable
         }
 
         protected abstract void OnEquip(PlayerInput input, UsableItem item);
-        protected abstract void OnUnequip(PlayerInput input, UsableItem item);
+        protected abstract void OnUnequip(UsableItem item);
         protected abstract PlayerInput GetMainInput();
     }
 

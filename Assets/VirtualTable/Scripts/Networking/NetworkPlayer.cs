@@ -6,80 +6,92 @@ using System.Collections.Generic;
 namespace CpvrLab.VirtualTable {
 
     [RequireComponent(typeof(NetworkIdentity))]
+    // print everything
     public class NetworkPlayer : NetworkBehaviour {
+
+        public void SetName()
+        {
+
+        }
+
+        private void Log(string msg)
+        {
+            Debug.Log("NetworkPlayer(" + netId + ", " + (isLocalPlayer ? "local" : "remote") + "): " + msg);
+        }
+
         public override bool OnCheckObserver(NetworkConnection conn)
         {
-            Debug.Log("NetworkPlayer: OnCheckObserver");
+            Log("OnCheckObserver");
             return base.OnCheckObserver(conn);
         }
 
         public override void OnDeserialize(NetworkReader reader, bool initialState)
         {
-            Debug.Log("NetworkPlayer: OnDeserialize");
+            Log("OnDeserialize");
             base.OnDeserialize(reader, initialState);
         }
 
         public override void OnNetworkDestroy()
         {
-            Debug.Log("NetworkPlayer: OnNetworkDestroy");
+            Log("OnNetworkDestroy");
             base.OnNetworkDestroy();
         }
 
         public override bool OnRebuildObservers(HashSet<NetworkConnection> observers, bool initialize)
         {
-            Debug.Log("NetworkPlayer: OnRebuildObservers");
+            Log("OnRebuildObservers");
             return base.OnRebuildObservers(observers, initialize);
 
         }
 
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
-            Debug.Log("NetworkPlayer: OnSerialize");
+            Log("OnSerialize");
             return base.OnSerialize(writer, initialState);
         }
 
         public override void OnSetLocalVisibility(bool vis)
         {
-            Debug.Log("NetworkPlayer: OnSetLocalVisibility");
+            Log("OnSetLocalVisibility");
             base.OnSetLocalVisibility(vis);
         }
 
         public override void OnStartAuthority()
         {
-            Debug.Log("NetworkPlayer: OnStartAuthority");
+            Log("OnStartAuthority");
             base.OnStartAuthority();
         }
 
         public override void OnStartClient()
         {
-            Debug.Log("NetworkPlayer: OnStartClient");
+            Log("OnStartClient");
             base.OnStartClient();
         }
 
         public override void OnStartLocalPlayer()
         {
-            Debug.Log("NetworkPlayer: OnStartLocalPlayer");
+            Log("OnStartLocalPlayer");
             base.OnStartLocalPlayer();
         }
 
         public override void OnStartServer()
         {
-            Debug.Log("NetworkPlayer: OnStartServer");
+            Log("OnStartServer");
             base.OnStartServer();
         }
 
         public override void OnStopAuthority()
         {
-            Debug.Log("NetworkPlayer: OnStopAuthority");
+            Log("OnStopAuthority");
             base.OnStopAuthority();
         }
 
         public override void PreStartClient()
         {
-            Debug.Log("NetworkPlayer: PreStartClient");
+            Log("PreStartClient");
             base.PreStartClient();
         }
-        
+
     }
 
 }

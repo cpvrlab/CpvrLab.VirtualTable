@@ -6,8 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/VirtualTable/Scenes/TestOfflineScene.unity
-  - enabled: 1
     path: Assets/VirtualTable/Scenes/OfflineScene.unity
   - enabled: 1
-    path: Assets/VirtualTable/Scenes/OnlineScene.unity
+    path: Assets/VirtualTable/Scenes/OnlinePickupTest.unity

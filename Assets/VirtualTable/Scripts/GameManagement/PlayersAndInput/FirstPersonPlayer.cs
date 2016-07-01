@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityStandardAssets.Characters.FirstPerson;
 
 namespace CpvrLab.VirtualTable {
 
@@ -11,22 +12,30 @@ namespace CpvrLab.VirtualTable {
         [Range(0.5f, 3f)]
         public float pickupRange;
         public GameObject attachPoint;
-        protected Transform head;
+        public Transform head;
         protected UsableItem _currentlyEquipped = null;
         protected MovableItem _currentlyHolding = null;
         protected FirstPersonPlayerInput _playerInput;
-
-        protected override void Start()
+        
+        public override void OnStartLocalPlayer()
         {
-            base.Start();
-            head = Camera.main.transform;
+            base.OnStartLocalPlayer();
+
+            // temporary solution?
+            GetComponent<CharacterController>().enabled = true;
+            GetComponent<FirstPersonController>().enabled = true;
+            
             _playerInput = GetComponent<FirstPersonPlayerInput>();
             // register the input slot with the base class
             AddInputSlot(_playerInput);
+
         }
 
         void Update()
         {
+            if(!isLocalPlayer)
+                return;
+
             if(_currentlyEquipped != null) {
                 if(Input.GetKeyDown(KeyCode.E)) {
                     Unequip(_currentlyEquipped); // remove item from equipped input slot
@@ -113,12 +122,13 @@ namespace CpvrLab.VirtualTable {
             item.Attach(attachPoint); // attach the item to our "hand" object
             _currentlyEquipped = item;
         }
-
-        protected override void OnUnequip(PlayerInput input, UsableItem item)
+        
+        protected override void OnUnequip(UsableItem item)
         {
             item.Detach(); // drop the item
             _currentlyEquipped = null;
         }
+        
     } // class
 
 } // namespace

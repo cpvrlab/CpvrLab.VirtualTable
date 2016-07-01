@@ -17,8 +17,8 @@ namespace CpvrLab.VirtualTable {
 
         public event InteractionEventHandler UsableItemPickedUp;
         public event InteractionEventHandler UsableItemDropped;
-        public event InteractionEventHandler MovableItemPickedUp;
-        public event InteractionEventHandler MovableItemDropped;
+        //public event InteractionEventHandler MovableItemPickedUp;
+        //public event InteractionEventHandler MovableItemDropped;
         
         public float pickupRadius = 0.1f;
         private SteamVR_Controller.Device _device;

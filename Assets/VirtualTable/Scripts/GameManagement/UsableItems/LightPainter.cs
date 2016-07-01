@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Networking;
 
 namespace CpvrLab.VirtualTable {
 
@@ -10,6 +11,12 @@ namespace CpvrLab.VirtualTable {
     //          Or we could implement actual 3d brush strokes. Not sure yet. Has to be decided
     //          when we implement the light painting game.
     //          As of now this is just a proof of concept
+
+    // todo:    Network optimizations if needed: We currently send a command every time we add
+    //          a point to the line renderer. This could bog down the network. A better approach 
+    //          would be to use the position on each client to draw the line. And periodically
+    //          send a list of correct line points to the server for the other clients to 
+    //          correct their local drawings.
     public class LightPainter : UsableItem {
 
         public float deltaPaint = 0.01f;
@@ -20,14 +27,16 @@ namespace CpvrLab.VirtualTable {
         private LineRenderer _currentLine;
         private bool _pointsChanged;
         private List<GameObject> _lines = new List<GameObject>();
+        [SyncVar]
         private bool _drawing = false;
+        private bool _lineChanged = false;
 
 
-        void Start()
+        public override void OnStartClient()
         {
+            base.OnStartClient();
             StartCoroutine(UpdateCurrentLine());
         }
-
 
         void Update()
         {
@@ -40,14 +49,18 @@ namespace CpvrLab.VirtualTable {
                 StartNewLine();
             }
 
-            _drawing = _input.GetAction(PlayerInput.ActionCode.Button0);
+            bool drawing = _input.GetAction(PlayerInput.ActionCode.Button0);
+            if(_drawing != drawing) {
+                _drawing = drawing;
+                CmdSetDrawing(_drawing);
+            }
 
             if(_drawing) {
                 var prevPosition = _currentLinePoints.Count > 0 ? _currentLinePoints[_currentLinePoints.Count - 1] : Vector3.zero;
                 var pos = paintPoint.position;
 
                 if(_currentLinePoints.Count == 0 || Vector3.Distance(prevPosition, pos) > deltaPaint) {
-                    _currentLinePoints.Add(pos);
+                    AddLinePoint(pos);
                 }
             }
 
@@ -55,8 +68,22 @@ namespace CpvrLab.VirtualTable {
                 Clear();
             }
         }
+        [Command] void CmdSetDrawing(bool value) { _drawing = value; }
 
+        
         void Clear()
+        {
+
+            // todo: is it really necessary to immediately execute on local client?
+            //       probably yes, but we should still make sure.
+            ClearClient();
+            CmdClear();
+        }
+        
+        [Command] void CmdClear() { RpcClear(); }
+        [ClientRpc] void RpcClear() { if(!hasAuthority) ClearClient(); }
+
+        void ClearClient()
         {
             foreach(var go in _lines) {
                 DestroyImmediate(go);
@@ -64,8 +91,31 @@ namespace CpvrLab.VirtualTable {
             _lines.Clear();
         }
 
+        void AddLinePoint(Vector3 position)
+        {
+            AddLinePointClient(position);
+            CmdAddLinePoint(position);
+        }
+        [Command] void CmdAddLinePoint(Vector3 position) { RpcAddLinePoint(position); }
+        [ClientRpc] void RpcAddLinePoint(Vector3 position) { if(!hasAuthority) AddLinePointClient(position); }
+        void AddLinePointClient(Vector3 position)
+        {
+            _currentLinePoints.Add(position);
+            _lineChanged = true;
+        }
+
         void StartNewLine()
         {
+            var color = Random.ColorHSV(0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+            StartNewLineClient(color);
+            CmdStartNewLine(color);
+        }
+
+        [Command] void CmdStartNewLine(Color color) { RpcStartNewLine(color); }
+        [ClientRpc] void RpcStartNewLine(Color color) { if(!hasAuthority) StartNewLineClient(color); }
+        void StartNewLineClient(Color color)
+        {
+            Debug.Log("StartNEwLine");
             _currentLinePoints.Clear();
 
             var go = new GameObject("Line");
@@ -77,7 +127,6 @@ namespace CpvrLab.VirtualTable {
             _currentLine.useWorldSpace = true;
             _currentLine.material = new Material(Shader.Find("Particles/Additive"));
             _currentLine.SetWidth(0.025F, 0.025F);
-            var color = Random.ColorHSV(0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
             _currentLine.SetColors(color, color);
         }
 
@@ -93,17 +142,19 @@ namespace CpvrLab.VirtualTable {
         IEnumerator UpdateCurrentLine()
         {
             while(true) {
-                if(_currentLinePoints.Count < 1 || !_drawing)
-                    yield return null;
-                else {
+                if(_currentLinePoints.Count > 0 && (_drawing || _lineChanged)) {
                     // innefficient as hell
                     _currentLinePoints.Add(paintPoint.position);
                     _currentLine.SetVertexCount(_currentLinePoints.Count);
                     _currentLine.SetPositions(_currentLinePoints.ToArray());
                     _currentLinePoints.RemoveAt(_currentLinePoints.Count - 1);
 
+                    _lineChanged = false;
+
                     yield return null;
                 }
+                else                 
+                    yield return null;
             }
         }
     }

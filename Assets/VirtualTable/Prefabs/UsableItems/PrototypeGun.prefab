@@ -44,6 +44,8 @@ GameObject:
   - 4: {fileID: 417876}
   - 114: {fileID: 11494124}
   - 54: {fileID: 5447806}
+  - 114: {fileID: 11442318}
+  - 114: {fileID: 11436324}
   m_Layer: 0
   m_Name: PrototypeGun
   m_TagString: UsableItem
@@ -606,6 +608,58 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &11436324
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 137884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1768714887, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TransformSyncMode: 0
+  m_SendInterval: 0.033333335
+  m_SyncRotationAxis: 7
+  m_RotationSyncCompression: 0
+  m_SyncSpin: 0
+  m_MovementTheshold: 0.001
+  m_SnapThreshold: 5
+  m_InterpolateRotation: 1
+  m_InterpolateMovement: 1
+--- !u!114 &11442318
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 137884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 147
+    i1: 234
+    i2: 172
+    i3: 222
+    i4: 188
+    i5: 1
+    i6: 216
+    i7: 68
+    i8: 104
+    i9: 195
+    i10: 121
+    i11: 60
+    i12: 131
+    i13: 139
+    i14: 158
+    i15: 6
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1
 --- !u!114 &11494124
 MonoBehaviour:
   m_ObjectHideFlags: 1
