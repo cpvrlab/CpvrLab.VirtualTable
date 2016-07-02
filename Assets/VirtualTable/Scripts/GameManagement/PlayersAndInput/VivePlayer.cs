@@ -6,12 +6,16 @@ using System;
 namespace CpvrLab.VirtualTable
 {
 
-
     public class VivePlayer : GamePlayer
     {
 
         [Header("Vive Player Properties")]
         public bool isRightHanded = true;
+
+        public GameObject head;
+        public GameObject leftController;
+        public GameObject rightController;
+
 
         // unsure if these variables are necessary 
         protected ViveInteractionController _leftInteraction;
