@@ -29,7 +29,7 @@ namespace CpvrLab.VirtualTable {
                 var prop = advancedSettings.FindPropertyRelative("networkManager");
                 EditorGUILayout.PropertyField(prop);
 
-                int numOptions = (int)BuildOptions.Target.Count;
+                int numOptions = System.Enum.GetNames(typeof(BuildOptions.Target)).Length;
                 if(script.targetOptions.Length != numOptions) {
 
                     Debug.LogWarning("BuildOptions: Looks like the number of build options changed, updating internal build options list.");

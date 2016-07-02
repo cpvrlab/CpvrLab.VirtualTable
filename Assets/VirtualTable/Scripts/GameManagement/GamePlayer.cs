@@ -182,7 +182,6 @@ namespace CpvrLab.VirtualTable {
         }
         [ClientRpc] public void RpcOnUnequip(GameObject item) {
             var usableItem = item.GetComponent<UsableItem>();
-            PlayerInput input = null;
 
             if(usableItem == null) {
                 Debug.LogError("GamePlayer.RpcOnEquip(): Can't find attached UsableItem component!");
@@ -195,10 +194,6 @@ namespace CpvrLab.VirtualTable {
             // if we're the local player make sure the item is properly unequipped
             // and stripped of its client authority
             if(isLocalPlayer) {
-                var slot = FindInputSlot(usableItem);
-                if(slot != null)
-                    input = slot.input;
-
                 usableItem.OnUnequip();
                 usableItem.ReleaseAuthority();
             }
