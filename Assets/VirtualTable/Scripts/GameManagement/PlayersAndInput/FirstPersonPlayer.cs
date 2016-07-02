@@ -125,6 +125,7 @@ namespace CpvrLab.VirtualTable {
         
         protected override void OnUnequip(UsableItem item)
         {
+            Debug.Log("Unequip");
             item.Detach(); // drop the item
             _currentlyEquipped = null;
         }

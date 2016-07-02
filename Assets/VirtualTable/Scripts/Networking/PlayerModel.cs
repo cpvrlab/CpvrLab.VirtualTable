@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerModel : MonoBehaviour {
+namespace CpvrLab.VirtualTable
+{
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public abstract class PlayerModel : MonoBehaviour
+    {
+        public abstract void RenderPreview(RenderTexture target);
+        /// <summary>
+        /// Called by the owning GamePlayer
+        /// </summary>
+        /// <param name="player"></param>
+        public abstract void InitializeModel(GamePlayer player);
+    }
+
 }

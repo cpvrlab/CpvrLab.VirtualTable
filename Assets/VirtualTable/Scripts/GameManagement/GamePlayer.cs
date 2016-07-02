@@ -17,11 +17,18 @@ namespace CpvrLab.VirtualTable {
     public abstract class GamePlayer : NetworkBehaviour {
 
         // defines an input slot that can serve an usable item with input
+        // todo: important, We need to define the attachment slots in this base class
+        //          we need to do this because in case of a sudden disconnect we must
+        //          properly unequip any items this player might have picked up before 
+        //          destroying it. We probably have to move the handling of 
+        //          assigning client authority to usableitems to the usableitem itself 
+        //          for this to work.
         protected class InputSlot {
             public PlayerInput input;
+            public GameObject attachPoint;
             public UsableItem item = null;
         }
-
+                
         // prevent the player from equipping or unequipping any items
         public bool lockEquippedItems = false;
 
@@ -34,6 +41,17 @@ namespace CpvrLab.VirtualTable {
 
         protected List<InputSlot> _inputSlots = new List<InputSlot>();
 
+        /// <summary>
+        /// List of possible representations of this player
+        /// This list is populated by the concrete class
+        /// </summary>
+        public List<PlayerModel> playerModels = new List<PlayerModel>();
+        protected int _localPlayerModel = 0;
+        protected int _remotePlayerModel = 0;
+        protected PlayerModel _localPlayerModelInstance = null;
+        protected PlayerModel _remotePlayerModelInstance = null;
+
+
         // todo:    use a unified naming scheme across all classes used for this project
         //          for the methods that can be used by subclasses. Maybe start isn't such a good idea
         //          we should maybe use an initialize method that gets called by start in the 
@@ -41,6 +59,38 @@ namespace CpvrLab.VirtualTable {
         {
             // add ourselves to the current game manager
             GameManager.instance.AddPlayer(this);
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            // hacked this in quickly to test it out as soon as I can use the vive at work again
+            // needs sanity checks, ability to switch local and remote models on the fly etc etc.
+            if(isLocalPlayer && playerModels.Count > _localPlayerModel)
+            {
+                // todo: spawn local player model
+                _localPlayerModelInstance = Instantiate(playerModels[_localPlayerModel], transform.position, transform.rotation) as PlayerModel;
+                _localPlayerModelInstance.InitializeModel(this);
+            }
+            else if(playerModels.Count > _remotePlayerModel)
+            {
+                // todo: spawn remote player model
+                _remotePlayerModelInstance = Instantiate(playerModels[_remotePlayerModel], transform.position, transform.rotation) as PlayerModel;
+                _remotePlayerModelInstance.InitializeModel(this);
+            }
+        }
+
+        public override void OnNetworkDestroy()
+        {
+            Debug.Log("GamePlayer: OnNetworkDestroy");
+            UnequipAllImmediate();
+            base.OnNetworkDestroy();
+        }
+
+        protected void SetLocalPlayerModel(int index)
+        {
+
         }
         
         protected InputSlot GetInputSlot(int index)
@@ -133,6 +183,18 @@ namespace CpvrLab.VirtualTable {
             foreach(var slot in _inputSlots) {
                 if(slot.item != null) {
                     Unequip(slot.item);
+                }
+            }
+        }
+
+        // todo: this doesn't return client authority to the server!
+        public void UnequipAllImmediate()
+        {
+            foreach(var slot in _inputSlots)
+            {
+                if(slot.item != null)
+                {
+                    OnUnequip(slot.item);
                 }
             }
         }

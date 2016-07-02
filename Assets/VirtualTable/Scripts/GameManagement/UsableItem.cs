@@ -43,6 +43,7 @@ namespace CpvrLab.VirtualTable {
         [Client]
         public void Detach()
         {
+            Debug.Log("Detach " + ((_prevParent != null) ? _prevParent.name : "null"));
             transform.parent = _prevParent;
             var rb = GetComponent<Rigidbody>();
             rb.isKinematic = false;
