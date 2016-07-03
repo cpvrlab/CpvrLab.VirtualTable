@@ -3,7 +3,6 @@ using UnityEngine.Networking;
 using System.Collections;
 
 namespace CpvrLab.VirtualTable {
-    public class UsableItem : MonoBehaviour {
 
     [RequireComponent(typeof(Rigidbody), typeof(NetworkTransform))]
     public class UsableItem : NetworkBehaviour {
