@@ -47,7 +47,7 @@ namespace CpvrLab.VirtualTable {
         /// </summary>
         public List<PlayerModel> playerModels = new List<PlayerModel>();
         protected int _localPlayerModel = 0;
-        protected int _remotePlayerModel = 0;
+        protected int _remotePlayerModel = 1;
         protected PlayerModel _localPlayerModelInstance = null;
         protected PlayerModel _remotePlayerModelInstance = null;
 
@@ -61,19 +61,27 @@ namespace CpvrLab.VirtualTable {
             GameManager.instance.AddPlayer(this);
         }
 
-        public override void OnStartClient()
+        public override void OnStartLocalPlayer()
         {
-            base.OnStartClient();
+            base.OnStartLocalPlayer();
+        }
 
+
+        // todo: Can we rely on Start being called AFTER localplayerstart? Or more specific can we rely on 
+        //          isLocalPlayer to contain the correct value every time? I'm not too sure this is the right
+        //          approach and we might need our own implementation for this to work properly. For now
+        //          this does the job and I'll just leave it be.
+        public void Start()
+        {
             // hacked this in quickly to test it out as soon as I can use the vive at work again
             // needs sanity checks, ability to switch local and remote models on the fly etc etc.
-            if(isLocalPlayer && playerModels.Count > _localPlayerModel)
+            if (isLocalPlayer && playerModels.Count > _localPlayerModel)
             {
                 // todo: spawn local player model
                 _localPlayerModelInstance = Instantiate(playerModels[_localPlayerModel], transform.position, transform.rotation) as PlayerModel;
                 _localPlayerModelInstance.InitializeModel(this);
             }
-            else if(playerModels.Count > _remotePlayerModel)
+            else if (playerModels.Count > _remotePlayerModel)
             {
                 // todo: spawn remote player model
                 _remotePlayerModelInstance = Instantiate(playerModels[_remotePlayerModel], transform.position, transform.rotation) as PlayerModel;
