@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 
 namespace CpvrLab.VirtualTable {
+    public class UsableItem : MonoBehaviour {
 
     [RequireComponent(typeof(Rigidbody), typeof(NetworkTransform))]
     public class UsableItem : NetworkBehaviour {
@@ -12,7 +13,7 @@ namespace CpvrLab.VirtualTable {
         protected Transform _prevParent = null;
         protected GamePlayer _owner = null;
         [SyncVar] protected bool _unequipDone;
-
+        
         public override void OnStartAuthority()
         {
             Debug.Log("Start authority");
