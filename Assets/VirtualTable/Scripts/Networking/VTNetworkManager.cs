@@ -3,28 +3,97 @@ using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine.Networking.Match;
 
-namespace CpvrLab.VirtualTable {
+namespace CpvrLab.VirtualTable
+{
+
+
+    public class VTMsgType
+    {
+        public static short AddPlayer = MsgType.Highest + 1;
+    };
+    public class AddPlayerMessage : MessageBase
+    {
+        public string name;
+        public int playerPrefabIndex = 0;
+    }
 
     // test class to see how unity's networkmanager works
-    public class VTNetworkManager : NetworkManager {
+    public class VTNetworkManager : NetworkManager
+    {
 
         //public NetworkPlayer playerPrefab;
+
+
+        public int networkPrefabIndex = 0;
+        public GameObject[] playerPrefabs;
+
+        // client variable containing the player name of the local player as
+        // set in the connect screen
+        [HideInInspector]
+        public string localPlayerName = "player";
+
 
         protected NetworkPlayer _playerInstance;
 
         void Start()
         {
             //LogFilter.currentLogLevel = (int)LogFilter.FilterLevel.Debug;
-
         }
 
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
         {
             base.OnServerAddPlayer(conn, playerControllerId);
             //playerPrefab
+            Debug.Log("OnServerAddPlayer");
+        }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+
+        }
+
+        public override void OnStartClient(NetworkClient client)
+        {
+            base.OnStartClient(client);
+            foreach (var prefab in playerPrefabs)
+                ClientScene.RegisterPrefab(prefab);
+        }
+        public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader netMsg)
+        {
+            //base.OnServerAddPlayer(conn, playerControllerId, netMsg);
+
+
+            var msg = netMsg.ReadMessage<AddPlayerMessage>();
+            Debug.Log("Adding player... " + msg.name + " " + playerPrefabs[msg.playerPrefabIndex].name);
+            GameObject player = (GameObject)Instantiate(playerPrefabs[msg.playerPrefabIndex], Vector3.zero, Quaternion.identity);
+
+            var gamePlayer = player.GetComponent<GamePlayer>();
+            gamePlayer.displayName = msg.name;
+
+            NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
+        }
+        
+
+        public override void OnClientSceneChanged(NetworkConnection conn)
+        {
+            base.OnClientSceneChanged(conn);
+            Debug.Log("OnClientSceneChanged");
+
+            // spawn our player
+            var msg = new AddPlayerMessage();
+            msg.playerPrefabIndex = networkPrefabIndex;
+            msg.name = localPlayerName;
+            ClientScene.AddPlayer(conn, 0, msg);
         }
 
 
+        public override void OnServerSceneChanged(string sceneName)
+        {
+            base.OnServerSceneChanged(sceneName);
+            Debug.Log("OnServerSceneChanged");
+        }
 
         /*
         public override NetworkClient StartHost()

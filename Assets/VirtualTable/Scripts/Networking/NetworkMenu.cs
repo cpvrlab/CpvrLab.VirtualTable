@@ -30,6 +30,12 @@ namespace CpvrLab.VirtualTable {
 
             netMngr.StartHost();
         }
+
+        public void OnNameInputChanged(string text)
+        {
+            var netMngr = (VTNetworkManager)NetworkManager.singleton;
+            netMngr.localPlayerName = text;
+        }
     }
 
 }

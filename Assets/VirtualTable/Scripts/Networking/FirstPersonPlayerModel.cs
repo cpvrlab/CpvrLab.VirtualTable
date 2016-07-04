@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System;
 
@@ -7,6 +8,7 @@ namespace CpvrLab.VirtualTable
     public class FirstPersonPlayerModel : PlayerModel
     {
         protected FirstPersonPlayer _player;
+
 
         public override void InitializeModel(GamePlayer player)
         {

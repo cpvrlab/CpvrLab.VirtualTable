@@ -24,7 +24,7 @@ namespace CpvrLab.VirtualTable {
         private SteamVR_Controller.Device _device;
 
         // currently holding an item?
-        private bool holdingItem { get { return _currentlyEquipped != null; } }
+        private bool holdingItem = false;
         private GameObject _currentlyEquipped;
 
 
@@ -63,6 +63,8 @@ namespace CpvrLab.VirtualTable {
                 // because the item will be registered with the GamePlayer base class
                 if(UsableItemPickedUp != null)
                     UsableItemPickedUp(this, other.attachedRigidbody.gameObject);
+
+                holdingItem = true;
             }
         }
 
@@ -75,6 +77,8 @@ namespace CpvrLab.VirtualTable {
                     // because the item will be registered with the GamePlayer base class
                     if(UsableItemDropped != null)
                         UsableItemDropped(this, _currentlyEquipped);
+
+                    holdingItem = false;
                 }
             }
         }

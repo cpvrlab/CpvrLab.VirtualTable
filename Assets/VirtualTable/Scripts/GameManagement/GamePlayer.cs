@@ -15,6 +15,7 @@ namespace CpvrLab.VirtualTable {
     //          UsableItem class?
     //
     public abstract class GamePlayer : NetworkBehaviour {
+        
 
         // defines an input slot that can serve an usable item with input
         // todo: important, We need to define the attachment slots in this base class
@@ -40,6 +41,8 @@ namespace CpvrLab.VirtualTable {
 
 
         protected List<InputSlot> _inputSlots = new List<InputSlot>();
+
+        public string displayName = "player";
 
         /// <summary>
         /// List of possible representations of this player
@@ -80,12 +83,14 @@ namespace CpvrLab.VirtualTable {
                 // todo: spawn local player model
                 _localPlayerModelInstance = Instantiate(playerModels[_localPlayerModel], transform.position, transform.rotation) as PlayerModel;
                 _localPlayerModelInstance.InitializeModel(this);
+                _localPlayerModelInstance.playerText.text = displayName;
             }
             else if (playerModels.Count > _remotePlayerModel)
             {
                 // todo: spawn remote player model
                 _remotePlayerModelInstance = Instantiate(playerModels[_remotePlayerModel], transform.position, transform.rotation) as PlayerModel;
                 _remotePlayerModelInstance.InitializeModel(this);
+                _remotePlayerModelInstance.playerText.text = displayName;
             }
         }
 
