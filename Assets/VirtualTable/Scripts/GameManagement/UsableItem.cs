@@ -49,6 +49,7 @@ namespace CpvrLab.VirtualTable {
             var rb = GetComponent<Rigidbody>();
             rb.isKinematic = false;
         }
+        
 
         [Client]
         public void AssignOwner(GamePlayer owner, PlayerInput input) {

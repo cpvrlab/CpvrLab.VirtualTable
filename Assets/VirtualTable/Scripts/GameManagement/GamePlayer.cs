@@ -52,8 +52,7 @@ namespace CpvrLab.VirtualTable {
         public List<PlayerModel> playerModels = new List<PlayerModel>();
         protected int _localPlayerModel = 0;
         protected int _remotePlayerModel = 1;
-        protected PlayerModel _localPlayerModelInstance = null;
-        protected PlayerModel _remotePlayerModelInstance = null;
+        protected PlayerModel _playerModelInstance = null;
 
 
         // todo:    use a unified naming scheme across all classes used for this project
@@ -82,23 +81,26 @@ namespace CpvrLab.VirtualTable {
             if (isLocalPlayer && playerModels.Count > _localPlayerModel)
             {
                 // todo: spawn local player model
-                _localPlayerModelInstance = Instantiate(playerModels[_localPlayerModel], transform.position, transform.rotation) as PlayerModel;
-                _localPlayerModelInstance.InitializeModel(this);
-                _localPlayerModelInstance.playerText.text = displayName;
+                _playerModelInstance = Instantiate(playerModels[_localPlayerModel], transform.position, transform.rotation) as PlayerModel;
+                _playerModelInstance.InitializeModel(this);
+                _playerModelInstance.playerText.text = displayName;
             }
             else if (playerModels.Count > _remotePlayerModel)
             {
                 // todo: spawn remote player model
-                _remotePlayerModelInstance = Instantiate(playerModels[_remotePlayerModel], transform.position, transform.rotation) as PlayerModel;
-                _remotePlayerModelInstance.InitializeModel(this);
-                _remotePlayerModelInstance.playerText.text = displayName;
+                _playerModelInstance = Instantiate(playerModels[_remotePlayerModel], transform.position, transform.rotation) as PlayerModel;
+                _playerModelInstance.InitializeModel(this);
+                _playerModelInstance.playerText.text = displayName;
             }
         }
 
         public override void OnNetworkDestroy()
         {
-            Debug.Log("GamePlayer: OnNetworkDestroy");
-            UnequipAll();
+            if (!isServer)
+            {
+                UnequipAllLocal();
+                Destroy(_playerModelInstance.gameObject);
+            }
             base.OnNetworkDestroy();
         }
 
@@ -299,9 +301,30 @@ namespace CpvrLab.VirtualTable {
             // call the unequip hook of the concrete GamePlayer
             OnUnequip(item);
 
+            UnequipLocal(item);
+        }
+
+        protected void UnequipAllLocal()
+        {
+            foreach (var slot in _attachmentSlots)
+                UnequipLocal(slot.item);
+        }
+
+        protected void UnequipLocal(UsableItem item)
+        {
+            var slot = FindAttachmentSlot(item);
+            if (slot == null)
+                return;
+
+
+
+            slot.item = null;
+
+            Debug.Log("UNEQUIPPING item");
+
+            item.Detach();
             item.ClearOwner();
             item.ReleaseAuthority();
-            item.Detach();         
         }
 
         // register a new input slot with the base class

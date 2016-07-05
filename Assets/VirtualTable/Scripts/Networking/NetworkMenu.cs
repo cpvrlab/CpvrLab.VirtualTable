@@ -13,6 +13,7 @@ namespace CpvrLab.VirtualTable {
 
         public void OnConnectClicked()
         {
+            Debug.Log("Connectclicked");
             var netMngr = NetworkManager.singleton;
 
             netMngr.networkAddress = ipInput.text;

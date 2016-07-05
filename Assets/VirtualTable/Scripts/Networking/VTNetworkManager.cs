@@ -40,6 +40,30 @@ namespace CpvrLab.VirtualTable
             //LogFilter.currentLogLevel = (int)LogFilter.FilterLevel.Debug;
         }
 
+        /// <summary>
+        /// Currently an ugly workaround for players who suddenly disconnect and still have usable
+        /// items with client authority set. We remove the client authority on every item for this player
+        /// before they get destroyed.
+        /// todo: find a better solution. 
+        /// </summary>
+        /// <param name="conn"></param>
+        public override void OnServerDisconnect(NetworkConnection conn)
+        {
+
+            var usableItems = FindObjectsOfType<UsableItem>();
+            foreach(var item in usableItems)
+            {
+                Debug.Log("Removing authority from " + item.name + " " + item.GetComponent<NetworkIdentity>().clientAuthorityOwner + "  " + conn);
+                var networkId = item.GetComponent<NetworkIdentity>();
+                if (networkId.clientAuthorityOwner != null && conn == networkId.clientAuthorityOwner)
+                {
+                    networkId.RemoveClientAuthority(networkId.clientAuthorityOwner);
+                }
+            }
+
+            base.OnServerDisconnect(conn);
+        }
+
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
         {
             base.OnServerAddPlayer(conn, playerControllerId);
