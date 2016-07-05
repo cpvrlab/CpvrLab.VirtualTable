@@ -131,7 +131,7 @@ namespace CpvrLab.VirtualTable {
         }
 
         // clear the drawing when this item is dropped
-        public override void OnUnequip()
+        protected override void OnUnequip()
         {
             base.OnUnequip();
 

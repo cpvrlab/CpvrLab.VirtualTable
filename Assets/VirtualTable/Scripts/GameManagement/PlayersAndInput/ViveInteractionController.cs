@@ -6,7 +6,7 @@ using Valve.VR;
 namespace CpvrLab.VirtualTable {
 
 
-    public delegate void InteractionEventHandler(object sender, GameObject target);
+    public delegate void InteractionEventHandler(PlayerInput input, UsableItem target);
 
     // todo:    separation of usable and movable items is tedious
     //          could this be simplified?
@@ -19,13 +19,14 @@ namespace CpvrLab.VirtualTable {
         public event InteractionEventHandler UsableItemDropped;
         //public event InteractionEventHandler MovableItemPickedUp;
         //public event InteractionEventHandler MovableItemDropped;
-        
+
+        public PlayerInput input;
         public float pickupRadius = 0.1f;
         private SteamVR_Controller.Device _device;
 
         // currently holding an item?
         private bool holdingItem = false;
-        private GameObject _currentlyEquipped;
+        private UsableItem _currentlyEquipped = null;
 
 
         // Use this for initialization
@@ -58,13 +59,19 @@ namespace CpvrLab.VirtualTable {
             
                         
             if(usable) {
-                // notify listeners about the pickup
-                // this will trigger a AttachItem to be called by VivePlayer
-                // because the item will be registered with the GamePlayer base class
-                if(UsableItemPickedUp != null)
-                    UsableItemPickedUp(this, other.attachedRigidbody.gameObject);
 
-                holdingItem = true;
+                var item = other.attachedRigidbody.gameObject.GetComponent<UsableItem>();
+                if (item != null)
+                {
+                    if (item.isInUse)
+                        return;
+
+                    _currentlyEquipped = item;
+                    if (UsableItemPickedUp != null)
+                        UsableItemPickedUp(input, _currentlyEquipped);
+
+                    holdingItem = true;
+                }
             }
         }
 
@@ -72,29 +79,13 @@ namespace CpvrLab.VirtualTable {
         {
             if(_device.GetPressDown(EVRButtonId.k_EButton_Grip)) {
                 if(holdingItem) {
-                    // notify listeners about the pickup
-                    // this will trigger a Unattach to be called by VivePlayer
-                    // because the item will be registered with the GamePlayer base class
                     if(UsableItemDropped != null)
-                        UsableItemDropped(this, _currentlyEquipped);
+                        UsableItemDropped(input, _currentlyEquipped);
 
+                    _currentlyEquipped = null;
                     holdingItem = false;
                 }
             }
-        }
-
-        public void AttachItem(UsableItem item)
-        {
-            // attach the item to this gameObject
-            item.Attach(gameObject);
-            item.transform.localRotation = Quaternion.Euler(90, 0, 0);
-            _currentlyEquipped = item.gameObject;
-        }
-
-        public void DetachItem(UsableItem item)
-        {
-            item.Detach();
-            _currentlyEquipped = null;
         }
     }
 }

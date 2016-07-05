@@ -16,7 +16,15 @@ namespace CpvrLab.VirtualTable {
         protected UsableItem _currentlyEquipped = null;
         protected MovableItem _currentlyHolding = null;
         protected FirstPersonPlayerInput _playerInput;
-        
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            // add attachment slots on all clients
+            AddAttachmentSlot(attachPoint);
+        }
+
         public override void OnStartLocalPlayer()
         {
             base.OnStartLocalPlayer();
@@ -26,8 +34,11 @@ namespace CpvrLab.VirtualTable {
             GetComponent<FirstPersonController>().enabled = true;
             
             _playerInput = GetComponent<FirstPersonPlayerInput>();
-            // register the input slot with the base class
-            AddInputSlot(_playerInput);
+            
+            // add the player input component to our attachment slot
+            // todo: this implementation doesn't seem that good
+            //       although we don't need a sanity check here it still feels dangerous and wrong.
+            FindAttachmentSlot(attachPoint).input = _playerInput;
 
         }
 
@@ -116,17 +127,13 @@ namespace CpvrLab.VirtualTable {
             return _playerInput;
         }
 
-        protected override void OnEquip(PlayerInput input, UsableItem item)
+        protected override void OnEquip(AttachmentSlot slot)
         {
-            // perform custom equip actions
-            item.Attach(attachPoint); // attach the item to our "hand" object
-            _currentlyEquipped = item;
+            _currentlyEquipped = slot.item;
         }
         
         protected override void OnUnequip(UsableItem item)
         {
-            Debug.Log("Unequip");
-            item.Detach(); // drop the item
             _currentlyEquipped = null;
         }
         

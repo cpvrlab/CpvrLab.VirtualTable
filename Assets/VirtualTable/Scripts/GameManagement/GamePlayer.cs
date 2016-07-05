@@ -24,9 +24,10 @@ namespace CpvrLab.VirtualTable {
         //          destroying it. We probably have to move the handling of 
         //          assigning client authority to usableitems to the usableitem itself 
         //          for this to work.
-        protected class InputSlot {
-            public PlayerInput input;
+        protected class AttachmentSlot
+        {
             public GameObject attachPoint;
+            public PlayerInput input;
             public UsableItem item = null;
         }
                 
@@ -40,7 +41,7 @@ namespace CpvrLab.VirtualTable {
         public bool lockItemUse = false;
 
 
-        protected List<InputSlot> _inputSlots = new List<InputSlot>();
+        protected List<AttachmentSlot> _attachmentSlots = new List<AttachmentSlot>();
 
         public string displayName = "player";
 
@@ -97,7 +98,7 @@ namespace CpvrLab.VirtualTable {
         public override void OnNetworkDestroy()
         {
             Debug.Log("GamePlayer: OnNetworkDestroy");
-            UnequipAllImmediate();
+            UnequipAll();
             base.OnNetworkDestroy();
         }
 
@@ -106,190 +107,230 @@ namespace CpvrLab.VirtualTable {
 
         }
         
-        protected InputSlot GetInputSlot(int index)
+        protected AttachmentSlot GetAttachmentSlot(int index)
         {
-            if(index < 0 || _inputSlots.Count <= index)
+            if(index < 0 || _attachmentSlots.Count <= index)
                 return null;
 
-            return _inputSlots[index];
+            return _attachmentSlots[index];
         }
 
-        protected InputSlot FindInputSlot(UsableItem item)
+        protected AttachmentSlot FindAttachmentSlot(GameObject attachPoint)
         {
-            return _inputSlots.Find(x => x.item == item);
+            return _attachmentSlots.Find(x => x.attachPoint == attachPoint);
         }
 
-        protected InputSlot FindInputSlot(PlayerInput input)
+        protected AttachmentSlot FindAttachmentSlot(UsableItem item)
         {
-            return _inputSlots.Find(x => x.input == input);
+            return _attachmentSlots.Find(x => x.item == item);
+        }
+
+        protected AttachmentSlot FindAttachmentSlot(PlayerInput input)
+        {
+            return _attachmentSlots.Find(x => x.input == input);
         }
 
         protected bool IsItemEquipped(UsableItem item)
         {
-            return FindInputSlot(item) != null;
+            return FindAttachmentSlot(item) != null;
         }
 
-        protected bool IsInputSlotAssigned(PlayerInput input)
+        protected bool IsAttachmentSlotInputAssigned(PlayerInput input)
         {
-            return FindInputSlot(input) != null;
+            return FindAttachmentSlot(input) != null;
         }
+
+        protected int GetSlotIndex(AttachmentSlot slot)
+        {
+            return _attachmentSlots.IndexOf(slot);
+        }
+
+        /// <summary>
+        /// Can be called on server and local player to equip an item
+        /// to the main attachment slot.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="unequipIfOccupied"></param>
+        public void Equip(UsableItem item,  bool unequipIfOccupied = false)
+        {
+            if (isLocalPlayer)
+                Equip(GetMainInput(), item, unequipIfOccupied);
+            else if(isServer)
+            {
+                // todo...
+                //RpcEquipToMain(item.gameObject);
+            }
+        }
+        
+
 
         // equip an item and assign it to a specific player input
-        public void Equip(PlayerInput input, UsableItem item, bool unequipIfOccupied = false)
+        [Client]
+        protected void Equip(PlayerInput input, UsableItem item, bool unequipIfOccupied = false)
         {
-            var slot = FindInputSlot(input);
+            if (item.isInUse)
+            {
+                Debug.LogError("GamePlayer: Trying to equip an item that is already in use!");
+                return;
+            }
+
+            if (!isLocalPlayer)
+            {
+                Debug.LogError("GamePlayer: GamePlayer.Equip(input, item, unequipIfOccupied) can't be called from non local clients!");
+                return;
+            }
+
+            var slot = FindAttachmentSlot(input);
             if(slot == null) {
-                Debug.LogWarning("GamePlayer: Trying to add an item to a non existant input slot");
+                Debug.LogWarning("GamePlayer: Trying to add an item to a non existant attachment slot");
                 return;
             }
 
             // already an item equipped to that slot
-            if(slot.item != null) {
-                if(!unequipIfOccupied)
-                    return;
-
+            if(slot.item != null && unequipIfOccupied) {
                 // unequip the current item
-                Unequip(slot.item);
+                // todo: can we be sure that unequip will be executed on 
+                //       all clients 
+                Unequip(slot.item);                
             }
-
-            // assign new the item to the slot
-            slot.item = item;
 
             // notify everyone about the equipped item
-            CmdOnEquip(item.gameObject);
+            CmdOnEquip(item.gameObject, GetSlotIndex(slot));
         }
 
-        // equip an item to the main input slot
-        public void Equip(UsableItem item, bool unequipIfOccupied = false)
-        {
-            Equip(GetMainInput(), item, unequipIfOccupied);
+        
+        
+
+        [Command] private void CmdOnEquip(GameObject item, int slotIndex) {
+            // assign authority to the equipped item
+            item.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
+            
+            RpcOnEquip(item, slotIndex);
         }
-
-
-        public void Unequip(UsableItem item)
+        [ClientRpc] public void RpcOnEquip(GameObject itemGameObject, int slotIndex)
         {
-            var slot = _inputSlots.Find(x => x.item == item);
-            if(slot == null) {
-                Debug.LogWarning("GamePlayer: Trying to unequip an item that wasn't equipped!");
+            var item = itemGameObject.GetComponent<UsableItem>();
+            var slot = GetAttachmentSlot(slotIndex);
+            
+            if(item == null) {
+                Debug.LogError("GamePlayer.RpcOnEquip(): Can't find attached UsableItem component!");
                 return;
             }
-
-            slot.item = null;
             
-            // notify everyone about the unequipped item
-            CmdOnUnequip(item.gameObject);
+            if(slot == null) {
+                Debug.LogError("GamePlayer.RpcOnEquip(): Can't find attachment slot for index " + slotIndex + "!");
+                return;
+            }
+            
+
+            // attach the item
+            // note: slot.input is null except for the local player
+            //       and the item should also only have authority on the local player object
+            //       since the comand call was made from there
+            // todo: make sure that the input stuff is true
+            slot.item = item;
+            slot.item.AssignOwner(this, slot.input);
+            slot.item.Attach(slot.attachPoint);
+                        
+            OnEquip(slot);
+        }
+        
+        /// <summary>
+        /// Can be called on client or server to unequip an item
+        /// </summary>
+        /// <param name="item"></param>
+        public void Unequip(UsableItem item)
+        {
+            if (isLocalPlayer)
+            {
+                var slot = FindAttachmentSlot(item);
+                if (slot == null)
+                {
+                    Debug.LogWarning("GamePlayer: Trying to unequip an item that wasn't equipped!");
+                    return;
+                }
+
+                // notify everyone about the unequipped item
+                CmdOnUnequip(item.gameObject);
+            }
+            else if(isServer)
+            {
+                // todo...
+                // unsure if we need to separate server and client code here
+            }
         }
 
         // unequip an item assigned to a specific slot
-        public void UnequipItemFrom(PlayerInput input)
+        [Client]
+        protected void UnequipItemFrom(PlayerInput input)
         {
-            var slot = FindInputSlot(input);
+            var slot = FindAttachmentSlot(input);
             if(slot.item == null || !IsItemEquipped(slot.item))
                 return;
 
             Unequip(slot.item);
         }
 
-        // unequips all equipped items
+        /// <summary>
+        /// Can be called on both server and local player
+        /// to drop all equipped items
+        /// </summary>
         public void UnequipAll()
         {
-            foreach(var slot in _inputSlots) {
+            foreach(var slot in _attachmentSlots) {
                 if(slot.item != null) {
                     Unequip(slot.item);
                 }
             }
         }
 
-        // todo: this doesn't return client authority to the server!
-        public void UnequipAllImmediate()
-        {
-            foreach(var slot in _inputSlots)
-            {
-                if(slot.item != null)
-                {
-                    OnUnequip(slot.item);
-                }
-            }
-        }
-
-
-        [Command] private void CmdOnEquip(GameObject item) {
-            // assign authority to the equipped item
-            item.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
-            //item.GetComponent<NetworkTransform>().enabled = false;
-
-            RpcOnEquip(item);
-        }
-        [ClientRpc] public void RpcOnEquip(GameObject item)
-        {
-            var usableItem = item.GetComponent<UsableItem>();
-            PlayerInput input = null;
-            
-            if(usableItem == null) {
-                Debug.LogError("GamePlayer.RpcOnEquip(): Can't find attached UsableItem component!");
-                return;
-            }
-
-            // get the player input component from the input slot
-            // if we're the local player
-            if(isLocalPlayer) {
-                var slot = FindInputSlot(usableItem);
-                if(slot != null) {
-                    input = slot.input;
-
-                    usableItem.OnEquip(this, input);
-                }
-            }
-                        
-            OnEquip(input, usableItem);
-        }
-
-        [Command] private void CmdOnUnequip(GameObject item) {
-            
+        [Command] private void CmdOnUnequip(GameObject item) {            
             RpcOnUnequip(item);
-            // revoke client authority after a set amount of seconds
-            // todo:    there is no guarantee that our set timer 
-            //          is enough for all clients to have run
-            //          the item's deninitialize calls that may happen
-            //          in UsableItem.OnUnequip. We should find a better
-            //          way to revoke the clients authority w
-            //StartCoroutine(RemoveClientAuthorityTimed());
         }
-        [ClientRpc] public void RpcOnUnequip(GameObject item) {
-            var usableItem = item.GetComponent<UsableItem>();
 
-            if(usableItem == null) {
+        [ClientRpc] public void RpcOnUnequip(GameObject itemGameObject) {
+            var item = itemGameObject.GetComponent<UsableItem>();
+
+            if(item == null) {
                 Debug.LogError("GamePlayer.RpcOnEquip(): Can't find attached UsableItem component!");
                 return;
             }
 
             // call the unequip hook of the concrete GamePlayer
-            OnUnequip(usableItem);
+            OnUnequip(item);
 
-            // if we're the local player make sure the item is properly unequipped
-            // and stripped of its client authority
-            if(isLocalPlayer) {
-                usableItem.OnUnequip();
-                usableItem.ReleaseAuthority();
-            }
+            item.ClearOwner();
+            item.ReleaseAuthority();
+            item.Detach();         
         }
 
         // register a new input slot with the base class
-        protected void AddInputSlot(PlayerInput input)
+        [Client]
+        protected void AddAttachmentSlot(GameObject attachPoint, PlayerInput input = null)
         {
-            if(IsInputSlotAssigned(input)) {
-                Debug.LogError("GamePlayer: Trying to add an player input that is already assigned to an input slot!");
+            if (FindAttachmentSlot(attachPoint) != null)
+            {
+                Debug.LogError("GamePlayer: Trying to add an attachment point that is already assigned to an attachment slot!");
                 return;
             }
 
-            var inputSlot = new InputSlot();
-            inputSlot.input = input;
+            if (input != null && IsAttachmentSlotInputAssigned(input))
+            {
+                Debug.LogError("GamePlayer: Trying to add a a player input that is already assign to an attachment slot!");
+                return;
+            }
 
-            _inputSlots.Add(inputSlot);
+
+            var attachmentSlot = new AttachmentSlot();
+            attachmentSlot.attachPoint = attachPoint;
+            attachmentSlot.input = input;
+
+            _attachmentSlots.Add(attachmentSlot);
         }
 
-        protected abstract void OnEquip(PlayerInput input, UsableItem item);
-        protected abstract void OnUnequip(UsableItem item);
+        // todo: these functions don't need to be abstract anymore
+        protected virtual void OnEquip(AttachmentSlot slot) { }
+        protected virtual void OnUnequip(UsableItem item) { }
         protected abstract PlayerInput GetMainInput();
     }
 

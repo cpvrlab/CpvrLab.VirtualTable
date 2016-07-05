@@ -11,6 +11,7 @@ namespace CpvrLab.VirtualTable {
         protected PlayerInput _input;
         protected Transform _prevParent = null;
         protected GamePlayer _owner = null;
+        public bool isInUse { get { return _owner != null; } }
         [SyncVar] protected bool _unequipDone;
         
         public override void OnStartAuthority()
@@ -50,19 +51,34 @@ namespace CpvrLab.VirtualTable {
         }
 
         [Client]
-        public virtual void OnEquip(GamePlayer owner, PlayerInput input) {
+        public void AssignOwner(GamePlayer owner, PlayerInput input) {
             _owner = owner;
             _input = input;
+
+            OnEquip();
+        }
+
+        [Client]
+        protected virtual void OnEquip()
+        {
             Debug.Log("OnEquip");
         }
 
         [Client]
-        public virtual void OnUnequip() {
+        public void ClearOwner() {
             _owner = null;
             _input = null;
-            Debug.Log("OnUnequip");
-            
+
+            OnUnequip();
         }
+
+        [Client]
+        protected virtual void OnUnequip()
+        {
+            Debug.Log("OnUnequip");
+        }
+
+
 
         // Release client authority
         // todo:    implement a more reliable solution for the problem of releasing authority

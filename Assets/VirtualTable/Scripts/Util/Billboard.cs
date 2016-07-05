@@ -10,8 +10,9 @@ namespace CpvrLab.VirtualTable
         {
             if (Camera.main == null)
                 return;
-
-            transform.LookAt(Camera.main.transform.position);
+            
+            Vector3 position = transform.position + Camera.main.transform.rotation * Vector3.forward;
+            transform.LookAt(position, Camera.main.transform.rotation * Vector3.up);
         }
     }
 

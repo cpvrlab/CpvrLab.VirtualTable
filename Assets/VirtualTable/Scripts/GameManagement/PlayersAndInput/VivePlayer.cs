@@ -33,8 +33,15 @@ namespace CpvrLab.VirtualTable
 
         protected VivePlayerInput _leftInput;
         protected VivePlayerInput _rightInput;
+        
+                
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
 
-        protected UsableItem equipped;
+            AddAttachmentSlot(leftController);
+            AddAttachmentSlot(rightController);
+        }
 
         public override void OnStartLocalPlayer()
         {
@@ -71,8 +78,11 @@ namespace CpvrLab.VirtualTable
                 _rightInput = right.AddComponent<VivePlayerInput>();
 
             // add input slots to base class
-            AddInputSlot(_leftInput);
-            AddInputSlot(_rightInput);
+            FindAttachmentSlot(leftController).input = _leftInput;
+            FindAttachmentSlot(rightController).input = _rightInput;
+
+            _leftInteraction.input = _leftInput;
+            _rightInteraction.input = _rightInput;
 
             _leftInput.trackedObj = leftTrackedObj;
             _rightInput.trackedObj = rightTrackedObj;
@@ -113,22 +123,15 @@ namespace CpvrLab.VirtualTable
 
         }
 
-        void ItemPickedUp(object sender, GameObject target)
+        void ItemPickedUp(PlayerInput input, UsableItem item)
         {
-            equipped = target.GetComponent<UsableItem>();
-            // todo:     this implementation is crap. but at the moment I'm still unsure if we even need to tell
-            //           the base GamePlayer class about our equipped items or not
-            if (_rightInteraction.Equals(sender))
-            {
-                Equip(_rightInput, equipped);
-            }
+            Equip(input, item, false);
         }
         
 
-        void ItemDropped(object sender, GameObject target)
+        void ItemDropped(PlayerInput input, UsableItem item)
         {
-            Unequip(equipped);
-            equipped = null;
+            Unequip(item);
         }
 
         protected override PlayerInput GetMainInput()
@@ -139,21 +142,14 @@ namespace CpvrLab.VirtualTable
                 return _leftInput;
         }
 
-        protected override void OnEquip(PlayerInput input, UsableItem item)
-        {
-            // todo:    I reall don't like this implementation, review this after having some games working.
-
-
-            
-            item.Attach(rightController);
-            
+        protected override void OnEquip(AttachmentSlot slot)
+        {            
         }
 
         protected override void OnUnequip(UsableItem item)
         {
-            Debug.Log("detaching");
-            item.Detach();
         }
+
     } // class
 
 } // namespace

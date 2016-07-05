@@ -10,7 +10,7 @@ namespace CpvrLab.VirtualTable {
             throw new NotImplementedException();
         }
 
-        protected override void OnEquip(PlayerInput input, UsableItem item)
+        protected override void OnEquip(AttachmentSlot slot)
         {
             throw new NotImplementedException();
         }
