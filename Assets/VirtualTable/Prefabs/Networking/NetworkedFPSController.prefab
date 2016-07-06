@@ -318,12 +318,14 @@ MonoBehaviour:
   lockEquippedItems: 0
   lockPickup: 0
   lockItemUse: 0
+  displayName: player
   playerModels:
   - {fileID: 11423588, guid: 6b52834eef5f2fe40bfded28fbc74cc8, type: 2}
   - {fileID: 11480694, guid: 1d91cdf097b53324ab34d4b646d6c0ed, type: 2}
   pickupRange: 3
   attachPoint: {fileID: 177896}
   head: {fileID: 418198}
+  fpsGUIPrefab: {fileID: 167498, guid: 18d8cce52ac55be4db1de1809602fc27, type: 2}
 --- !u!114 &11410552
 MonoBehaviour:
   m_ObjectHideFlags: 1

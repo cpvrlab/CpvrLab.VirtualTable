@@ -79,22 +79,29 @@ namespace CpvrLab.VirtualTable
             if (_rightInput == null)
                 _rightInput = right.AddComponent<VivePlayerInput>();
 
-            // add input slots to base class
+            // Update the input slots added in OnStartClient
             FindAttachmentSlot(leftController).input = _leftInput;
             FindAttachmentSlot(rightController).input = _rightInput;
 
+            // the interactin controllers also need the player input
             _leftInteraction.input = _leftInput;
             _rightInteraction.input = _rightInput;
 
+            // add the tracked object to the VivePlayerInput
+            // for it to know where to get input from
             _leftInput.trackedObj = leftTrackedObj;
             _rightInput.trackedObj = rightTrackedObj;
 
+            // connect pickup and drop delegates of the interaction controllers
+            // to be notified when we should pick up a usable item
             _leftInteraction.UsableItemPickedUp += ItemPickedUp;
             _rightInteraction.UsableItemPickedUp += ItemPickedUp;
             _leftInteraction.UsableItemDropped += ItemDropped;
             _rightInteraction.UsableItemDropped += ItemDropped;
 
-
+            // finally we want to find the gameobject representation
+            // of the actual vive HMD
+            // todo: can we do this a bit cleaner?
             var trackedObjects = FindObjectsOfType<SteamVR_TrackedObject>();
             foreach (var obj in trackedObjects)
             {
@@ -109,6 +116,10 @@ namespace CpvrLab.VirtualTable
 
         }
 
+        /// <summary>
+        /// The local player makes sure to update the three gameObjects
+        /// that represent the head and hands over the network
+        /// </summary>
         void Update()
         {
             if (!isLocalPlayer)
@@ -125,12 +136,21 @@ namespace CpvrLab.VirtualTable
 
         }
 
+        /// <summary>
+        /// Called when ever one of our controllers picks up a UsableItem
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="item"></param>
         void ItemPickedUp(PlayerInput input, UsableItem item)
         {
             Equip(input, item, false);
         }
         
-
+        /// <summary>
+        /// Called when ever one of our controllers drops a UsableItem
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="item"></param>
         void ItemDropped(PlayerInput input, UsableItem item)
         {
             Unequip(item);

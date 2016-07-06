@@ -17,6 +17,9 @@ namespace CpvrLab.VirtualTable {
         public float pickupRange;
         public GameObject attachPoint;
         public Transform head;
+        public GameObject fpsGUIPrefab;
+        protected GameObject _fpsGUIInstance;
+
         protected UsableItem _currentlyEquipped = null;
         protected MovableItem _currentlyHolding = null;
         protected FirstPersonPlayerInput _playerInput;
@@ -44,6 +47,13 @@ namespace CpvrLab.VirtualTable {
             //       although we don't need a sanity check here it still feels dangerous and wrong.
             FindAttachmentSlot(attachPoint).input = _playerInput;
 
+            // instantiate the GUI
+            _fpsGUIInstance = Instantiate(fpsGUIPrefab);
+        }
+
+        void OnDestroy()
+        {
+            Destroy(_fpsGUIInstance);
         }
 
         void Update()

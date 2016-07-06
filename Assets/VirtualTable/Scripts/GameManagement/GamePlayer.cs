@@ -11,6 +11,11 @@ namespace CpvrLab.VirtualTable {
     /// 
     /// todo:   We should probably rename this class to better reflect that this is the main representation
     ///         of a player over the network.
+    ///         
+    /// todo:   We don't keep track about attachment slots on the server currently. This is because we 
+    ///         only have a host option at this point and not a standalone server. If we ever wanted 
+    ///         to add dedicated server support we'd need to change that. Maybe we should be making these
+    ///         changes now to make it easier in the future.
     /// </summary>
     public abstract class GamePlayer : NetworkBehaviour {
         
@@ -116,7 +121,6 @@ namespace CpvrLab.VirtualTable {
 
             CmdSetRemoteModel(_remotePlayerModel);
         }
-
         [Command] protected void CmdSetRemoteModel(int index) { RpcSetRemoteModel(index); }
         [ClientRpc] protected void RpcSetRemoteModel(int index) { _remotePlayerModel = index; SetPlayerModel(index); }
 
@@ -130,6 +134,7 @@ namespace CpvrLab.VirtualTable {
             base.OnNetworkDestroy();
         }
         
+
         protected AttachmentSlot GetAttachmentSlot(int index)
         {
             if(index < 0 || _attachmentSlots.Count <= index)
@@ -215,17 +220,14 @@ namespace CpvrLab.VirtualTable {
             if(slot.item != null && unequipIfOccupied) {
                 // unequip the current item
                 // todo: can we be sure that unequip will be executed on 
-                //       all clients 
+                //       all clients?
                 Unequip(slot.item);                
             }
 
             // notify everyone about the equipped item
             CmdOnEquip(item.gameObject, GetSlotIndex(slot));
         }
-
         
-        
-
         [Command] private void CmdOnEquip(GameObject item, int slotIndex) {
             // assign authority to the equipped item
             item.GetComponent<NetworkIdentity>().AssignClientAuthority(connectionToClient);
@@ -252,7 +254,7 @@ namespace CpvrLab.VirtualTable {
             // note: slot.input is null except for the local player
             //       and the item should also only have authority on the local player object
             //       since the comand call was made from there
-            // todo: make sure that the input stuff is true
+            // todo: make sure that the stuff said in the note above is correct.
             slot.item = item;
             slot.item.AssignOwner(this, slot.input);
             slot.item.Attach(slot.attachPoint);
