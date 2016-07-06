@@ -64,6 +64,13 @@ namespace CpvrLab.VirtualTable {
                 // handle object pickups
                 HandleItemInteractions();
             }
+
+            // test for model switching
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                NextLocalModel();
+                NextRemoteModel();
+            }
         }
 
         void HandleItemInteractions()

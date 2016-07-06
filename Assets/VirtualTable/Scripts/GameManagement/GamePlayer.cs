@@ -14,15 +14,6 @@ namespace CpvrLab.VirtualTable {
     /// </summary>
     public abstract class GamePlayer : NetworkBehaviour {
         
-
-        // defines an input slot that can serve an usable item with input
-        // todo: important, We need to define the attachment slots in this base class
-        //          we need to do this because in case of a sudden disconnect we must
-        //          properly unequip any items this player might have picked up before 
-        //          destroying it. We probably have to move the handling of 
-        //          assigning client authority to usableitems to the usableitem itself 
-        //          for this to work.
-
         /// <summary>
         /// defines an attachment slot where UsableItems can be attached to
         /// later by the concrete player implementation.
@@ -57,59 +48,86 @@ namespace CpvrLab.VirtualTable {
         protected int _remotePlayerModel = 1;
         protected PlayerModel _playerModelInstance = null;
 
-
-        // todo:    use a unified naming scheme across all classes used for this project
-        //          for the methods that can be used by subclasses. Maybe start isn't such a good idea
-        //          we should maybe use an initialize method that gets called by start in the 
+        
         public override void OnStartServer()
         {
-            // add ourselves to the current game manager
+            // add ourselves to the current game manager server instance
             GameManager.instance.AddPlayer(this);
         }
 
-        public override void OnStartLocalPlayer()
-        {
-            base.OnStartLocalPlayer();
-        }
 
-
-        // todo: Can we rely on Start being called AFTER localplayerstart? Or more specific can we rely on 
-        //          isLocalPlayer to contain the correct value every time? I'm not too sure this is the right
-        //          approach and we might need our own implementation for this to work properly. For now
-        //          this does the job and I'll just leave it be.
+        /// <summary>
+        /// Here we instantiate player models for this GamePlayer. Both remote and local instances, which may have
+        /// different player model representations. 
+        /// 
+        /// todo:   Can we rely on Start being called AFTER localplayerstart? Or more specific can we rely on 
+        ///         isLocalPlayer to contain the correct value every time? I'm not too sure this is the right
+        ///         approach and we might need our own implementation for this to work properly. For now
+        ///         this does the job and I'll just leave it be.
+        /// </summary>
         public void Start()
         {
-            // hacked this in quickly to test it out as soon as I can use the vive at work again
-            // needs sanity checks, ability to switch local and remote models on the fly etc etc.
             if (isLocalPlayer && playerModels.Count > _localPlayerModel)
-            {
-                // todo: spawn local player model
-                _playerModelInstance = Instantiate(playerModels[_localPlayerModel], transform.position, transform.rotation) as PlayerModel;
-                _playerModelInstance.InitializeModel(this);
-                _playerModelInstance.playerText.text = displayName;
-            }
+                SetPlayerModel(_localPlayerModel);
             else if (playerModels.Count > _remotePlayerModel)
-            {
-                // todo: spawn remote player model
-                _playerModelInstance = Instantiate(playerModels[_remotePlayerModel], transform.position, transform.rotation) as PlayerModel;
-                _playerModelInstance.InitializeModel(this);
-                _playerModelInstance.playerText.text = displayName;
-            }
+                SetPlayerModel(_remotePlayerModel);
         }
+
+        protected void SetPlayerModel(int index)
+        {
+            if (index < 0 || playerModels.Count <= index)
+                return;
+
+            // remove current model
+            DestroyPlayerModel();
+
+            _playerModelInstance = Instantiate(playerModels[index], transform.position, transform.rotation) as PlayerModel;
+            _playerModelInstance.InitializeModel(this);
+            _playerModelInstance.playerText.text = displayName;
+        }
+
+        protected void DestroyPlayerModel()
+        {
+            if (_playerModelInstance == null)
+                return;
+
+            Destroy(_playerModelInstance.gameObject);
+            _playerModelInstance = null;
+        }
+
+        [Client] protected void NextLocalModel()
+        {
+            if (!isLocalPlayer)
+                return;
+
+            _localPlayerModel++;
+            _localPlayerModel %= playerModels.Count;
+
+            SetPlayerModel(_localPlayerModel);
+        }
+
+        [Client] protected void NextRemoteModel()
+        {
+            if (!isLocalPlayer)
+                return;
+
+            _remotePlayerModel++;
+            _remotePlayerModel %= playerModels.Count;
+
+            CmdSetRemoteModel(_remotePlayerModel);
+        }
+
+        [Command] protected void CmdSetRemoteModel(int index) { RpcSetRemoteModel(index); }
+        [ClientRpc] protected void RpcSetRemoteModel(int index) { _remotePlayerModel = index; SetPlayerModel(index); }
 
         public override void OnNetworkDestroy()
         {
             if (!isServer)
             {
                 UnequipAllLocal();
-                Destroy(_playerModelInstance.gameObject);
+                DestroyPlayerModel();
             }
             base.OnNetworkDestroy();
-        }
-
-        protected void SetLocalPlayerModel(int index)
-        {
-
         }
         
         protected AttachmentSlot GetAttachmentSlot(int index)
