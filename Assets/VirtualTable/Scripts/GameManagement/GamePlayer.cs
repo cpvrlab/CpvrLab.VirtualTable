@@ -4,16 +4,14 @@ using System.Collections.Generic;
 using System.Collections;
 
 namespace CpvrLab.VirtualTable {
-
-    // todo:    review the necessaty and function of this class
-    //          it seems like the item equip handling could easily
-    //          be done by concrete classes. Of course we need a base
-    //          class to handle locking of input etc but maybe saving
-    //          the input slots in here too is overkill and completely
-    //          unnecessary. 
-    //          Would it be better if we moved all the equip code into the
-    //          UsableItem class?
-    //
+    
+    /// <summary>
+    /// Abstract base class for all game players. It is responsible for interacting with UsableItems
+    /// and routing player input to the necessary receivers.
+    /// 
+    /// todo:   We should probably rename this class to better reflect that this is the main representation
+    ///         of a player over the network.
+    /// </summary>
     public abstract class GamePlayer : NetworkBehaviour {
         
 
@@ -24,6 +22,11 @@ namespace CpvrLab.VirtualTable {
         //          destroying it. We probably have to move the handling of 
         //          assigning client authority to usableitems to the usableitem itself 
         //          for this to work.
+
+        /// <summary>
+        /// defines an attachment slot where UsableItems can be attached to
+        /// later by the concrete player implementation.
+        /// </summary>
         protected class AttachmentSlot
         {
             public GameObject attachPoint;
@@ -148,7 +151,7 @@ namespace CpvrLab.VirtualTable {
         }
 
         /// <summary>
-        /// Can be called on server and local player to equip an item
+        /// Can be called on server or local player to equip an item
         /// to the main attachment slot.
         /// </summary>
         /// <param name="item"></param>
@@ -163,12 +166,14 @@ namespace CpvrLab.VirtualTable {
                 //RpcEquipToMain(item.gameObject);
             }
         }
-        
 
-
-        // equip an item and assign it to a specific player input
-        [Client]
-        protected void Equip(PlayerInput input, UsableItem item, bool unequipIfOccupied = false)
+        /// <summary>
+        /// Equip an item to the attachmentslot associated with the PlayerInput "input"
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="item"></param>
+        /// <param name="unequipIfOccupied"></param>
+        [Client] protected void Equip(PlayerInput input, UsableItem item, bool unequipIfOccupied = false)
         {
             if (item.isInUse)
             {

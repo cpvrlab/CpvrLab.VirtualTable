@@ -17,7 +17,10 @@ namespace CpvrLab.VirtualTable
         public int playerPrefabIndex = 0;
     }
 
-    // test class to see how unity's networkmanager works
+    /// <summary>
+    /// Virtual table network manager. The current version of VirtualTable is building upon Unity's HLAPI
+    /// for it's networking functionality.
+    /// </summary>
     public class VTNetworkManager : NetworkManager
     {
 
@@ -27,29 +30,40 @@ namespace CpvrLab.VirtualTable
         public int networkPrefabIndex = 0;
         public GameObject[] playerPrefabs;
 
-        // client variable containing the player name of the local player as
-        // set in the connect screen
+        /// <summary>
+        /// We store the local players name as a variable of the network manager. We later
+        /// send the name to the server instance when the player connects to it.
+        /// todo: this seems like unnecessary mixing, can we implement it in a way where we don't need to
+        /// store the players name in here before connecting to a server?
+        /// </summary>
         [HideInInspector]
         public string localPlayerName = "player";
-
-
-        protected NetworkPlayer _playerInstance;
+        
 
         void Start()
         {
+            // change log filter level for easier debugging
             //LogFilter.currentLogLevel = (int)LogFilter.FilterLevel.Debug;
         }
 
         /// <summary>
-        /// Currently an ugly workaround for players who suddenly disconnect and still have usable
-        /// items with client authority set. We remove the client authority on every item for this player
-        /// before they get destroyed.
-        /// todo: find a better solution. 
+        /// Currently an ugly workaround for players who suddenly disconnect but still have UsableItems equipped. 
+        /// In this case we do the following: 
+        ///     1. We find and iterate over every UsableItem in the scene. 
+        ///     2. identify items that have a matching client authority with the disconnected player.
+        ///     3. Remove the client authority from those items manually.
+        ///     
+        /// Why we do this: Items that have local client authority that belong to a client that disconnects
+        ///     will be deleted by the NetworkManager. We need to prevent that.
+        ///     
+        /// todo: Implement this a bit more nicely. 
+        ///         possible improvements: Add a static list to UsableItem on the server side that 
+        ///         keeps track of all the server side intances of UsableItem. This way we don't require to run
+        ///         a GameObject.Find call.
         /// </summary>
-        /// <param name="conn"></param>
+        /// <param name="conn">Connection to the disconnected client</param>
         public override void OnServerDisconnect(NetworkConnection conn)
         {
-
             var usableItems = FindObjectsOfType<UsableItem>();
             foreach(var item in usableItems)
             {
@@ -63,27 +77,26 @@ namespace CpvrLab.VirtualTable
 
             base.OnServerDisconnect(conn);
         }
-
-        public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
-        {
-            base.OnServerAddPlayer(conn, playerControllerId);
-            //playerPrefab
-            Debug.Log("OnServerAddPlayer");
-        }
-
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-
-
-        }
-
+        
+        /// <summary>
+        /// Called on every client after connecting to a server.
+        /// </summary>
+        /// <param name="client"></param>
         public override void OnStartClient(NetworkClient client)
         {
             base.OnStartClient(client);
+
+            // Register our custom game player prefabs with the client scene
             foreach (var prefab in playerPrefabs)
                 ClientScene.RegisterPrefab(prefab);
         }
+
+        /// <summary>
+        /// Called on the server when a new client connects and is requesting to be spawned as a player object.
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="playerControllerId"></param>
+        /// <param name="netMsg"></param>
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader netMsg)
         {
             //base.OnServerAddPlayer(conn, playerControllerId, netMsg);
@@ -99,7 +112,16 @@ namespace CpvrLab.VirtualTable
             NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
         }
         
-
+        /// <summary>
+        /// Called on the client when ever the scene changes.
+        /// 
+        /// todo: Don't handle player spawning in here. We currently do it here because we want to spawn
+        /// a player object as soon as we change to the online scene. However further down the road we
+        /// will have more than just one scene and will eventually run into problems where this function
+        /// is called for every scene. Which we don't want potentially. Rather we will not be unloading
+        /// spawned player objects on scene changes.
+        /// </summary>
+        /// <param name="conn"></param>
         public override void OnClientSceneChanged(NetworkConnection conn)
         {
             base.OnClientSceneChanged(conn);
@@ -119,6 +141,7 @@ namespace CpvrLab.VirtualTable
             Debug.Log("OnServerSceneChanged");
         }
 
+        // the entire NetworkServer interface below, complete with debug outputs in case we should need it
         /*
         public override NetworkClient StartHost()
         {

@@ -6,17 +6,21 @@ using UnityEngine.Networking;
 namespace CpvrLab.VirtualTable {
 
 
-    // todo:    Implement a custom line renderer that behaves like googles tilt brush line strokes
-    //          The lines shouldn't try to orientate themselves towards the camera but just stay flat
-    //          Or we could implement actual 3d brush strokes. Not sure yet. Has to be decided
-    //          when we implement the light painting game.
-    //          As of now this is just a proof of concept
-
-    // todo:    Network optimizations if needed: We currently send a command every time we add
-    //          a point to the line renderer. This could bog down the network. A better approach 
-    //          would be to use the position on each client to draw the line. And periodically
-    //          send a list of correct line points to the server for the other clients to 
-    //          correct their local drawings.
+    /// <summary>
+    /// Simple "light painter" that allows the user to draw in the air.
+    ///
+    /// todo:    Implement a custom line renderer that behaves like googles tilt brush line strokes
+    ///          The lines shouldn't try to orientate themselves towards the camera but just stay flat
+    ///          Or we could implement actual 3d brush strokes. Not sure yet. Has to be decided
+    ///          when we implement the light painting game.
+    ///          As of now this is just a proof of concept
+    /// 
+    /// todo:    Network optimizations if needed: We currently send a command every time we add
+    ///          a point to the line renderer. This could bog down the network. A better approach 
+    ///          would be to use the position on each client to draw the line. And periodically
+    ///          send a list of correct line points to the server for the other clients to 
+    ///          correct their local drawings.
+    /// </summary>
     public class LightPainter : UsableItem {
 
         public float deltaPaint = 0.01f;
@@ -150,11 +154,9 @@ namespace CpvrLab.VirtualTable {
                     _currentLinePoints.RemoveAt(_currentLinePoints.Count - 1);
 
                     _lineChanged = false;
-
-                    yield return null;
                 }
-                else                 
-                    yield return null;
+
+                yield return null;
             }
         }
     }

@@ -8,8 +8,10 @@ namespace CpvrLab.VirtualTable
 {
 
     /// <summary>
-    /// Note: this class needs a refactoring ASAP, it's only implemented as a proof ofconcept
-    /// and is poorly designt in some places.
+    /// First implementation of a networked vive player.
+    /// 
+    /// todo:   this class needs a refactoring ASAP, it's only implemented as a proof ofconcept
+    ///         and is poorly designed in some places.
     /// </summary>
     public class VivePlayer : GamePlayer
     {

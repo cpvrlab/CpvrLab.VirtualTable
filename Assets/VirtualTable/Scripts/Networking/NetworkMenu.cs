@@ -5,6 +5,10 @@ using UnityEngine.Networking;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// Handles everything related to the start screen menu where players connect to 
+    /// or create a server to play on.
+    /// </summary>
     public class NetworkMenu : MonoBehaviour {
 
         public InputField playerNameInput;

@@ -3,6 +3,14 @@ using System.Collections;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// Base class for any item that can be picked up by the player. 
+    /// 
+    /// note:   at the time of writing this comment this class is still unfinished and unused.
+    /// 
+    /// todo:   there is a lot of shared functionality between UsableItem and MovableItem
+    ///         we should consider to maybe combine the two into a single base class.
+    /// </summary>
     [RequireComponent(typeof(Rigidbody))]
     public class MovableItem : MonoBehaviour {
         // todo:    implement functionality to be grabbed

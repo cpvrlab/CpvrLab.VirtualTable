@@ -6,6 +6,9 @@ using Valve.VR;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// VivePlayerInput, we map certain buttons from the vive controller to the generic PlayerInput axes and actions. 
+    /// </summary>
     public class VivePlayerInput : PlayerInput {
         
         [HideInInspector]

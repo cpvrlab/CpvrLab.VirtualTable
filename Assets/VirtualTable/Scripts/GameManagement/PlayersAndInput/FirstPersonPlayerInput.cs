@@ -4,6 +4,10 @@ using System;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// For the first person input we simply map unity keys and axes to 
+    /// the ones defined in PlayerInput.
+    /// </summary>
     public class FirstPersonPlayerInput : PlayerInput {
 
         private Dictionary<ActionCode, KeyCode> _actionMapping;

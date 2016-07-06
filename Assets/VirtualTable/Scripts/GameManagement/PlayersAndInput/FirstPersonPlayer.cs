@@ -5,6 +5,10 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// Prototype implementation of a FirstPersonPlayer. This player is controlled by mouse and 
+    /// keyboard like a traditional first person game. 
+    /// </summary>
     [RequireComponent(typeof(FirstPersonPlayerInput))]
     public class FirstPersonPlayer : GamePlayer {
 

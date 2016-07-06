@@ -5,6 +5,7 @@ using System;
 
 namespace CpvrLab.VirtualTable
 {
+
     public class FirstPersonPlayerModel : PlayerModel
     {
         protected FirstPersonPlayer _player;

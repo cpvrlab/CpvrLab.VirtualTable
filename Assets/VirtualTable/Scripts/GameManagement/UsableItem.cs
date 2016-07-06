@@ -4,6 +4,11 @@ using System.Collections;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// Base class for all usable items. A usable item is an object that can be equipped by a GamePlayer.
+    /// When equipped by a GamePlayer a UsableItem will be attachd to an attachment point defined by the
+    /// GamePlayer and receive input from one of the GamePlayer's PlayerInput components.
+    /// </summary>
     [RequireComponent(typeof(Rigidbody), typeof(NetworkTransform))]
     public class UsableItem : NetworkBehaviour {
 
@@ -13,68 +18,94 @@ namespace CpvrLab.VirtualTable {
         protected GamePlayer _owner = null;
         public bool isInUse { get { return _owner != null; } }
         [SyncVar] protected bool _unequipDone;
-        
+
+        // tempararily used for debugging purposes
         public override void OnStartAuthority()
         {
             Debug.Log("Start authority");
             base.OnStartAuthority();
         }
 
+        // tempararily used for debugging purposes
         public override void OnStopAuthority()
         {
             Debug.Log("Stop authority");
             base.OnStopAuthority();
         }
 
-        [Client]
-        public void Attach(GameObject attach)
+        /// <summary>
+        /// Attaches this usable item to a given attachment point.
+        /// Currently this is done by setting the rigidbody of the item to
+        /// be kinematic and childing it to the attach GameObject.
+        /// 
+        /// Concrete GamePlayers can change the local position and rotation of the item
+        /// by overriding GamePlayer.OnEquip and changing the values there.
+        /// </summary>
+        /// <param name="attach"></param>
+        [Client] public void Attach(GameObject attach)
         {
             _prevParent = transform.parent;
 
             transform.parent = attach.transform;
             transform.localRotation = Quaternion.identity;
             transform.localPosition = Vector3.zero;
-
-            // todo: not sure if it's a good idea to handle this here.
+            
             // "disable" rigidbody by setting it to kinematic
             var rb = GetComponent<Rigidbody>();
             rb.isKinematic = true;
         }
 
-        [Client]
-        public void Detach()
+        /// <summary>
+        /// Detaches an item from the current attachment point.
+        /// </summary>
+        [Client] public void Detach()
         {
+            // return if we're not attached to anything.
+            if (transform.parent == _prevParent)
+                return;
+
+            // todo: remove debug output
             Debug.Log("Detach " + ((_prevParent != null) ? _prevParent.name : "null"));
+
             transform.parent = _prevParent;
             var rb = GetComponent<Rigidbody>();
             rb.isKinematic = false;
         }
         
-
-        [Client]
-        public void AssignOwner(GamePlayer owner, PlayerInput input) {
+        /// <summary>
+        /// Assign an owner of this UsableItem. If the local GamePlayer is the owner then input will
+        /// contain a non null value. Else only owner will be assigned.
+        /// </summary>
+        /// <param name="owner"></param>
+        /// <param name="input"></param>
+        [Client] public void AssignOwner(GamePlayer owner, PlayerInput input) {
             _owner = owner;
             _input = input;
 
             OnEquip();
         }
 
-        [Client]
-        protected virtual void OnEquip()
+        /// <summary>
+        /// OnEquip is the initialization method for concrete UsableItems and is called on all client representations.
+        /// 
+        /// todo: find a better name for this.
+        /// </summary>
+        [Client] protected virtual void OnEquip()
         {
             Debug.Log("OnEquip");
         }
 
-        [Client]
-        public void ClearOwner() {
+        [Client] public void ClearOwner() {
             _owner = null;
             _input = null;
 
             OnUnequip();
         }
 
-        [Client]
-        protected virtual void OnUnequip()
+        /// <summary>
+        /// OnUnequip is the last method called before this item loses its owner. Used for item cleanup if necessary.
+        /// </summary>
+        [Client] protected virtual void OnUnequip()
         {
             Debug.Log("OnUnequip");
         }
@@ -102,8 +133,6 @@ namespace CpvrLab.VirtualTable {
             var nId = GetComponent<NetworkIdentity>();
             nId.RemoveClientAuthority(nId.clientAuthorityOwner);
         }
-        
 
-        // 
     }
 }

@@ -4,9 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace CpvrLab.VirtualTable {
-
-    [RequireComponent(typeof(NetworkIdentity))]
-    // print everything
+    
+    /// <summary>
+    /// Unused, see GamePlayer
+    /// </summary>
     public class NetworkPlayer : NetworkBehaviour {
 
         public void SetName()

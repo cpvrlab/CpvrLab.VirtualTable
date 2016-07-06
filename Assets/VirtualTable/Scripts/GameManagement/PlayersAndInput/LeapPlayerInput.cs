@@ -4,9 +4,10 @@ using System;
 
 namespace CpvrLab.VirtualTable {
 
-    // todo:    how will we implement button presses from the leap?
-    //          maybe a gui on the arm? problem here is we can't 
-    //          press a button while picking something up
+
+    /// <summary>
+    /// LeapMotion PlayerInput. Not sure how we will do this yet, but we'll see.
+    /// </summary>
     public class LeapPlayerInput : PlayerInput {
         public override bool GetAction(ActionCode ac)
         {

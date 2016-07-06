@@ -12,6 +12,11 @@ namespace CpvrLab.VirtualTable {
     //          could this be simplified?
     // 
     // note:    at the moment only usable items work
+
+    /// <summary>
+    /// ViveInteractionController can be added to a vive controller to interact with UsableItems.
+    /// This class will notify VivePlayer about picked up items etc.
+    /// </summary>
     [RequireComponent(typeof(SphereCollider))]
     public class ViveInteractionController : MonoBehaviour {
 

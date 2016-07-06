@@ -4,6 +4,9 @@ using System.Collections;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// This game manager was used for early tests. Will probably be removed pretty soon.
+    /// </summary>
     public class TestGameManager : GameManager {
         
         protected override void OnInitialize()

@@ -7,6 +7,12 @@ namespace CpvrLab.VirtualTable {
         public LightPainter lightPainter;
     }
 
+
+    /// <summary>
+    /// This isn't really a "game" but more of an expericne where every player 
+    /// receives a light painting UsableItem to draw into the air. We could possibly add functionality like sharing drawings, saving
+    /// or other collaboration stuff. Who knows, we'll see.
+    /// </summary>
     public class LightPaintingGame : Game {
 
         public GameObject lightPainterPrefab;

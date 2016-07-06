@@ -15,16 +15,27 @@ namespace CpvrLab.VirtualTable {
 
     */
 
-
+    /// <summary>
+    /// Base class for game player data. This class contains at least a reference to the GamePlayer
+    /// that this data is describing. A concrete implementation of the class could keep track
+    /// of player score or other relevant information a concrete game could need to store and display.
+    /// 
+    /// todo: Do we really need GamePlayer as a member of the data? Wouldn't a dictionary in the base
+    /// Game class work much better for our usecases? Change if necessary.
+    /// </summary>
     public class GamePlayerData {
         // todo: should this be public?
         public GamePlayer player;
     }
 
-    // todo:    for now a Game is a MonoBehaviour so that we can edit it easier in the editor
-    //          but it would be great if we could edit the game rules etc in a custom list editor
-    //          in the game manager editor itself where each game exposes its settings
-    //          via a property drawer.
+    /// <summary>
+    /// Base class for all game implementations.
+    /// 
+    /// todo:   for now a Game is a MonoBehaviour so that we can edit it easier in the editor
+    ///         but it would be great if we could edit the game rules etc in a custom list editor
+    ///         in the game manager editor itself where each game exposes its settings
+    ///         via a property drawer.
+    /// </summary>
     public abstract class Game : MonoBehaviour {
 
         public event Action<Game> GameFinished;

@@ -3,8 +3,10 @@ using System.Collections;
 
 namespace CpvrLab.VirtualTable
 {
-
-
+    
+    /// <summary>
+    /// Simple billboard script used for displaying names above players heads.
+    /// </summary>
     public class BillboardName : MonoBehaviour
     {
 
@@ -22,7 +24,8 @@ namespace CpvrLab.VirtualTable
             if (Camera.main == null)
                 return;
 
-            // ignore rotation of parent
+            // ignore rotation of parent and always keep the initial world offset
+            // position relative to the parent
             if (!inheritParentRotation)
             {
                 transform.position = transform.parent.position + _offset;
