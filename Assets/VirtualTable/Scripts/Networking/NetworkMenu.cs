@@ -15,6 +15,33 @@ namespace CpvrLab.VirtualTable {
         public InputField ipInput;
         public InputField portInput;
 
+        void Start()
+        {
+            // keep track of the users choices
+            string[] savedStrings = {
+                "player.name", "connect.ip", "connect.port"
+            };
+            InputField[] fields =
+            {
+                playerNameInput, ipInput, portInput
+            };
+
+            for(int i = 0; i < savedStrings.Length; i++)
+            {
+                var identifier = savedStrings[i];
+                var field = fields[i];
+                var savedString = PlayerPrefs.GetString(identifier);
+                if (!string.IsNullOrEmpty(savedString)) {
+                    field.text = savedString;
+                }
+
+                field.onValueChanged.AddListener(
+                        value => { PlayerPrefs.SetString(identifier, value); }
+                    );
+            }
+            
+        }
+
         public void OnConnectClicked()
         {
             Debug.Log("Connectclicked");

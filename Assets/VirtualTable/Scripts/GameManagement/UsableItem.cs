@@ -8,6 +8,9 @@ namespace CpvrLab.VirtualTable {
     /// Base class for all usable items. A usable item is an object that can be equipped by a GamePlayer.
     /// When equipped by a GamePlayer a UsableItem will be attachd to an attachment point defined by the
     /// GamePlayer and receive input from one of the GamePlayer's PlayerInput components.
+    /// 
+    /// todo:   properly sync the equip state of this item. If a player connects late he must be able
+    ///         to know which items are in use and which ones he can safely pick up.
     /// </summary>
     [RequireComponent(typeof(Rigidbody), typeof(NetworkTransform))]
     public class UsableItem : NetworkBehaviour {
@@ -18,6 +21,7 @@ namespace CpvrLab.VirtualTable {
         protected GamePlayer _owner = null;
         public bool isInUse { get { return _owner != null; } }
         [SyncVar] protected bool _unequipDone;
+        
 
         // tempararily used for debugging purposes
         public override void OnStartAuthority()

@@ -46,6 +46,9 @@ namespace CpvrLab.VirtualTable
             //LogFilter.currentLogLevel = (int)LogFilter.FilterLevel.Debug;
         }
 
+
+
+
         /// <summary>
         /// Currently an ugly workaround for players who suddenly disconnect but still have UsableItems equipped. 
         /// In this case we do the following: 
@@ -111,6 +114,7 @@ namespace CpvrLab.VirtualTable
 
             NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
         }
+
         
         /// <summary>
         /// Called on the client when ever the scene changes.

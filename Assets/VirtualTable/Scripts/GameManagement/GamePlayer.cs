@@ -16,6 +16,11 @@ namespace CpvrLab.VirtualTable {
     ///         only have a host option at this point and not a standalone server. If we ever wanted 
     ///         to add dedicated server support we'd need to change that. Maybe we should be making these
     ///         changes now to make it easier in the future.
+    ///         
+    /// todo:   IMPORTANT! attachment slos aren't synced over the network. So when a new client connects late
+    ///         he won't be able to know what items are equipped on which player. This also means that
+    ///         the equipped items won't be a child of that gameplayer and that the item itself also doesn't 
+    ///         know it is owned by a player. This can lead to other players trying to pick up items already in use.
     /// </summary>
     public abstract class GamePlayer : NetworkBehaviour {
         
@@ -38,9 +43,9 @@ namespace CpvrLab.VirtualTable {
 
         // prevent the player from using any equipped items
         public bool lockItemUse = false;
-
-
+        
         protected List<AttachmentSlot> _attachmentSlots = new List<AttachmentSlot>();
+        
 
         public string displayName = "player";
 
@@ -52,7 +57,7 @@ namespace CpvrLab.VirtualTable {
         protected int _localPlayerModel = 0;
         protected int _remotePlayerModel = 1;
         protected PlayerModel _playerModelInstance = null;
-
+        
         
         public override void OnStartServer()
         {
@@ -375,6 +380,24 @@ namespace CpvrLab.VirtualTable {
 
             _attachmentSlots.Add(attachmentSlot);
         }
+
+        //public override bool OnSerialize(NetworkWriter writer, bool initialState)
+        //{
+        //    bool wroteSync = base.OnSerialize(writer, initialState);
+
+        //    writer.Write(synctest);
+
+        //    return wroteSync;
+        //}
+
+        //public override void OnDeserialize(NetworkReader reader, bool initialState)
+        //{
+        //    base.OnDeserialize(reader, initialState);
+
+        //    synctest = reader.ReadInt32();
+        //    Debug.Log("Deserialize " + synctest);
+        //}
+
 
         // todo: these functions don't need to be abstract anymore
         protected virtual void OnEquip(AttachmentSlot slot) { }
