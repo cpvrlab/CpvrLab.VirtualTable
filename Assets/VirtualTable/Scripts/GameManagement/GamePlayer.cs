@@ -46,7 +46,7 @@ namespace CpvrLab.VirtualTable {
         
         protected List<AttachmentSlot> _attachmentSlots = new List<AttachmentSlot>();
         
-
+        [SyncVar]
         public string displayName = "player";
 
         /// <summary>
