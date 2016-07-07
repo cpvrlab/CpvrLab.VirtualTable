@@ -3,6 +3,9 @@ using System.Collections;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// Not much here yet. 
+    /// </summary>
     public class PrototypeGun : UsableItem {
 
         public Transform trigger;

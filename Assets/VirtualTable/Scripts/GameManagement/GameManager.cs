@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// The GameManager is responsible of loading and unloading games and everything related to it.
+    /// If a game requires a scene change then this is also handled here. If a game is over the 
+    /// game manager is also responsible of displaying the games results by rendering the games
+    /// GamePlayerData in list form (this last part is still only an idea for the future)
+    /// 
+    /// note:   at the time of writing this comment the GameManager class is still pretty much untested
+    ///         and may change immensely over the next few iterations.
+    /// </summary>
     public class GameManager : MonoBehaviour {
 
         public static GameManager instance { get { return _instance; } }

@@ -4,15 +4,16 @@ using System;
 
 
 namespace CpvrLab.VirtualTable {
-
-
-
-
-    // todo: is it a good idea to make this a component? should it be?
-
+    
     // todo:    would it be a good idea to use an other input propagation system?
     //          instead of querying the input class with GetActionDown etc could we
     //          send the events to subscribers? 
+
+    /// <summary>
+    /// Interface for all PlayerInput used by GamePlayers. 
+    /// 
+    /// todo:   Does this need to be a MonoBehaviour? I don't think it does.
+    /// </summary>
     public abstract class PlayerInput : MonoBehaviour {
 
         // todo:    Don't know how to call these at this point
@@ -53,6 +54,7 @@ namespace CpvrLab.VirtualTable {
         // get value of this axis
         public abstract float GetAxis(AxisCode ac);
 
+        // not sure if we need these here...
         public abstract Vector3 GetLookDirection();
         public abstract Vector3 GetLeftAimDirection();
         public abstract Vector3 GetRightAimDirection();

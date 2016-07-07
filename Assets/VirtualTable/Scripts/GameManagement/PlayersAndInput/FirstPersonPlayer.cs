@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityStandardAssets.Characters.FirstPerson;
 
 namespace CpvrLab.VirtualTable {
 
+    /// <summary>
+    /// Prototype implementation of a FirstPersonPlayer. This player is controlled by mouse and 
+    /// keyboard like a traditional first person game. 
+    /// </summary>
     [RequireComponent(typeof(FirstPersonPlayerInput))]
     public class FirstPersonPlayer : GamePlayer {
 
@@ -11,22 +16,51 @@ namespace CpvrLab.VirtualTable {
         [Range(0.5f, 3f)]
         public float pickupRange;
         public GameObject attachPoint;
-        protected Transform head;
+        public Transform head;
+        public GameObject fpsGUIPrefab;
+        protected GameObject _fpsGUIInstance;
+
         protected UsableItem _currentlyEquipped = null;
         protected MovableItem _currentlyHolding = null;
         protected FirstPersonPlayerInput _playerInput;
 
-        protected override void Start()
+        public override void OnStartClient()
         {
-            base.Start();
-            head = Camera.main.transform;
+            base.OnStartClient();
+
+            // add attachment slots on all clients
+            AddAttachmentSlot(attachPoint);
+        }
+
+        public override void OnStartLocalPlayer()
+        {
+            base.OnStartLocalPlayer();
+
+            // temporary solution?
+            GetComponent<CharacterController>().enabled = true;
+            GetComponent<FirstPersonController>().enabled = true;
+            
             _playerInput = GetComponent<FirstPersonPlayerInput>();
-            // register the input slot with the base class
-            AddInputSlot(_playerInput);
+            
+            // add the player input component to our attachment slot
+            // todo: this implementation doesn't seem that good
+            //       although we don't need a sanity check here it still feels dangerous and wrong.
+            FindAttachmentSlot(attachPoint).input = _playerInput;
+
+            // instantiate the GUI
+            _fpsGUIInstance = Instantiate(fpsGUIPrefab);
+        }
+
+        void OnDestroy()
+        {
+            Destroy(_fpsGUIInstance);
         }
 
         void Update()
         {
+            if(!isLocalPlayer)
+                return;
+
             if(_currentlyEquipped != null) {
                 if(Input.GetKeyDown(KeyCode.E)) {
                     Unequip(_currentlyEquipped); // remove item from equipped input slot
@@ -39,6 +73,13 @@ namespace CpvrLab.VirtualTable {
             else {
                 // handle object pickups
                 HandleItemInteractions();
+            }
+
+            // test for model switching
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                NextLocalModel();
+                NextRemoteModel();
             }
         }
 
@@ -94,6 +135,7 @@ namespace CpvrLab.VirtualTable {
             //       best way would be to add the functionality into holdable item
             //       attach a fixed joint (or maybe a loose joint with the object hanging around?)
             //       anyway, what is   
+
         }
 
         void ReleaseMovableItem(MovableItem item)
@@ -106,18 +148,16 @@ namespace CpvrLab.VirtualTable {
             return _playerInput;
         }
 
-        protected override void OnEquip(PlayerInput input, UsableItem item)
+        protected override void OnEquip(AttachmentSlot slot)
         {
-            // perform custom equip actions
-            item.Attach(attachPoint); // attach the item to our "hand" object
-            _currentlyEquipped = item;
+            _currentlyEquipped = slot.item;
         }
-
-        protected override void OnUnequip(PlayerInput input, UsableItem item)
+        
+        protected override void OnUnequip(UsableItem item)
         {
-            item.Detach(); // drop the item
             _currentlyEquipped = null;
         }
+        
     } // class
 
 } // namespace

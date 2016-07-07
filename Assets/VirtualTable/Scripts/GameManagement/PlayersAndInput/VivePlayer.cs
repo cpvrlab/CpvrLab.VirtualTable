@@ -2,16 +2,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEngine.Networking;
 
 namespace CpvrLab.VirtualTable
 {
 
-
+    /// <summary>
+    /// First implementation of a networked vive player.
+    /// 
+    /// todo:   this class needs a refactoring ASAP, it's only implemented as a proof ofconcept
+    ///         and is poorly designed in some places.
+    /// </summary>
     public class VivePlayer : GamePlayer
     {
 
         [Header("Vive Player Properties")]
         public bool isRightHanded = true;
+
+        public GameObject head;
+        public GameObject leftController;
+        public GameObject rightController;
+
+        // temporary only for testing. we'll use a better solution later
+        public GameObject tempCameraRig;
+
+        protected GameObject hmd = null;
+
 
         // unsure if these variables are necessary 
         protected ViveInteractionController _leftInteraction;
@@ -19,12 +35,23 @@ namespace CpvrLab.VirtualTable
 
         protected VivePlayerInput _leftInput;
         protected VivePlayerInput _rightInput;
-
-        protected override void Start()
+        
+                
+        public override void OnStartClient()
         {
-            base.Start();
+            base.OnStartClient();
 
-            var controllerManager = GetComponent<SteamVR_ControllerManager>();
+            AddAttachmentSlot(leftController);
+            AddAttachmentSlot(rightController);
+        }
+
+        public override void OnStartLocalPlayer()
+        {
+            base.OnStartLocalPlayer();
+
+            tempCameraRig.SetActive(true);
+
+            var controllerManager = FindObjectOfType<SteamVR_ControllerManager>();
 
             var left = controllerManager.left;
             var right = controllerManager.right;
@@ -52,53 +79,99 @@ namespace CpvrLab.VirtualTable
             if (_rightInput == null)
                 _rightInput = right.AddComponent<VivePlayerInput>();
 
-            // add input slots to base class
-            AddInputSlot(_leftInput);
-            AddInputSlot(_rightInput);
+            // Update the input slots added in OnStartClient
+            FindAttachmentSlot(leftController).input = _leftInput;
+            FindAttachmentSlot(rightController).input = _rightInput;
 
+            // the interactin controllers also need the player input
+            _leftInteraction.input = _leftInput;
+            _rightInteraction.input = _rightInput;
+
+            // add the tracked object to the VivePlayerInput
+            // for it to know where to get input from
             _leftInput.trackedObj = leftTrackedObj;
             _rightInput.trackedObj = rightTrackedObj;
 
+            // connect pickup and drop delegates of the interaction controllers
+            // to be notified when we should pick up a usable item
             _leftInteraction.UsableItemPickedUp += ItemPickedUp;
             _rightInteraction.UsableItemPickedUp += ItemPickedUp;
             _leftInteraction.UsableItemDropped += ItemDropped;
             _rightInteraction.UsableItemDropped += ItemDropped;
+
+            // finally we want to find the gameobject representation
+            // of the actual vive HMD
+            // todo: can we do this a bit cleaner?
+            var trackedObjects = FindObjectsOfType<SteamVR_TrackedObject>();
+            foreach (var obj in trackedObjects)
+            {
+                if (obj.index == SteamVR_TrackedObject.EIndex.Hmd)
+                {
+                    hmd = obj.gameObject;
+                }
+            }
+
+            if (hmd == null)
+                Debug.LogError("VivePlayer: couldn't find a hmd for the local player");
+
         }
 
-        void ItemPickedUp(object sender, GameObject target)
+        /// <summary>
+        /// The local player makes sure to update the three gameObjects
+        /// that represent the head and hands over the network
+        /// </summary>
+        void Update()
         {
-            // todo:     this implementation is crap. but at the moment I'm still unsure if we even need to tell
-            //           the base GamePlayer class about our equipped items or not
-            if (_leftInteraction.Equals(sender))
-                Equip(_leftInput, target.GetComponent<UsableItem>());
-            else
-                Equip(_rightInput, target.GetComponent<UsableItem>());
+            if (!isLocalPlayer)
+                return;
+
+            head.transform.position = hmd.transform.position;
+            head.transform.rotation = hmd.transform.rotation;
+
+            leftController.transform.position = _leftInteraction.transform.position;
+            leftController.transform.rotation = _leftInteraction.transform.rotation;
+
+            rightController.transform.position = _rightInteraction.transform.position;
+            rightController.transform.rotation = _rightInteraction.transform.rotation;
+
         }
 
-        void ItemDropped(object sender, GameObject target)
+        /// <summary>
+        /// Called when ever one of our controllers picks up a UsableItem
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="item"></param>
+        void ItemPickedUp(PlayerInput input, UsableItem item)
         {
-            Unequip(target.GetComponent<UsableItem>());
+            Equip(input, item, false);
         }
         
+        /// <summary>
+        /// Called when ever one of our controllers drops a UsableItem
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="item"></param>
+        void ItemDropped(PlayerInput input, UsableItem item)
+        {
+            Unequip(item);
+        }
+
         protected override PlayerInput GetMainInput()
         {
-            if(isRightHanded)
+            if (isRightHanded)
                 return _rightInput;
             else
                 return _leftInput;
         }
 
-        protected override void OnEquip(PlayerInput input, UsableItem item)
-        {
-            // todo:    I reall don't like this implementation, review this after having some games working.
-            input.gameObject.GetComponent<ViveInteractionController>().AttachItem(item);
+        protected override void OnEquip(AttachmentSlot slot)
+        {            
         }
 
-        protected override void OnUnequip(PlayerInput input, UsableItem item)
+        protected override void OnUnequip(UsableItem item)
         {
-            Debug.Log("OnUnequip");
-            input.gameObject.GetComponent<ViveInteractionController>().DetachItem(item);
         }
+
     } // class
 
 } // namespace
