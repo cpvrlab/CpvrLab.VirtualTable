@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections.Generic;
 
 namespace CpvrLab.VirtualTable {
@@ -35,6 +36,7 @@ namespace CpvrLab.VirtualTable {
             // initialize our custom player data
             for(int i = 0; i < _playerData.Count; i++) {
                 var pd = GetConcretePlayerData(i);
+                Debug.Log("LightPaintingGame: " + i);
 
                 // unequip all of the items the player is using
                 pd.player.UnequipAll();
@@ -43,6 +45,7 @@ namespace CpvrLab.VirtualTable {
 
                 // equip a light painter to the players main slot
                 pd.lightPainter = Instantiate(lightPainterPrefab).GetComponent<LightPainter>();
+                NetworkServer.Spawn(pd.lightPainter.gameObject);
                 pd.player.Equip(pd.lightPainter, true);
             }
         }
@@ -51,11 +54,12 @@ namespace CpvrLab.VirtualTable {
         {
             base.OnStop();
             Debug.Log("LightPaintingGame: Stopping");
-
+            
 
             for(int i = 0; i < _playerData.Count; i++) {
                 var pd = GetConcretePlayerData(i);
                 pd.player.UnequipAll();
+                NetworkServer.Destroy(pd.lightPainter.gameObject);
                 Destroy(pd.lightPainter.gameObject);                
             }
         }

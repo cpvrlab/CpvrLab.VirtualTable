@@ -1,7 +1,16 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections.Generic;
 
 namespace CpvrLab.VirtualTable {
+
+    public class StartGameMessage : MessageBase
+    {
+        public int gameIndex = -1;
+    }
+    public class StopGameMessage : MessageBase
+    { }
+
 
     /// <summary>
     /// The GameManager is responsible of loading and unloading games and everything related to it.
@@ -12,7 +21,7 @@ namespace CpvrLab.VirtualTable {
     /// note:   at the time of writing this comment the GameManager class is still pretty much untested
     ///         and may change immensely over the next few iterations.
     /// </summary>
-    public class GameManager : MonoBehaviour {
+    public class GameManager : NetworkBehaviour {
 
         public static GameManager instance { get { return _instance; } }
         private static GameManager _instance = null;
@@ -22,6 +31,9 @@ namespace CpvrLab.VirtualTable {
 
         // list of players currently able to play
         protected List<GamePlayer> _players = new List<GamePlayer>();
+
+        // dirty flag in case the players list has changed
+        protected bool _dirty = false;
 
         void Awake()
         {
@@ -34,16 +46,34 @@ namespace CpvrLab.VirtualTable {
             }
 
             _instance = this;
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
 
             OnInitialize();
         }
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+
+            NetworkServer.RegisterHandler(VTMsgType.StartGame, StartGameMsgHandler);
+            NetworkServer.RegisterHandler(VTMsgType.StopGame, StopGameMsgHandler);
+        }
+
 
         protected virtual void OnInitialize() { }
 
         public void AddPlayer(GamePlayer player)
         {
-            if(!_players.Contains(player))
+            if (!_players.Contains(player))
+            {
                 _players.Add(player);
+                _dirty = true;
+            }
             else
                 Debug.LogError("GameManager: Trying to register the same player twice!");
         }
@@ -66,11 +96,33 @@ namespace CpvrLab.VirtualTable {
                 RemovePlayer(p);
             }
         }
-
-
+        
         public void StartGame(int index)
         {
-            if(index < 0 && games.Length <= index) {
+            if (isServer)
+            {
+                StartGameInternal(index);
+            }
+            else
+            {
+                var netMngr = NetworkManager.singleton as VTNetworkManager;
+                var msg = new StartGameMessage();
+                msg.gameIndex = index;
+                netMngr.client.Send(VTMsgType.StartGame, msg);
+            }
+        }
+        [Server] private void StartGameMsgHandler(NetworkMessage netMsg)
+        {
+            Debug.Log("GameManager: Received StartGameMsg");
+            var msg = netMsg.ReadMessage<StartGameMessage>();
+            StartGameInternal(msg.gameIndex);
+        }
+
+
+        [Server] public void StartGameInternal(int index)
+        {
+            if (index < 0 && games.Length <= index)
+            {
                 Debug.LogError("GameManager: Trying to load a game with an invalid index.");
                 return;
             }
@@ -82,9 +134,10 @@ namespace CpvrLab.VirtualTable {
         //          use a callback paradigm to call start game as soon
         //          as the previous game has unloaded
         //          
-        void StartGame(Game game)
+        [Server] void StartGame(Game game)
         {
-            StopGame(_currentGame);
+            // stop current game
+            StopGame();
 
             _currentGame = game;
             _currentGame.Initialize();
@@ -92,9 +145,9 @@ namespace CpvrLab.VirtualTable {
             _currentGame.GameFinished += GameFinished;
         }
 
-        void StopGame(Game game)
+        [Server] void StopGame()
         {
-            if(game == null)
+            if(_currentGame == null)
                 return;
 
             _currentGame.Stop();
@@ -107,11 +160,29 @@ namespace CpvrLab.VirtualTable {
 
         void FixedUpdate()
         {
+            if (!isServer)
+                return;
+            
+            // todo: this dirty flag stuff is temporary... probably
+            if(_dirty)
+            {
+                foreach (var game in games)                
+                    game.AddPlayers(_players.ToArray());
+                
+                _dirty = false;
+            }
+
             // advance current game logic
             if(_currentGame != null)
                 _currentGame.OnUpdate();
         }
+        
 
+        [Server] private void StopGameMsgHandler(NetworkMessage netMsg)
+        {
+            Debug.Log("Received StopGameMsg");
+            StopGame();
+        }
     }
 
 }

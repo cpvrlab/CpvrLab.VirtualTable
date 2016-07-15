@@ -196,6 +196,25 @@ namespace CpvrLab.VirtualTable {
         }
 
         /// <summary>
+        /// todo:   switch this stuff around. An equip call should probably start on the server. 
+        ///         So at the moment when the server wants to equip an item to a specific player
+        ///         he has to trigger that player to call Equip locally. Which seems like unnecessary
+        ///         round trips. 
+        /// </summary>
+        /// <param name="item"></param>
+        [ClientRpc] protected void RpcEquipToMain(GameObject itemGO, bool unequipIfOccupied)
+        {
+            if (!isLocalPlayer)
+                return;
+
+            var item = itemGO.GetComponent<UsableItem>();
+            if (item == null)
+                return;
+
+            Equip(GetMainInput(), item, unequipIfOccupied);
+        }
+
+        /// <summary>
         /// Equip an item to the attachmentslot associated with the PlayerInput "input"
         /// </summary>
         /// <param name="input"></param>
@@ -273,23 +292,15 @@ namespace CpvrLab.VirtualTable {
         /// <param name="item"></param>
         public void Unequip(UsableItem item)
         {
-            if (isLocalPlayer)
+            var slot = FindAttachmentSlot(item);
+            if (slot == null)
             {
-                var slot = FindAttachmentSlot(item);
-                if (slot == null)
-                {
-                    Debug.LogWarning("GamePlayer: Trying to unequip an item that wasn't equipped!");
-                    return;
-                }
+                Debug.LogWarning("GamePlayer: Trying to unequip an item that wasn't equipped!");
+                return;
+            }
 
-                // notify everyone about the unequipped item
-                CmdOnUnequip(item.gameObject);
-            }
-            else if(isServer)
-            {
-                // todo...
-                // unsure if we need to separate server and client code here
-            }
+            // notify everyone about the unequipped item
+            CmdOnUnequip(item.gameObject);
         }
 
         // unequip an item assigned to a specific slot
@@ -343,9 +354,8 @@ namespace CpvrLab.VirtualTable {
         protected void UnequipLocal(UsableItem item)
         {
             var slot = FindAttachmentSlot(item);
-            if (slot == null)
+            if (item == null || slot == null)
                 return;
-
 
 
             slot.item = null;

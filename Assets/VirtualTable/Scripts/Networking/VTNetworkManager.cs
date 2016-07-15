@@ -10,6 +10,8 @@ namespace CpvrLab.VirtualTable
     public class VTMsgType
     {
         public static short AddPlayer = MsgType.Highest + 1;
+        public static short StartGame = MsgType.Highest + 2;
+        public static short StopGame = MsgType.Highest + 3;
     };
     public class AddPlayerMessage : MessageBase
     {
