@@ -250,14 +250,12 @@ namespace RootMotion.FinalIK {
             if(!gameObject.activeInHierarchy) return;
 
             if(ik.solver.iterations == 0) return;
-
-            //Debug.Log("Head iterate: " + iteration);
-
+            
             // Shoulders
-            //leftShoulderPos = transform.position + (leftShoulderPos - transform.position).normalized * leftShoulderDist;
-            //rightShoulderPos = transform.position + (rightShoulderPos - transform.position).normalized * rightShoulderDist;
+            leftShoulderPos = transform.position + (leftShoulderPos - transform.position).normalized * leftShoulderDist;
+            rightShoulderPos = transform.position + (rightShoulderPos - transform.position).normalized * rightShoulderDist;
 
-            //Solve(ref leftShoulderPos, ref rightShoulderPos, shoulderDist);
+            Solve(ref leftShoulderPos, ref rightShoulderPos, shoulderDist);
 
             LerpSolverPosition(ik.solver.leftShoulderEffector, leftShoulderPos, positionWeight * ik.solver.IKPositionWeight);
             LerpSolverPosition(ik.solver.rightShoulderEffector, rightShoulderPos, positionWeight * ik.solver.IKPositionWeight);

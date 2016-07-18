@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace CpvrLab.VirtualTable {
 
     class LightPaintingPlayerData : GamePlayerData {
-        public LightPainter lightPainter;
+        public LightPainter lightPainter = null;
     }
 
 
@@ -44,8 +44,13 @@ namespace CpvrLab.VirtualTable {
                 // todo: disable item pickups for the player
 
                 // equip a light painter to the players main slot
-                pd.lightPainter = Instantiate(lightPainterPrefab).GetComponent<LightPainter>();
-                NetworkServer.Spawn(pd.lightPainter.gameObject);
+                if (pd.lightPainter == null)
+                {
+                    // if the light painter for this player hasn't been spawned do it now
+                    pd.lightPainter = Instantiate(lightPainterPrefab).GetComponent<LightPainter>();
+                    NetworkServer.Spawn(pd.lightPainter.gameObject);
+                }
+                pd.lightPainter.isVisible = true;
                 pd.player.Equip(pd.lightPainter, true);
             }
         }
@@ -59,8 +64,13 @@ namespace CpvrLab.VirtualTable {
             for(int i = 0; i < _playerData.Count; i++) {
                 var pd = GetConcretePlayerData(i);
                 pd.player.UnequipAll();
-                NetworkServer.Destroy(pd.lightPainter.gameObject);
-                Destroy(pd.lightPainter.gameObject);                
+
+                // hide objects
+                pd.lightPainter.isVisible = false;
+                
+                //NetworkServer.Destroy(pd.lightPainter.gameObject);
+                //Destroy(pd.lightPainter.gameObject);
+                //pd.lightPainter = null;           
             }
         }
 

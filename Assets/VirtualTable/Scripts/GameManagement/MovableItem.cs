@@ -11,7 +11,7 @@ namespace CpvrLab.VirtualTable {
     /// todo:   there is a lot of shared functionality between UsableItem and MovableItem
     ///         we should consider to maybe combine the two into a single base class.
     /// </summary>
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(Rigidbody), typeof(VelocityInfo))]
     public class MovableItem : MonoBehaviour {
         // todo:    implement functionality to be grabbed
         //          one should be able to grab an object already held by someone
@@ -27,12 +27,20 @@ namespace CpvrLab.VirtualTable {
 
         public void Attach(Rigidbody rb)
         {
-            
+            // todo, leave this joint as a component ( i mean just require the component in the first place)
+            var joint = gameObject.AddComponent<FixedJoint>();
+            joint.connectedBody = rb;
         }
 
-        public void Detach(Rigidbody rb)
+        public void Detach()
         {
+            var joint = gameObject.GetComponent<FixedJoint>();
+            var velInfo = GetComponent<VelocityInfo>();
+            var rb = GetComponent<Rigidbody>();
 
+            DestroyImmediate(joint);
+            rb.velocity = velInfo.avrgVelocity;
+            rb.angularVelocity = velInfo.avrgAngularVelocity;
         }
     }
 }

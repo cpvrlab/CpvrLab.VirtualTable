@@ -81,6 +81,13 @@ namespace CpvrLab.VirtualTable {
                 NextLocalModel();
                 NextRemoteModel();
             }
+
+            if(_currentlyHolding != null)
+            {
+                var rb1 = attachPoint.GetComponent<Rigidbody>();
+                var rb2 = _currentlyHolding.GetComponent<Rigidbody>();
+                Debug.Log("AttachPoint: " + rb1.velocity + " " + rb1.angularVelocity + "; Item: " + rb2.velocity + " " + rb2.angularVelocity);
+            }
         }
 
         void HandleItemInteractions()
@@ -135,12 +142,16 @@ namespace CpvrLab.VirtualTable {
             //       best way would be to add the functionality into holdable item
             //       attach a fixed joint (or maybe a loose joint with the object hanging around?)
             //       anyway, what is   
-
+            _currentlyHolding = item;
+            //item.Attach(attachPoint.GetComponent<Rigidbody>());
+            CmdGrabMovableItem(item.gameObject, 0);
         }
 
         void ReleaseMovableItem(MovableItem item)
         {
-
+            _currentlyHolding = null;
+            //item.Detach();
+            CmdReleaseMovableItem(item.gameObject, 0);
         }
 
         protected override PlayerInput GetMainInput()

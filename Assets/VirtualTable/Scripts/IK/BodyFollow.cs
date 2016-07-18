@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace CpvrLab.AVRtar {
+namespace CpvrLab.VirtualTable {
 
     /// <summary>
     /// This script has to be added to a biped character model to follow head rotation and movements
@@ -115,7 +115,7 @@ namespace CpvrLab.AVRtar {
 
             // locomotion
             Vector3 localVelocity = Quaternion.Inverse(transform.rotation) * velocityInfo.avrgVelocity;  //velocityInfo.averageVelocity;
-            float velocityMag = velocityInfo.avrgVelocityMagnitude;
+            float velocityMag = velocityInfo.avrgVelocity.magnitude;
 
             // normalize velocity relative to the max speed of our animated character
             localVelocity /= animatorLocomotionSpeed;
@@ -128,13 +128,13 @@ namespace CpvrLab.AVRtar {
             _animator.SetFloat("Strafe", strafe);
             _animator.SetFloat("Forward", forward);
 
-            _animator.SetFloat("Turn", _turnDirection * velocityInfo.avrgAngularVelocityMagnitude * 0.01f, 0.1f, Time.deltaTime);
+            _animator.SetFloat("Turn", _turnDirection * velocityInfo.avrgAngularVelocity.magnitude * 0.01f, 0.1f, Time.deltaTime);
             //_animator.SetFloat("Turn", 0.00003f);
             // turning
 
 
 
-            if(velocityInfo.avrgVelocityMagnitude > locomotionAnimThreshold) {
+            if(velocityInfo.avrgVelocity.magnitude > locomotionAnimThreshold) {
                 _animator.SetBool("DoTurning", false);
                 _animator.speed = velocityMag;
             }

@@ -99,6 +99,12 @@ namespace CpvrLab.VirtualTable
             _leftInteraction.UsableItemDropped += ItemDropped;
             _rightInteraction.UsableItemDropped += ItemDropped;
 
+            _leftInteraction.MovableItemPickedUp += MovableItemPickedUp;
+            _rightInteraction.MovableItemPickedUp += MovableItemPickedUp;
+            _leftInteraction.MovableItemDropped += MovableItemDropped;
+            _rightInteraction.MovableItemDropped += MovableItemDropped;
+
+
             // finally we want to find the gameobject representation
             // of the actual vive HMD
             // todo: can we do this a bit cleaner?
@@ -154,6 +160,17 @@ namespace CpvrLab.VirtualTable
         void ItemDropped(PlayerInput input, UsableItem item)
         {
             Unequip(item);
+        }
+
+        void MovableItemPickedUp(PlayerInput input, MovableItem item)
+        {
+            Debug.Log("Grabbing " + GetSlotIndex(FindAttachmentSlot(input)) + " " + item.name);
+            CmdGrabMovableItem(item.gameObject, GetSlotIndex(FindAttachmentSlot(input)));
+        }
+        void MovableItemDropped(PlayerInput input, MovableItem item)
+        {
+            Debug.Log("Releasing");
+            CmdReleaseMovableItem(item.gameObject, GetSlotIndex(FindAttachmentSlot(input)));
         }
 
         protected override PlayerInput GetMainInput()

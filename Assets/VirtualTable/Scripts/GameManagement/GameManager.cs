@@ -87,7 +87,11 @@ namespace CpvrLab.VirtualTable {
 
         public void RemovePlayer(GamePlayer player)
         {
-            _players.Remove(player);
+            if (_players.Contains(player))
+            {
+                _players.Remove(player);
+                _dirty = true;
+            }
         }
 
         public void RemovePlayers(GamePlayer[] players)
@@ -166,8 +170,11 @@ namespace CpvrLab.VirtualTable {
             // todo: this dirty flag stuff is temporary... probably
             if(_dirty)
             {
-                foreach (var game in games)                
+                foreach (var game in games)
+                {
+                    game.ClearPlayerList();
                     game.AddPlayers(_players.ToArray());
+                }
                 
                 _dirty = false;
             }

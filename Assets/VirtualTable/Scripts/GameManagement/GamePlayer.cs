@@ -64,7 +64,7 @@ namespace CpvrLab.VirtualTable {
             // add ourselves to the current game manager server instance
             GameManager.instance.AddPlayer(this);
         }
-
+        
 
         /// <summary>
         /// Here we instantiate player models for this GamePlayer. Both remote and local instances, which may have
@@ -137,6 +137,9 @@ namespace CpvrLab.VirtualTable {
                 DestroyPlayerModel();
             }
             base.OnNetworkDestroy();
+
+
+            GameManager.instance.RemovePlayer(this);
         }
         
 
@@ -191,7 +194,7 @@ namespace CpvrLab.VirtualTable {
             else if(isServer)
             {
                 // todo...
-                //RpcEquipToMain(item.gameObject);
+                RpcEquipToMain(item.gameObject, unequipIfOccupied);
             }
         }
 
@@ -365,6 +368,26 @@ namespace CpvrLab.VirtualTable {
             item.Detach();
             item.ClearOwner();
             item.ReleaseAuthority();
+        }
+        
+        [Command] protected void CmdGrabMovableItem(GameObject itemGO, int slotIndex)
+        {
+            // todo: we should keep track of movable items on both server and client
+            RpcGrabMovableItem(itemGO, slotIndex);
+        }
+        [ClientRpc] protected void RpcGrabMovableItem(GameObject itemGO, int slotIndex)
+        {
+            var item = itemGO.GetComponent<MovableItem>();
+            item.Attach(GetAttachmentSlot(slotIndex).attachPoint.GetComponent<Rigidbody>());
+        }
+        [Command] protected void CmdReleaseMovableItem(GameObject itemGO, int slotIndex)
+        {
+            RpcReleaseMovableItem(itemGO, slotIndex);
+        }
+        [ClientRpc] protected void RpcReleaseMovableItem(GameObject itemGO, int slotIndex)
+        {
+            var item = itemGO.GetComponent<MovableItem>();
+            item.Detach();
         }
 
         // register a new input slot with the base class

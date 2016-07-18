@@ -21,7 +21,17 @@ namespace CpvrLab.VirtualTable {
         protected GamePlayer _owner = null;
         public bool isInUse { get { return _owner != null; } }
         [SyncVar] protected bool _unequipDone;
+        [SyncVar(hook ="OnVisibilityChanged")] public bool isVisible = true;
         
+
+        private void OnVisibilityChanged(bool value)
+        {
+            isVisible = value;
+            for(int i = 0; i < transform.childCount; i++)
+                transform.GetChild(i).gameObject.SetActive(value);
+            
+            GetComponent<Rigidbody>().isKinematic = !value;
+        }
 
         // tempararily used for debugging purposes
         public override void OnStartAuthority()

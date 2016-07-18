@@ -54,6 +54,11 @@ namespace CpvrLab.VirtualTable {
 
         protected float _gameTime;
 
+        public void ClearPlayerList()
+        {
+            _playerData.Clear();
+        }
+
         // Add a player to the game player list
         public void AddPlayer(GamePlayer player)
         {

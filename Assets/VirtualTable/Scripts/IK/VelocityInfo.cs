@@ -5,16 +5,15 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 
-namespace CpvrLab.AVRtar {
+namespace CpvrLab.VirtualTable {
 
     public class VelocityInfo : MonoBehaviour {
 
-        private int averageSampleCount = 20;
+        private int _sampleCount = 5;
+        private float _sampleCountReciproc = 1.0f;
 
         public Vector3 avrgVelocity { get { return _avrgVelocity; } }
         public Vector3 avrgAngularVelocity { get { return _averageAngularVelocity; } }
-        public float avrgVelocityMagnitude { get { return _avrgVelocityMag; } }
-        public float avrgAngularVelocityMagnitude { get { return _avrgAngularVelocityMag; } }
 
         Vector3 _prevPosition;
         Quaternion _prevRotation;
@@ -22,27 +21,18 @@ namespace CpvrLab.AVRtar {
         Vector3 _velocity;
         Vector3 _velocitySum;
         Vector3 _avrgVelocity;
-        float _avrgVelocityMag;
-        double _velocityMagSum;
                 
         Vector3 _angularVelocity;
         Vector3 _angularVelocitySum;
         Vector3 _averageAngularVelocity;
-        float _avrgAngularVelocityMag;
-        double _angularVelocityMagSum;
 
         Queue<Vector3> _velocityCache = new Queue<Vector3>();
         Queue<Vector3> _angularVelocityCache = new Queue<Vector3>();
-        Queue<float> _velocityMagCache = new Queue<float>();
-        Queue<float> _angularVelocityMagCache = new Queue<float>();
-
-        int _iterations = 0;
-        int _cacheIndex = 0;
-
-
+        
         void Awake()
         {
             UpdatePrevState();
+            _sampleCountReciproc = 1.0f / (float)_sampleCount;
         }
 
         void LateUpdate()
@@ -52,8 +42,7 @@ namespace CpvrLab.AVRtar {
 
 
             //Debug.Log("Vel: " + _velocity + " Avrg. vel: " + avrgVelocity + " Avrg. vel. mag.: " + avrgVelocityMagnitude + " Avrg. angular vel.: " + avrgAngularVelocity + " Avrg. angular vel. mag.: " + avrgAngularVelocityMagnitude);
-
-
+            
             UpdatePrevState();
         }
 
@@ -64,17 +53,10 @@ namespace CpvrLab.AVRtar {
             _prevRotation = transform.rotation;
 
             // update velocity rolling average
-            _avrgVelocity = CalcRollingAvrgVec3(_velocity, ref _velocityCache, ref _velocitySum, averageSampleCount);
-
-            // update velocity magnitude rolling average
-            _avrgVelocityMag = CalcRollingAvrgf(_velocity.magnitude, ref _velocityMagCache, ref _velocityMagSum, averageSampleCount);
-            _avrgVelocityMag = Mathf.Max(_avrgVelocityMag, 0.0f);
+            _avrgVelocity = CalcRollingAvrgVec3(_velocity, ref _velocityCache, ref _velocitySum, _sampleCount);
+            
             // update angular velocity average
-            _averageAngularVelocity = CalcRollingAvrgVec3(_angularVelocity, ref _angularVelocityCache, ref _angularVelocitySum, averageSampleCount);
-
-            // update angular velocity magnitude rolling average
-            _avrgAngularVelocityMag = CalcRollingAvrgf(_angularVelocity.magnitude, ref _angularVelocityMagCache, ref _angularVelocityMagSum, averageSampleCount);
-            _avrgAngularVelocityMag = Mathf.Max(_avrgAngularVelocityMag, 0.0f);
+            _averageAngularVelocity = CalcRollingAvrgVec3(_angularVelocity, ref _angularVelocityCache, ref _angularVelocitySum, _sampleCount);            
         }
 
 
@@ -91,7 +73,7 @@ namespace CpvrLab.AVRtar {
             sum += newSample;
 
             // calculate average and mean
-            return (float)(sum / (double)samples.Count);
+            return (float)(sum * (double)_sampleCountReciproc);
         }
 
         // calculate running average over a set of samples given the sum of that set
@@ -107,7 +89,7 @@ namespace CpvrLab.AVRtar {
             sum += newSample;
 
             // calculate average and mean
-            return sum / (float)samples.Count;
+            return sum * _sampleCountReciproc;
         }
 
 
