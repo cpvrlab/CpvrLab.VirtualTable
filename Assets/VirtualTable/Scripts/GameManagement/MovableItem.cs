@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 namespace CpvrLab.VirtualTable {
@@ -12,7 +13,7 @@ namespace CpvrLab.VirtualTable {
     ///         we should consider to maybe combine the two into a single base class.
     /// </summary>
     [RequireComponent(typeof(Rigidbody), typeof(VelocityInfo))]
-    public class MovableItem : MonoBehaviour {
+    public class MovableItem : NetworkBehaviour {
         // todo:    implement functionality to be grabbed
         //          one should be able to grab an object already held by someone
         //          else. Or for example pass an object from one hand to an other

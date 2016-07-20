@@ -39,6 +39,7 @@ namespace CpvrLab.VirtualTable {
             // temporary solution?
             GetComponent<CharacterController>().enabled = true;
             GetComponent<FirstPersonController>().enabled = true;
+            head.GetComponent<AudioListener>().enabled = true;
             
             _playerInput = GetComponent<FirstPersonPlayerInput>();
             

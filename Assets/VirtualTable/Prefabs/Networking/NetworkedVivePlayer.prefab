@@ -615,8 +615,8 @@ MonoBehaviour:
   lockItemUse: 0
   displayName: player
   playerModels:
-  - {fileID: 11422414, guid: 5a4f352bf58822642999487e81f72fce, type: 2}
-  - {fileID: 11422414, guid: 5a4f352bf58822642999487e81f72fce, type: 2}
+  - {fileID: 11408748, guid: 3a0507ef043765a4fa30ae7833ed084f, type: 2}
+  - {fileID: 11408748, guid: 3a0507ef043765a4fa30ae7833ed084f, type: 2}
   isRightHanded: 1
   head: {fileID: 128060}
   leftController: {fileID: 108642}

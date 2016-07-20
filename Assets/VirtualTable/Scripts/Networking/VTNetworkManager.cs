@@ -138,6 +138,7 @@ namespace CpvrLab.VirtualTable
             msg.playerPrefabIndex = networkPrefabIndex;
             msg.name = localPlayerName;
             ClientScene.AddPlayer(conn, 0, msg);
+            
         }
 
 
@@ -145,6 +146,9 @@ namespace CpvrLab.VirtualTable
         {
             base.OnServerSceneChanged(sceneName);
             Debug.Log("OnServerSceneChanged");
+
+            // force objects already in the scene to be spawned correctly
+            NetworkServer.SpawnObjects();
         }
 
         // the entire NetworkServer interface below, complete with debug outputs in case we should need it

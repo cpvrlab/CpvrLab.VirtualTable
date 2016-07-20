@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
 namespace CpvrLab.VirtualTable
 {
 
+    [RequireComponent(typeof(Shootable))]
     public class BalloonItem : MovableItem
     {
 
@@ -29,8 +31,25 @@ namespace CpvrLab.VirtualTable
             _color = Random.ColorHSV(0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
             _renderer.material.color = _color;
 
+
             if (autoDestroy)
                 StartCoroutine(AutoDestroy());
+        }
+
+
+        public override void OnStartServer()
+        {
+            base.OnStartServer();
+            
+            var shootable = gameObject.AddComponent<Shootable>();
+            shootable.OnHit.AddListener(OnHit);
+
+        }
+
+        void OnHit(Vector3 position)
+        {
+            Pop();
+            RpcPop();
         }
 
         IEnumerator AutoDestroy()
@@ -46,6 +65,12 @@ namespace CpvrLab.VirtualTable
             if (tempPopTest)
                 Pop();
         }
+
+        [ClientRpc] void RpcPop()
+        {
+            Pop();
+        }
+
 
         public void Pop()
         {

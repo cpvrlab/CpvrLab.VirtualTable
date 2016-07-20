@@ -182,7 +182,8 @@ namespace CpvrLab.VirtualTable
         }
 
         protected override void OnEquip(AttachmentSlot slot)
-        {            
+        {
+            slot.item.transform.localRotation = Quaternion.Euler(90, 0, 0);       
         }
 
         protected override void OnUnequip(UsableItem item)
