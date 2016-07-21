@@ -83,12 +83,12 @@ namespace CpvrLab.VirtualTable {
                 NextRemoteModel();
             }
 
-            if(_currentlyHolding != null)
-            {
-                var rb1 = attachPoint.GetComponent<Rigidbody>();
-                var rb2 = _currentlyHolding.GetComponent<Rigidbody>();
-                Debug.Log("AttachPoint: " + rb1.velocity + " " + rb1.angularVelocity + "; Item: " + rb2.velocity + " " + rb2.angularVelocity);
-            }
+            //if(_currentlyHolding != null)
+            //{
+                //var rb1 = attachPoint.GetComponent<Rigidbody>();
+                //var rb2 = _currentlyHolding.GetComponent<Rigidbody>();
+                //Debug.Log("AttachPoint: " + rb1.velocity + " " + rb1.angularVelocity + "; Item: " + rb2.velocity + " " + rb2.angularVelocity);
+            //}
         }
 
         void HandleItemInteractions()

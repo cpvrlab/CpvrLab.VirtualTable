@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
@@ -36,7 +37,7 @@ namespace CpvrLab.VirtualTable {
     ///         in the game manager editor itself where each game exposes its settings
     ///         via a property drawer.
     /// </summary>
-    public abstract class Game : MonoBehaviour {
+    public abstract class Game : NetworkBehaviour {
 
         public event Action<Game> GameFinished;
 
@@ -136,7 +137,9 @@ namespace CpvrLab.VirtualTable {
         
         protected virtual void OnInitialize() { }
         protected virtual void OnStop() { }
-        public virtual void OnUpdate() {
+        public virtual void OnUpdate()
+        {
+            if (!isServer) return;
             _gameTime += Time.fixedDeltaTime;
         }
     }

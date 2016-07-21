@@ -780,6 +780,7 @@ MonoBehaviour:
   trigger: {fileID: 448622}
   triggerAnglePressed: 120
   triggerAngleReleased: 70
+  maxFireRate: 0.5
   gunshotEffectPrefab: {fileID: 159122, guid: 30b87924955aeaa4081f046423e2d2eb, type: 2}
   muzzle: {fileID: 127206}
   gunShotSounds:
@@ -796,6 +797,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 910eed0d2736a3d4cbde12fe28c0581a, type: 3}
   - {fileID: 8300000, guid: bac8cc4df0cc0834aa2176fd3a22ee0d, type: 3}
   shellFallingSound: {fileID: 8300000, guid: 866eb266c9046484e97f788b481c77e6, type: 3}
+  dryFireSound: {fileID: 8300000, guid: 4c9183fa1d2bec040b609b3ca46a6df2, type: 3}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

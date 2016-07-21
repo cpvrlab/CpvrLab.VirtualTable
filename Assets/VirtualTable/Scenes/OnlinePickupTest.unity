@@ -230,6 +230,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 192169964}
   - 114: {fileID: 192169965}
+  - 114: {fileID: 192169966}
   m_Layer: 0
   m_Name: BalloonShooterGame
   m_TagString: Untagged
@@ -249,7 +250,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 229213791}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!114 &192169965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -261,6 +262,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 124d5c87cc9dda1499c97daad388762d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gunPrefab: {fileID: 137884, guid: 93eaacdebc01d84468c3793c838b9e06, type: 2}
+  balloonPrefab: {fileID: 138252, guid: 35cf3f72861f5274cb057891ba77499b, type: 2}
+  countdownTime: 5
+  balloonCount: 4
+  spawnExtents: {x: 1, y: 1}
+--- !u!114 &192169966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 192169963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 0
+    i1: 0
+    i2: 0
+    i3: 0
+    i4: 0
+    i5: 0
+    i6: 0
+    i7: 0
+    i8: 0
+    i9: 0
+    i10: 0
+    i11: 0
+    i12: 0
+    i13: 0
+    i14: 0
+    i15: 0
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!1 &229213789
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,8 +329,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   games:
   - {fileID: 1057915213}
-  - {fileID: 1010694736}
   - {fileID: 192169965}
+  - {fileID: 1010694736}
 --- !u!4 &229213791
 Transform:
   m_ObjectHideFlags: 0
@@ -305,8 +343,8 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1057915212}
-  - {fileID: 1010694735}
   - {fileID: 192169964}
+  - {fileID: 1010694735}
   m_Father: {fileID: 0}
   m_RootOrder: 7
 --- !u!114 &229213792
@@ -494,10 +532,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -505,7 +543,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Start Game 2
+  m_Text: Start Balloon Shooter Game
 --- !u!222 &366704010
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -624,10 +662,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 12
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -635,7 +673,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Start Game 1
+  m_Text: Start Light Painting Game
 --- !u!222 &475930222
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -653,12 +691,12 @@ GameObject:
   - 114: {fileID: 507708757}
   - 114: {fileID: 507708756}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: TestBalloonSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &507708756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1240,6 +1278,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1010694735}
   - 114: {fileID: 1010694736}
+  - 114: {fileID: 1010694737}
   m_Layer: 0
   m_Name: ConnectFourGame
   m_TagString: Untagged
@@ -1259,7 +1298,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 229213791}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!114 &1010694736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1271,6 +1310,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccbabd01ca9f8d54ba58d235f9e3e836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1010694737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1010694734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 0
+    i1: 0
+    i2: 0
+    i3: 0
+    i4: 0
+    i5: 0
+    i6: 0
+    i7: 0
+    i8: 0
+    i9: 0
+    i10: 0
+    i11: 0
+    i12: 0
+    i13: 0
+    i14: 0
+    i15: 0
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!1 &1057915211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1280,6 +1351,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1057915212}
   - 114: {fileID: 1057915213}
+  - 114: {fileID: 1057915214}
   m_Layer: 0
   m_Name: LightPaintingGame
   m_TagString: Untagged
@@ -1312,6 +1384,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightPainterPrefab: {fileID: 166006, guid: 75f98d1c4c9bc494da9774b840991951, type: 2}
+--- !u!114 &1057915214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1057915211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: 870353891bb340e2b2a9c8707e7419ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 0
+    i1: 0
+    i2: 0
+    i3: 0
+    i4: 0
+    i5: 0
+    i6: 0
+    i7: 0
+    i8: 0
+    i9: 0
+    i10: 0
+    i11: 0
+    i12: 0
+    i13: 0
+    i14: 0
+    i15: 0
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!4 &1130936217 stripped
 Transform:
   m_PrefabParentObject: {fileID: 408470, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}

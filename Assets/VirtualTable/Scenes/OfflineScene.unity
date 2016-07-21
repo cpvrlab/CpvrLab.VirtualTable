@@ -134,7 +134,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 146900, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4d293c8e162f3874b982baadd71153d2, type: 2}
@@ -517,7 +517,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!81 &831462006
 AudioListener:
   m_ObjectHideFlags: 0
@@ -626,7 +626,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 663ddc74395783444a9ebb9da3302a87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildTarget: 1
+  buildTarget: 0
   advancedSettings:
     networkManager: {fileID: 1611454715}
   targetOptions:
@@ -841,7 +841,7 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 121874, guid: e7befb9b5b272634f8fb691fda57e389, type: 2}
+  m_PlayerPrefab: {fileID: 102668, guid: cf2561fbf1eac1c4cb35b67910949e0f, type: 2}
   m_AutoCreatePlayer: 0
   m_PlayerSpawnMethod: 0
   m_OfflineScene: OfflineScene
@@ -888,7 +888,7 @@ MonoBehaviour:
   matchMaker: {fileID: 0}
   matchName: default
   matchSize: 4
-  networkPrefabIndex: 1
+  networkPrefabIndex: 0
   playerPrefabs:
   - {fileID: 102668, guid: cf2561fbf1eac1c4cb35b67910949e0f, type: 2}
   - {fileID: 121874, guid: e7befb9b5b272634f8fb691fda57e389, type: 2}
@@ -997,7 +997,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1930152765
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1094,7 +1094,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2082222616
 MonoBehaviour:
   m_ObjectHideFlags: 0

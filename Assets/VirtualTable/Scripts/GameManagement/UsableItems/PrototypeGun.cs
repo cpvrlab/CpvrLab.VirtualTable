@@ -13,12 +13,16 @@ namespace CpvrLab.VirtualTable {
         public float triggerAnglePressed;
         public float triggerAngleReleased;
 
+        public float maxFireRate = 0.5f;
+        private float _shotCooldown = 0.0f;
+
         public GameObject gunshotEffectPrefab;
         public GameObject muzzle;
 
         public AudioClip[] gunShotSounds;
         public AudioClip[] ricochetSounds;
         public AudioClip shellFallingSound;
+        public AudioClip dryFireSound;
 
         private AudioSource _audioSource;
         private GunshotEffect[] _effects;
@@ -44,11 +48,22 @@ namespace CpvrLab.VirtualTable {
             if (_input == null)
                 return;
 
+            bool shoot = _input.GetActionDown(PlayerInput.ActionCode.Button0);
+
+            if (_shotCooldown > 0)
+            {
+                _shotCooldown -= Time.deltaTime;
+
+                if (shoot)
+                    _audioSource.PlayOneShot(dryFireSound);
+            }
             // todo: this seems tedious, can't we just subscribe to buttons and receive input?
-            if (_input.GetActionDown(PlayerInput.ActionCode.Button0))
+            else if (shoot)
             {
                 Shoot();
                 CmdShoot();
+
+                _shotCooldown = maxFireRate;
             }
 
             // in case axis 0 is bound, show the trigger getting pressed
@@ -88,7 +103,7 @@ namespace CpvrLab.VirtualTable {
                         if (shootable != null)
                         {
                             // let the other object know it has been shot
-                            shootable.Hit(rayInfo.point);
+                            shootable.Hit(rayInfo.point, _owner);
                         }
                     }
                 }

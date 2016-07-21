@@ -19,7 +19,7 @@ namespace CpvrLab.VirtualTable
 
         private Rigidbody _rigidbody;
         private Renderer _renderer;
-        private Color _color;
+        [SyncVar(hook = "SetColor")] public Color color = Color.black;
 
         void Awake()
         {
@@ -27,18 +27,23 @@ namespace CpvrLab.VirtualTable
             _renderer = GetComponent<Renderer>();
             if (centerOfMass != null)
                 _rigidbody.centerOfMass = centerOfMass.localPosition;
-
-            _color = Random.ColorHSV(0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-            _renderer.material.color = _color;
+            
+            _renderer.material.color = color;
 
 
             if (autoDestroy)
                 StartCoroutine(AutoDestroy());
         }
-
+        
+        public void SetColor(Color col)
+        {
+            color = col;
+            _renderer.material.color = color;
+        }
 
         public override void OnStartServer()
         {
+            Debug.Log("BalloonStartServer");
             base.OnStartServer();
             
             var shootable = gameObject.AddComponent<Shootable>();
@@ -46,7 +51,7 @@ namespace CpvrLab.VirtualTable
 
         }
 
-        void OnHit(Vector3 position)
+        void OnHit(Vector3 position, GamePlayer shooter)
         {
             Pop();
             RpcPop();
@@ -77,7 +82,7 @@ namespace CpvrLab.VirtualTable
             var popParticle = Instantiate(popEffect, centerOfMass.position, centerOfMass.rotation) as GameObject;
             var popPS = popParticle.GetComponent<ParticleSystem>();
             var pr = popPS.GetComponent<Renderer>();
-            pr.material.color = _color;
+            pr.material.color = color;
             Destroy(popParticle, popPS.duration);
 
             var popAudio = popParticle.AddComponent<AudioSource>();
