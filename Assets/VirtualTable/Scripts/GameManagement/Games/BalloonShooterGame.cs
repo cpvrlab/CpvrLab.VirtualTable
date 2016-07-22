@@ -2,6 +2,7 @@
 using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace CpvrLab.VirtualTable
 {
@@ -9,6 +10,8 @@ namespace CpvrLab.VirtualTable
     class BalloonShooterPlayerData : GamePlayerData
     {
         public PrototypeGun gun;
+        public int gamesWon;
+        public float bestTime;
     }
 
     /// <summary>
@@ -20,8 +23,8 @@ namespace CpvrLab.VirtualTable
     /// alternative idea:   Have a bunch of colored balloons released. Have a timer run down for maybe 30 seconds
     ///                     As the timer runs down more and more balloons will lose their color and fade to grey.
     ///                     Grey balloons reveal to the player that they aren't the target. As the timer nears zero
-    ///                     so shrinks the possible options of balloons to shoot. Players have exactly three shots
-    ///                     and a cooldown after each shot used. So the players have to decide if they want to waste shots early
+    ///                     so shrinks the possible number of balloons to shoot. Players have exactly three shots
+    ///                     and a cooldown after each shot. So the players have to decide if they want to waste shots early
     ///                     for a possible win or save them for when theres only about 5 balloons left.
     ///                     
     ///                     remaining time and shots used could both count toward an overall score for the player.
@@ -34,6 +37,9 @@ namespace CpvrLab.VirtualTable
         public int countdownTime = 5;
         public int balloonCount = 10;
         public Vector2 spawnExtents = new Vector2(1, 1);
+
+        public Text gameStatusText;
+        public Renderer goalIndicator;
         
         enum GameState
         {
@@ -42,9 +48,10 @@ namespace CpvrLab.VirtualTable
             Shooting
         };
 
-        private float _timer;
+        private float _startTime;
         private GameState _state;
         private GameObject[] _balloons;
+        private Color _goalColor;
 
         private BalloonShooterPlayerData GetConcretePlayerData(int index)
         {
@@ -71,8 +78,7 @@ namespace CpvrLab.VirtualTable
                 pd.player.UnequipAll();
 
                 // todo: disable item pickups for the player
-
-                // equip a light painter to the players main slot
+                
                 if (pd.gun == null)
                 {
                     pd.gun = Instantiate(gunPrefab).GetComponent<PrototypeGun>();
@@ -83,14 +89,15 @@ namespace CpvrLab.VirtualTable
                 pd.player.Equip(pd.gun, true);
             }
 
-            _state = GameState.Spawning;
+            RpcSetStatusText("Get ready!");
+            HandleSpawning();
         }
 
         protected override void OnStop()
         {
             base.OnStop();
             Debug.Log("BalloonShooterGame: Stopping");
-
+            StopAllCoroutines();
 
             for (int i = 0; i < _playerData.Count; i++)
             {
@@ -100,26 +107,18 @@ namespace CpvrLab.VirtualTable
                 // hide objects
                 pd.gun.isVisible = false;
 
-                //NetworkServer.Destroy(pd.gun.gameObject);
-                //Destroy(pd.gun.gameObject);
-                //pd.gun = null;           
+
+                foreach (var balloon in _balloons)
+                {
+                    Debug.Log("Removing balloons");
+                    if (balloon != null)
+                        NetworkServer.Destroy(balloon);
+                }
             }
         }
+        
 
-        public override void OnUpdate()
-        {
-            if (!isServer) return;
-            base.OnUpdate();
-
-            switch (_state)
-            {
-                case GameState.Spawning: SpawningState(); break;
-                case GameState.Countdown: CountdownState(); break;
-                case GameState.Shooting: ShootingState(); break;
-            }
-        }
-
-        private void SpawningState()
+        private void HandleSpawning()
         {
             int goal = Random.Range(0, balloonCount -1);
             float colorHueSteps = 1.0f / (float)balloonCount;
@@ -145,7 +144,7 @@ namespace CpvrLab.VirtualTable
                     float x = Random.Range(-spawnExtents.x, spawnExtents.x);
                     float y = Random.Range(minHeight, maxHeight);
                     float z = Random.Range(-spawnExtents.y, spawnExtents.y);
-                    Vector3 candidate = new Vector3(x, y, z);
+                    Vector3 candidate = new Vector3(x, y, z) + transform.position;
 
                     bool spawnPointAccepted = true;
                     foreach(var point in spawnPoints)
@@ -159,7 +158,6 @@ namespace CpvrLab.VirtualTable
 
                     if (spawnPointAccepted)
                     {
-                        Debug.Log("Found spawn point for " + i + " after " + j + " iterations");
                         spawnPoints.Add(candidate);
                         spawnPoint = candidate;
                         break;
@@ -176,9 +174,7 @@ namespace CpvrLab.VirtualTable
                 var balloon = go.GetComponent<BalloonItem>();
                 var shootable = go.GetComponent<Shootable>();
                 balloon.color = Color.HSVToRGB(colorHueSteps * i, 1, 1);
-
-                Debug.Log("go " + go);
-
+                
                 // attach the balloon to the ground
                 // todo: we might want to do this in the balloon itself rather than here. Because if we do it here we have to do it for all the clients as well
                 AttachBalloon(go, spawnPoint);
@@ -187,14 +183,51 @@ namespace CpvrLab.VirtualTable
                 if(i == goal)
                 {
                     shootable.OnHit.AddListener(GoalShot);
+                    _goalColor = balloon.color;
                 }
             }
 
+            EnableInput(false);
+            
             _state = GameState.Countdown;
+            StartCoroutine(Countdown());
         }
 
-        private void CountdownState() { }
-        private void ShootingState() { }
+        private void EnableInput(bool enable)
+        {
+            foreach (var pd in _playerData)
+            {
+                ((BalloonShooterPlayerData)pd).gun.inputEnabled = enable;
+            }
+        }
+
+        private IEnumerator Countdown()
+        {
+            float timer = countdownTime;
+            float colorCycleSpeed = 0.5f;
+            float currentHue = 0.0f;
+
+            while(timer >  0.0f)
+            {
+                RpcSetStatusText("Get ready: " + timer.ToString("F2"));
+                timer -= Time.deltaTime;
+
+                // cycle the indicator through all of the possible colors
+                RpcSetGoalColor(Color.HSVToRGB(currentHue, 1, 1));
+                currentHue += colorCycleSpeed * Time.deltaTime;
+                while(currentHue > 1.0f)
+                    currentHue -= 1.0f;
+
+                yield return null;
+            }
+
+            // todo: reenable user input so they can shoot
+            RpcSetStatusText("Fire!");
+            RpcSetGoalColor(_goalColor);
+            _startTime = Time.time;
+            EnableInput(true);
+        }
+        
 
 
         [ClientRpc] void RpcAttachBalloon(GameObject go, Vector3 position)
@@ -213,17 +246,34 @@ namespace CpvrLab.VirtualTable
             spring.anchor = Vector3.zero;
         }
 
+        [ClientRpc] void RpcSetStatusText(string text)
+        {
+            gameStatusText.text = text;
+        }
+        [ClientRpc] void RpcSetGoalColor(Color color)
+        {
+            goalIndicator.material.SetColor("_EmissionColor", color);
+        }
+
         private void GoalShot(Vector3 position, GamePlayer shooter)
         {
-            Debug.Log("Winner Winner Chicken Dinner, player " + shooter.displayName + "won the game");
-
-            foreach(var balloon in _balloons)
+            RpcSetStatusText(shooter.displayName + " WINS! (" + (Time.time -_startTime).ToString("F2") + "s)");
+            
+            foreach (var balloon in _balloons)
             {
                 if (balloon != null)
                     NetworkServer.Destroy(balloon);
             }
 
-            Stop();            
+            // auto restart the game after a certain time
+            StartCoroutine(AutoRestartGame(4.0f));
+            //Stop();            
+        }
+
+        IEnumerator AutoRestartGame(float waitTime)
+        {
+            yield return new WaitForSeconds(waitTime);
+            HandleSpawning();
         }
     }
 

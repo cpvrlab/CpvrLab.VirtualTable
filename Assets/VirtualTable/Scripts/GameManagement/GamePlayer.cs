@@ -34,16 +34,6 @@ namespace CpvrLab.VirtualTable {
             public PlayerInput input;
             public UsableItem item = null;
         }
-                
-        // prevent the player from equipping or unequipping any items
-        public bool lockEquippedItems = false;
-
-        // prevent the player from picking up any items
-        public bool lockPickup = false;
-
-        // prevent the player from using any equipped items
-        public bool lockItemUse = false;
-        
         protected List<AttachmentSlot> _attachmentSlots = new List<AttachmentSlot>();
         
         [SyncVar]
@@ -391,8 +381,7 @@ namespace CpvrLab.VirtualTable {
         }
 
         // register a new input slot with the base class
-        [Client]
-        protected void AddAttachmentSlot(GameObject attachPoint, PlayerInput input = null)
+        [Client] protected void AddAttachmentSlot(GameObject attachPoint, PlayerInput input = null)
         {
             if (FindAttachmentSlot(attachPoint) != null)
             {
@@ -413,6 +402,7 @@ namespace CpvrLab.VirtualTable {
 
             _attachmentSlots.Add(attachmentSlot);
         }
+        
 
         //public override bool OnSerialize(NetworkWriter writer, bool initialState)
         //{

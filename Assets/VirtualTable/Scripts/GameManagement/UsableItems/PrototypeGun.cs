@@ -13,7 +13,7 @@ namespace CpvrLab.VirtualTable {
         public float triggerAnglePressed;
         public float triggerAngleReleased;
 
-        public float maxFireRate = 0.5f;
+        public float maxFireRate = 0.1f;
         private float _shotCooldown = 0.0f;
 
         public GameObject gunshotEffectPrefab;
@@ -50,7 +50,7 @@ namespace CpvrLab.VirtualTable {
 
             bool shoot = _input.GetActionDown(PlayerInput.ActionCode.Button0);
 
-            if (_shotCooldown > 0)
+            if (_shotCooldown > 0 || !inputEnabled)
             {
                 _shotCooldown -= Time.deltaTime;
 
@@ -60,6 +60,7 @@ namespace CpvrLab.VirtualTable {
             // todo: this seems tedious, can't we just subscribe to buttons and receive input?
             else if (shoot)
             {
+                Debug.Log("Calling Shoot from local player button press");
                 Shoot();
                 CmdShoot();
 
@@ -74,14 +75,25 @@ namespace CpvrLab.VirtualTable {
 
         [Command] void CmdShoot()
         {
-            Shoot();
             RpcShoot();
+
+            // do hit calculations on the server (if it's a dedicated server that is)
+            // else we already called Shoot in the update method
+            if (!hasAuthority && !isClient)
+            {
+                Debug.Log("Calling Shoot from CmdShoot");
+                Shoot();
+            }
         }
 
         [ClientRpc] void RpcShoot()
         {
-            if(!isLocalPlayer)
+            // only call shoot for non local players
+            if (!hasAuthority)
+            {
+                Debug.Log("Calling Shoot from RpcShoot");
                 Shoot();
+            }
         }
 
         void Shoot()
@@ -109,7 +121,7 @@ namespace CpvrLab.VirtualTable {
                 }
 
                 distance = rayInfo.distance;
-                Debug.Log("Hit! " + rayInfo.distance);
+                // Debug.Log("Hit! " + rayInfo.distance);
 
                 //_audioSource.PlayOneShot(ricochetSounds[Random.Range(0, ricochetSounds.Length - 1)]);
             }

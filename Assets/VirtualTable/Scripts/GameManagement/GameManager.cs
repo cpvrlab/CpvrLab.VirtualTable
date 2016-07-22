@@ -115,6 +115,7 @@ namespace CpvrLab.VirtualTable {
                 netMngr.client.Send(VTMsgType.StartGame, msg);
             }
         }
+        
         [Server] private void StartGameMsgHandler(NetworkMessage netMsg)
         {
             Debug.Log("GameManager: Received StartGameMsg");
@@ -149,9 +150,14 @@ namespace CpvrLab.VirtualTable {
             _currentGame.GameFinished += GameFinished;
         }
 
-        [Server] void StopGame()
+        public void StopGame()
         {
-            if(_currentGame == null)
+            CmdStopGame();
+        }
+
+        [Command] void CmdStopGame()
+        {
+            if (_currentGame == null)
                 return;
 
             _currentGame.Stop();

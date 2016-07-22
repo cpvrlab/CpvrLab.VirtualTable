@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.Networking.Match;
 
@@ -31,6 +32,8 @@ namespace CpvrLab.VirtualTable
 
         public int networkPrefabIndex = 0;
         public GameObject[] playerPrefabs;
+
+        // todo: make sure players have unique names
 
         /// <summary>
         /// We store the local players name as a variable of the network manager. We later
@@ -112,7 +115,11 @@ namespace CpvrLab.VirtualTable
             GameObject player = (GameObject)Instantiate(playerPrefabs[msg.playerPrefabIndex], Vector3.zero, Quaternion.identity);
 
             var gamePlayer = player.GetComponent<GamePlayer>();
+            gamePlayer.transform.position = startPositions[numPlayers%startPositions.Count].transform.position;
             gamePlayer.displayName = msg.name;
+
+            Debug.Log("spawning player #" + numPlayers + " at start position " + numPlayers % startPositions.Count + " startPositions.Count " + startPositions.Count);
+
 
             NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
         }

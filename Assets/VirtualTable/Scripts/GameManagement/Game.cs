@@ -54,6 +54,14 @@ namespace CpvrLab.VirtualTable {
         protected int _maxPlayers;
 
         protected float _gameTime;
+        
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            ShowChildren(false);
+        }
+
 
         public void ClearPlayerList()
         {
@@ -114,6 +122,9 @@ namespace CpvrLab.VirtualTable {
 
         public void Initialize()
         {
+            if (!isServer)
+                return;
+
             if(_usingCustomScene) {
                 // todo: load scene gracefully (async) 
                 SceneManager.LoadScene(_customSceneName);
@@ -134,9 +145,31 @@ namespace CpvrLab.VirtualTable {
             if(GameFinished != null)
                 GameFinished(this);
         }
+
+        /// <summary>
+        /// We use this function to hide and show child objects of a game (set game object active/inactive) 
+        /// I'm not sure if this is the best solution for now we'll leave it be.
+        /// </summary>
+        /// <param name="hide"></param>
+        [ClientRpc] void RpcShowChildren(bool show)
+        {
+            ShowChildren(show);
+        }
+
+        protected void ShowChildren(bool show)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+                transform.GetChild(i).gameObject.SetActive(show);
+        }
         
-        protected virtual void OnInitialize() { }
-        protected virtual void OnStop() { }
+        protected virtual void OnInitialize() {
+            RpcShowChildren(true);
+        }
+        protected virtual void OnStop()
+        {
+            RpcShowChildren(false);
+        }
+
         public virtual void OnUpdate()
         {
             if (!isServer) return;

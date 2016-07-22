@@ -22,7 +22,7 @@ namespace CpvrLab.VirtualTable {
         public bool isInUse { get { return _owner != null; } }
         [SyncVar] protected bool _unequipDone;
         [SyncVar(hook ="OnVisibilityChanged")] public bool isVisible = true;
-        
+        [SyncVar] public bool inputEnabled = true;
 
         private void OnVisibilityChanged(bool value)
         {
