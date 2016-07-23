@@ -16,6 +16,11 @@ namespace CpvrLab.VirtualTable {
     public class UsableItem : NetworkBehaviour {
 
         public Transform attachPoint;
+
+        // Some objects might want to
+        public Transform aimDirTransform; // todo: make aimDirTransform private but settable in the editor
+        public Vector3 aimDir { get { return (aimDirTransform != null) ? aimDirTransform.forward : transform.forward; } }
+
         protected PlayerInput _input;
         protected Transform _prevParent = null;
         protected GamePlayer _owner = null;
