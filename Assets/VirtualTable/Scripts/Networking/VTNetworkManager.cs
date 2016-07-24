@@ -28,7 +28,8 @@ namespace CpvrLab.VirtualTable
     {
 
         //public NetworkPlayer playerPrefab;
-
+        Dictionary<string, int> usernameCount = new Dictionary<string, int>();
+        Dictionary<NetworkConnection, GamePlayer> players = new Dictionary<NetworkConnection, GamePlayer>();
 
         public int networkPrefabIndex = 0;
         public GameObject[] playerPrefabs;
@@ -43,6 +44,7 @@ namespace CpvrLab.VirtualTable
         /// </summary>
         [HideInInspector]
         public string localPlayerName = "player";
+
         
 
         void Start()
@@ -82,6 +84,9 @@ namespace CpvrLab.VirtualTable
                     networkId.RemoveClientAuthority(networkId.clientAuthorityOwner);
                 }
             }
+            
+            // remove the player from our dictionary
+            players.Remove(conn);
 
             base.OnServerDisconnect(conn);
         }
@@ -116,7 +121,30 @@ namespace CpvrLab.VirtualTable
 
             var gamePlayer = player.GetComponent<GamePlayer>();
             gamePlayer.transform.position = startPositions[numPlayers%startPositions.Count].transform.position;
-            gamePlayer.displayName = msg.name;
+                        
+            // choose a unique user name for the player
+            string uniqueName = msg.name;
+            bool nameIsUnique = false;
+            int nameCount = 0;
+            while(!nameIsUnique)
+            {
+                nameIsUnique = true;
+                foreach (var p in players)
+                {
+                    if (p.Value.displayName.Equals(uniqueName))
+                    {
+                        nameIsUnique = false;
+                        nameCount++;
+                        uniqueName = msg.name + " (" + nameCount + ")";
+                    }
+
+                }
+            }
+
+            gamePlayer.displayName = uniqueName;
+
+            // add player to the servers dictionary
+            players.Add(conn, gamePlayer);
 
             Debug.Log("spawning player #" + numPlayers + " at start position " + numPlayers % startPositions.Count + " startPositions.Count " + startPositions.Count);
 
