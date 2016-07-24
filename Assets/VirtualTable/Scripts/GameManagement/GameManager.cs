@@ -26,6 +26,7 @@ namespace CpvrLab.VirtualTable {
         public static GameManager instance { get { return _instance; } }
         private static GameManager _instance = null;
 
+        public ScoreBoard scoreBoardData;
         public Game[] games;
         protected Game _currentGame;
 

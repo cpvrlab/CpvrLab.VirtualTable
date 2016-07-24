@@ -25,7 +25,6 @@ namespace CpvrLab.VirtualTable {
     /// Game class work much better for our usecases? Change if necessary.
     /// </summary>
     public class GamePlayerData {
-        // todo: should this be public?
         public GamePlayer player;
     }
 
@@ -40,6 +39,7 @@ namespace CpvrLab.VirtualTable {
     public abstract class Game : NetworkBehaviour {
 
         public event Action<Game> GameFinished;
+
 
         protected bool _usingCustomScene = false;
         protected string _customSceneName = "";
@@ -66,6 +66,11 @@ namespace CpvrLab.VirtualTable {
         public void ClearPlayerList()
         {
             _playerData.Clear();
+        }
+
+        protected GamePlayerData GetPlayerData(GamePlayer player)
+        {
+            return _playerData.Find(e => e.player == player);
         }
 
         // Add a player to the game player list
@@ -174,6 +179,46 @@ namespace CpvrLab.VirtualTable {
         {
             if (!isServer) return;
             _gameTime += Time.fixedDeltaTime;
+        }
+
+        protected virtual void ClearStats()
+        {
+        }
+
+        protected abstract string GetGameName();
+        protected abstract string[] GetScoreTitles();
+        protected abstract string[] GetScoreValues(int playerIndex);
+        protected abstract int GetScoreColumnCount();
+        protected virtual float[] GetScoreDimensionRatios()
+        {
+            int columns = GetScoreColumnCount();
+            float ratio = 1.0f / columns;
+            float[] ratios = new float[columns];
+            for(int i = 0; i < columns; i++)
+                ratios[i] = ratio;
+
+            return ratios;
+        }
+
+        protected virtual void UpdateScoreGUI()
+        {
+            Debug.Log("--------------SCORE UPDATE---------------");
+
+            string title = "";
+            foreach (var value in GetScoreTitles())
+                title += value + " ";
+            Debug.Log(title);
+
+            for (int i = 0; i < _playerData.Count; i++)
+            {
+                string content = "";
+                foreach (var value in GetScoreValues(i))
+                    content += value + " ";
+                Debug.Log(content);
+            }
+
+            Debug.Log("-----------------------------------------");
+            Debug.Log("-----------------------------------------");
         }
     }
 

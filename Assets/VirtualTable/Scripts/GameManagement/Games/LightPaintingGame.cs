@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using System;
 
 namespace CpvrLab.VirtualTable {
 
@@ -83,6 +84,26 @@ namespace CpvrLab.VirtualTable {
 
             if(_gameTime > 10.0f)
                 Stop();
+        }
+
+        protected override string GetGameName()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string[] GetScoreTitles()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string[] GetScoreValues(int playerIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override int GetScoreColumnCount()
+        {
+            throw new NotImplementedException();
         }
     }
 

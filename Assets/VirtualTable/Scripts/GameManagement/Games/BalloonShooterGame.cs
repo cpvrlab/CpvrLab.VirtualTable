@@ -3,6 +3,7 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
 
 namespace CpvrLab.VirtualTable
 {
@@ -10,8 +11,8 @@ namespace CpvrLab.VirtualTable
     class BalloonShooterPlayerData : GamePlayerData
     {
         public PrototypeGun gun;
-        public int gamesWon;
-        public float bestTime;
+        public int roundsWon = 0;
+        public float bestTime = -1.0f;
     }
 
     /// <summary>
@@ -57,6 +58,12 @@ namespace CpvrLab.VirtualTable
         {
             return (BalloonShooterPlayerData)_playerData[index];
         }
+
+        private BalloonShooterPlayerData GetConcretePlayerData(GamePlayer player)
+        {
+            return (BalloonShooterPlayerData)GetPlayerData(player);
+        }
+
 
         protected override GamePlayerData CreatePlayerDataImpl(GamePlayer player)
         {
@@ -120,7 +127,7 @@ namespace CpvrLab.VirtualTable
 
         private void HandleSpawning()
         {
-            int goal = Random.Range(0, balloonCount -1);
+            int goal = UnityEngine.Random.Range(0, balloonCount -1);
             float colorHueSteps = 1.0f / (float)balloonCount;
 
             float minHeight = 0.5f;
@@ -141,9 +148,9 @@ namespace CpvrLab.VirtualTable
 
                 for (int j = 0; j < spawnpointHorizontalSearchIterations; j++)
                 {
-                    float x = Random.Range(-spawnExtents.x, spawnExtents.x);
-                    float y = Random.Range(minHeight, maxHeight);
-                    float z = Random.Range(-spawnExtents.y, spawnExtents.y);
+                    float x = UnityEngine.Random.Range(-spawnExtents.x, spawnExtents.x);
+                    float y = UnityEngine.Random.Range(minHeight, maxHeight);
+                    float z = UnityEngine.Random.Range(-spawnExtents.y, spawnExtents.y);
                     Vector3 candidate = new Vector3(x, y, z) + transform.position;
 
                     bool spawnPointAccepted = true;
@@ -257,8 +264,20 @@ namespace CpvrLab.VirtualTable
 
         private void GoalShot(Vector3 position, GamePlayer shooter)
         {
-            RpcSetStatusText(shooter.displayName + " WINS! (" + (Time.time -_startTime).ToString("F2") + "s)");
-            
+            var timeUsed = Time.time - _startTime;
+            RpcSetStatusText(shooter.displayName + " WINS! (" + timeUsed.ToString("F2") + "s)");
+
+            // update stats
+            var pd = GetConcretePlayerData(shooter);
+            pd.roundsWon++;
+            if (pd.bestTime > 0.0f)
+                pd.bestTime = Mathf.Min(timeUsed, pd.bestTime);
+            else
+                pd.bestTime = timeUsed;
+
+            UpdateScoreGUI();
+
+
             foreach (var balloon in _balloons)
             {
                 if (balloon != null)
@@ -274,6 +293,39 @@ namespace CpvrLab.VirtualTable
         {
             yield return new WaitForSeconds(waitTime);
             HandleSpawning();
+        }
+
+        protected override string GetGameName()
+        {
+            return "Balloons";
+        }
+
+        protected override string[] GetScoreTitles()
+        {
+            return new string[]
+            {
+                "name", "rounds won", "best time"
+            };
+        }
+
+        public PrototypeGun gun;
+        public int gamesWon;
+        public float bestTime;
+        protected override string[] GetScoreValues(int playerIndex)
+        {
+            var pd = GetConcretePlayerData(playerIndex);
+
+            return new string[]
+            {
+                pd.player.displayName,
+                pd.roundsWon.ToString(),
+                ((pd.bestTime > 0.0f) ? pd.bestTime.ToString() : "NAN")
+            };
+        }
+
+        protected override int GetScoreColumnCount()
+        {
+            return 3;
         }
     }
 

@@ -35,6 +35,26 @@ namespace CpvrLab.VirtualTable {
         {
             base.OnUpdate();
         }
+
+        protected override string GetGameName()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string[] GetScoreTitles()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string[] GetScoreValues(int playerIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override int GetScoreColumnCount()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
