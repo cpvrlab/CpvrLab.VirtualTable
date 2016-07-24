@@ -85,74 +85,10 @@ namespace CpvrLab.VirtualTable {
                 NextRemoteModel();
             }
 
-            // make sure the item we're holding is aiming at what we're looking at
-            // this is a cheap "fix" for our crosshair to work for a gun
-            if(_currentlyEquipped != null)
+            if(Input.GetKeyDown(KeyCode.Mouse1))
             {
-
-                //Debug.DrawLine(attachPoint.transform.position, attachPoint.transform.position + _currentlyEquipped.aimDir, Color.blue);
-                //Debug.DrawLine(attachPoint.transform.position, attachPoint.transform.position + _currentlyEquipped.transform.forward, Color.red);
-                //Debug.DrawLine(attachPoint.transform.position, attachPoint.transform.position + attachPoint.transform.forward, Color.cyan);
-                //Debug.DrawLine(_currentlyEquipped.aimDirTransform.position, _currentlyEquipped.aimDirTransform.position + _currentlyEquipped.aimDir * 1000, Color.cyan);
-
-
-
-                _currentlyEquipped.transform.localRotation = _currentlyEquippedInitialRot;
-
-                Ray ray = new Ray(head.position, head.forward);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit, 10000))
-                {
-                    var localHitVec4 = (attachPoint.transform.worldToLocalMatrix * new Vector4(hit.point.x, hit.point.y, hit.point.z, 1));
-                    var localHit = new Vector3(localHitVec4.x, localHitVec4.y, localHitVec4.z);
-                    var targetDir = localHit;
-                    targetDir.Normalize();
-
-                    Debug.DrawLine(attachPoint.transform.position, attachPoint.transform.position + attachPoint.transform.forward * 1000, Color.green);
-                    Debug.DrawLine(attachPoint.transform.position, attachPoint.transform.position + targetDir * 1000, Color.green);
-
-                    Quaternion deltaRotation = Quaternion.FromToRotation(Vector3.forward, targetDir) * _currentlyEquippedInitialRot;
-
-                    _currentlyEquipped.transform.localRotation = deltaRotation;
-
-                    
-
-                    Debug.DrawLine(head.position, head.position + head.forward * 1000, Color.red);
-                    Debug.DrawLine(_currentlyEquipped.transform.position, _currentlyEquipped.transform.position + _currentlyEquipped.transform.forward * 10, Color.yellow);
-                    Debug.DrawLine(hit.point, hit.normal + Vector3.forward * 0.05f, Color.blue);
-
-                    var x1 = hit.point;
-                    var x2 = attachPoint.transform.position;
-                    var x3 = _currentlyEquipped.aimDirTransform.position;
-
-                    var a = Vector3.Distance(x3, x2);
-                    var b = Vector3.Distance(x2, x1);
-                    var c = Vector3.Distance(x1, x3);
-
-                    var result = Mathf.Rad2Deg * Mathf.Acos((a * a - b * b - c * c) / ((-2) * b * c));
-                    var axis = Vector3.Cross((x1 - x2).normalized, (x1 - x3).normalized);
-
-                    var deltaRot2 = Quaternion.AngleAxis(result, axis);
-
-                    Debug.DrawLine(x1, x2, Color.black);
-                    Debug.DrawLine(x1, x3, Color.grey);
-                    Debug.DrawLine(x2, x3, Color.white);
-
-                    Debug.Log("deltaRot2 " + deltaRot2);
-
-                    deltaRotation = deltaRot2 * deltaRotation;
-                    _currentlyEquipped.transform.localRotation = deltaRotation;
-
-                    Debug.DrawLine(_currentlyEquipped.aimDirTransform.position, hit.point, Color.green);
-                }
+                Debug.Log("Mouse1");
             }
-
-            //if(_currentlyHolding != null)
-            //{
-                //var rb1 = attachPoint.GetComponent<Rigidbody>();
-                //var rb2 = _currentlyHolding.GetComponent<Rigidbody>();
-                //Debug.Log("AttachPoint: " + rb1.velocity + " " + rb1.angularVelocity + "; Item: " + rb2.velocity + " " + rb2.angularVelocity);
-            //}
         }
 
         void HandleItemInteractions()
