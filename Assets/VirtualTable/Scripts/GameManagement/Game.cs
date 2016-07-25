@@ -138,6 +138,10 @@ namespace CpvrLab.VirtualTable {
             // reset game time
             _gameTime = 0.0f;
 
+            // initialize score board
+            InitScoreBoard();
+
+
             OnInitialize();
         }
 
@@ -186,12 +190,11 @@ namespace CpvrLab.VirtualTable {
         }
 
         protected abstract string GetGameName();
-        protected abstract string[] GetScoreTitles();
+        protected abstract string[] GetScoreHeaders();
         protected abstract string[] GetScoreValues(int playerIndex);
-        protected abstract int GetScoreColumnCount();
         protected virtual float[] GetScoreDimensionRatios()
         {
-            int columns = GetScoreColumnCount();
+            var columns = GetScoreHeaders().Length;
             float ratio = 1.0f / columns;
             float[] ratios = new float[columns];
             for(int i = 0; i < columns; i++)
@@ -202,23 +205,22 @@ namespace CpvrLab.VirtualTable {
 
         protected virtual void UpdateScoreGUI()
         {
-            Debug.Log("--------------SCORE UPDATE---------------");
-
-            string title = "";
-            foreach (var value in GetScoreTitles())
-                title += value + " ";
-            Debug.Log(title);
-
+            var sb = GameManager.instance.scoreBoardData;
             for (int i = 0; i < _playerData.Count; i++)
             {
-                string content = "";
-                foreach (var value in GetScoreValues(i))
-                    content += value + " ";
-                Debug.Log(content);
+                sb.SetRowData(i, GetScoreValues(i));
             }
+        }
 
-            Debug.Log("-----------------------------------------");
-            Debug.Log("-----------------------------------------");
+        protected virtual void InitScoreBoard()
+        {
+            var sb = GameManager.instance.scoreBoardData;
+            sb.SetTitle(GetGameName());
+            sb.SetHeaders(GetScoreHeaders());
+            for(int i = 0; i < _playerData.Count; i++)
+            {
+                sb.AddRow(GetScoreValues(i));
+            }
         }
     }
 

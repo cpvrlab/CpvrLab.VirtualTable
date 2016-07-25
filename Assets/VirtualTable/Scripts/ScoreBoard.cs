@@ -30,6 +30,7 @@ namespace CpvrLab.VirtualTable
         private string _title = "";
         private List<string> _headers = new List<string>();
         private List<List<string>> _rowData = new List<List<string>>();
+        private List<float> _cellSizeRatios = new List<float>(); // todo
 
         public string title { get { return _title; } }
         public List<string> headers { get { return _headers; } }
@@ -44,7 +45,7 @@ namespace CpvrLab.VirtualTable
             _dataChanged = true;
             Debug.Log("SetTitle");
         }
-
+        
         [Server] public void SetHeaders(string[] data)
         {
             _headers = new List<string>(data);
@@ -62,10 +63,10 @@ namespace CpvrLab.VirtualTable
             Debug.Log("AddRow");
         }
 
-        [Server] public void SetRowData(int rowNum, List<string> data)
+        [Server] public void SetRowData(int rowNum, string[] data)
         {
-            _rowData[rowNum] = data;
-            RpcUpdateRow(rowNum, Serialize(data));
+            _rowData[rowNum] = new List<string>(data);
+            RpcUpdateRow(rowNum, Serialize(_rowData[rowNum]));
             _dataChanged = true;
             Debug.Log("SetRowData");
         }
@@ -280,34 +281,34 @@ namespace CpvrLab.VirtualTable
         {
 
             // TEMP TEST
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                // run update only on the server
-                if (!isServer)
-                    return;
+            //if (Input.GetKeyDown(KeyCode.Space))
+            //{
+            //    // run update only on the server
+            //    if (!isServer)
+            //        return;
 
-                SetTitle("test " + UnityEngine.Random.Range(0, 100).ToString());
-                Debug.Log("Server: Changing title to " + _title);
+            //    SetTitle("test " + UnityEngine.Random.Range(0, 100).ToString());
+            //    Debug.Log("Server: Changing title to " + _title);
 
-                _headers.Clear();
-                _headers.Add("player");
-                _headers.Add("rounds won");
-                _headers.Add("best time");
+            //    _headers.Clear();
+            //    _headers.Add("player");
+            //    _headers.Add("rounds won");
+            //    _headers.Add("best time");
 
-                var row = new List<string>();
-                row.Add("wacki");
-                row.Add("2");
-                row.Add("0.33");
+            //    var row = new List<string>();
+            //    row.Add("wacki");
+            //    row.Add("2");
+            //    row.Add("0.33");
 
-                AddRow(row.ToArray());
+            //    AddRow(row.ToArray());
 
-                row = new List<string>();
-                row.Add("noob");
-                row.Add("1");
-                row.Add("5.13");
+            //    row = new List<string>();
+            //    row.Add("noob");
+            //    row.Add("1");
+            //    row.Add("5.13");
 
-                AddRow(row.ToArray());       
-            }
+            //    AddRow(row.ToArray());       
+            //}
 
             if (_dataChanged)
             {

@@ -287,20 +287,17 @@ namespace CpvrLab.VirtualTable
 
         protected override string GetGameName()
         {
-            return "Balloons";
+            return "Balloon Shooter Game";
         }
 
-        protected override string[] GetScoreTitles()
+        protected override string[] GetScoreHeaders()
         {
             return new string[]
             {
-                "name", "rounds won", "best time"
+                "Player", "Rounds Won", "Best Time"
             };
         }
-
-        public PrototypeGun gun;
-        public int gamesWon;
-        public float bestTime;
+        
         protected override string[] GetScoreValues(int playerIndex)
         {
             var pd = GetConcretePlayerData(playerIndex);
@@ -309,13 +306,8 @@ namespace CpvrLab.VirtualTable
             {
                 pd.player.displayName,
                 pd.roundsWon.ToString(),
-                ((pd.bestTime > 0.0f) ? pd.bestTime.ToString() : "NAN")
+                ((pd.bestTime > 0.0f) ? pd.bestTime.ToString() + "s" : "NAN")
             };
-        }
-
-        protected override int GetScoreColumnCount()
-        {
-            return 3;
         }
     }
 

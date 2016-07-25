@@ -41,7 +41,7 @@ namespace CpvrLab.VirtualTable {
             throw new NotImplementedException();
         }
 
-        protected override string[] GetScoreTitles()
+        protected override string[] GetScoreHeaders()
         {
             throw new NotImplementedException();
         }
@@ -50,11 +50,7 @@ namespace CpvrLab.VirtualTable {
         {
             throw new NotImplementedException();
         }
-
-        protected override int GetScoreColumnCount()
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 
 }
