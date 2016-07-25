@@ -13,6 +13,10 @@ namespace CpvrLab.VirtualTable
         public static short AddPlayer = MsgType.Highest + 1;
         public static short StartGame = MsgType.Highest + 2;
         public static short StopGame = MsgType.Highest + 3;
+
+
+        public static short ScoreBoard = MsgType.Highest + 4;
+        public static short ScoreBoardRowData = MsgType.Highest + 5;
     };
     public class AddPlayerMessage : MessageBase
     {
@@ -28,7 +32,6 @@ namespace CpvrLab.VirtualTable
     {
 
         //public NetworkPlayer playerPrefab;
-        Dictionary<string, int> usernameCount = new Dictionary<string, int>();
         Dictionary<NetworkConnection, GamePlayer> players = new Dictionary<NetworkConnection, GamePlayer>();
 
         public int networkPrefabIndex = 0;
