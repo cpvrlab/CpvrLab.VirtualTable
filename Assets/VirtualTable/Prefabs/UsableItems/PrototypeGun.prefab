@@ -968,6 +968,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attachPoint: {fileID: 405882}
+  aimDirTransform: {fileID: 455272}
   isVisible: 1
   inputEnabled: 1
   trigger: {fileID: 448622}

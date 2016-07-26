@@ -5,6 +5,7 @@ using UnityStandardAssets.Characters.FirstPerson;
 
 namespace CpvrLab.VirtualTable {
 
+
     /// <summary>
     /// Prototype implementation of a FirstPersonPlayer. This player is controlled by mouse and 
     /// keyboard like a traditional first person game. 
@@ -22,6 +23,7 @@ namespace CpvrLab.VirtualTable {
 
         protected UsableItem _currentlyEquipped = null;
         protected MovableItem _currentlyHolding = null;
+        protected Quaternion _currentlyEquippedInitialRot = Quaternion.identity;
         protected FirstPersonPlayerInput _playerInput;
 
         public override void OnStartClient()
@@ -83,12 +85,10 @@ namespace CpvrLab.VirtualTable {
                 NextRemoteModel();
             }
 
-            //if(_currentlyHolding != null)
-            //{
-                //var rb1 = attachPoint.GetComponent<Rigidbody>();
-                //var rb2 = _currentlyHolding.GetComponent<Rigidbody>();
-                //Debug.Log("AttachPoint: " + rb1.velocity + " " + rb1.angularVelocity + "; Item: " + rb2.velocity + " " + rb2.angularVelocity);
-            //}
+            if(Input.GetKeyDown(KeyCode.Mouse1))
+            {
+                Debug.Log("Mouse1");
+            }
         }
 
         void HandleItemInteractions()
@@ -100,7 +100,7 @@ namespace CpvrLab.VirtualTable {
             RaycastHit hit;
             if(!Physics.Raycast(ray, out hit, pickupRange))
                 return;
-
+            
             // todo: store the tags in some kind of const global variable!
             if(hit.transform.CompareTag("UsableItem")) {
                 HandleUsableItem(hit);
@@ -163,6 +163,10 @@ namespace CpvrLab.VirtualTable {
         protected override void OnEquip(AttachmentSlot slot)
         {
             _currentlyEquipped = slot.item;
+            slot.item.transform.localRotation = Quaternion.identity;
+            
+            _currentlyEquippedInitialRot = Quaternion.FromToRotation(slot.item.transform.worldToLocalMatrix * slot.item.aimDir, Vector3.forward);
+            _currentlyEquipped.transform.localRotation = _currentlyEquippedInitialRot;
         }
         
         protected override void OnUnequip(UsableItem item)
@@ -171,5 +175,5 @@ namespace CpvrLab.VirtualTable {
         }
         
     } // class
-
+    
 } // namespace
