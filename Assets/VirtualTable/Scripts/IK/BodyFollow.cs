@@ -33,10 +33,9 @@ namespace CpvrLab.VirtualTable {
         [Tooltip("Maximum angle the head can rotate relative to the body.")]
         [Range(0, 360)]
         public float headRotationLimit = 180.0f;
-
-
-        [Tooltip("Maximum angle the head can rotates relative to the body.")]
-        public float locomotionAnimThreshold = 0.8f;
+                
+        [Tooltip("Controlls at which velocity we want to see the full locomotion animation.")]
+        public float locomotionMaxFadeIn = 0.4f;
 
         // todo: same inspector as fbbik with foldout for 
         public GameObject headGoal;
@@ -113,42 +112,50 @@ namespace CpvrLab.VirtualTable {
 
 
 
-            // locomotion
+            // get the velocity and angular velocity in local space of the body
             Vector3 localVelocity = Quaternion.Inverse(transform.rotation) * velocityInfo.avrgVelocity;  //velocityInfo.averageVelocity;
-            float velocityMag = velocityInfo.avrgVelocity.magnitude;
-
-            // normalize velocity relative to the max speed of our animated character
-            localVelocity /= animatorLocomotionSpeed;
-            velocityMag /= animatorLocomotionSpeed;
+            Vector3 localAngularVelocity = Quaternion.Inverse(transform.rotation) * velocityInfo.avrgAngularVelocity;
             
+            // remember the magnitude of the velocities
+            float velocityMag = velocityInfo.avrgVelocity.magnitude;
+            float angVelocityMag = velocityInfo.avrgAngularVelocity.magnitude;
 
-            float strafe = Mathf.Min(localVelocity.x, 1.0f);
-            float forward = Mathf.Min(localVelocity.z, 1.0f);
-
-            _animator.SetFloat("Strafe", strafe);
-            _animator.SetFloat("Forward", forward);
-
-            _animator.SetFloat("Turn", _turnDirection * velocityInfo.avrgAngularVelocity.magnitude * 0.01f, 0.1f, Time.deltaTime);
-            //_animator.SetFloat("Turn", 0.00003f);
-            // turning
+            // now normalize our velocity
+            // these values serve as the maximum possible values of strafe and forward in our animator
+            localVelocity.Normalize();
 
 
+            // scale the velocity magnitude using the locomotion speed parameter in case we want
+            // our character to move slower or faster. This might come in handy if the character is 
+            // experiencing moon walking symptoms            
+            velocityMag /= animatorLocomotionSpeed;
 
-            if(velocityInfo.avrgVelocity.magnitude > locomotionAnimThreshold) {
-                _animator.SetBool("DoTurning", false);
-                _animator.speed = velocityMag;
-            }
-            else {
-                _animator.SetBool("DoTurning", true);
-                _animator.speed = 1.0f;
-            }
-
-
-
-
-            //Debug.Log("Velocity: " + velocityInfo.averageVelocity + "Local velocity: " + localVelocity);
+            // finally we scale the velocity vector using our scaled magnitude
+            // we don't want our character to immediatly have a strafe/forward value of 1
+            // but rather fade it in based on current velocity
+            // animatorLocomotionFadeThreshold serves as a parameter to controll at what velocity
+            // we want to see values of 1
+            localVelocity *= Mathf.Min(velocityMag / locomotionMaxFadeIn, 1.0f);
 
 
+            float strafe = localVelocity.x;
+            float forward = localVelocity.z;
+            //var turn = ((localAngularVelocity.y > 0) ? -1 : 1) * velocityInfo.avrgAngularVelocity.magnitude * 0.01f;
+            var turnAbs = Mathf.Min(Mathf.Abs(localAngularVelocity.y * 0.01f), 1.0f);
+            var turn = ((localAngularVelocity.y > 0) ? -1 : 1) * turnAbs;
+            
+            // normal locomotion parameters
+            _animator.SetFloat("Strafe", strafe, 0.1f, Time.deltaTime);
+            _animator.SetFloat("Forward", forward, 0.1f, Time.deltaTime);
+            
+            _animator.SetFloat("Turn", turn, 0.1f, Time.deltaTime);
+
+            // blend factor between the turn and locomotion blend trees
+            _animator.SetFloat("LocomotionTurnBlend", turnAbs, 0.1f, Time.deltaTime);
+            
+            // dynamically change animation speed so that our feet don't drag on the floor but move relative to our speed
+            // (currently only for locomotion, the turn animations just use a 1.0 speed. needs to be revisited in the future)
+            _animator.speed = Mathf.Lerp(velocityMag, 1.0f, turnAbs);            
         }
 
         private void UpdateTurnSpeed(float distance)
