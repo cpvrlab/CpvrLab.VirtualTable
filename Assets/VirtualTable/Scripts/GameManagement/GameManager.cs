@@ -47,6 +47,8 @@ namespace CpvrLab.VirtualTable {
             }
 
             _instance = this;
+
+            Debug.Log("GameMAnagerInstanceSet");
         }
 
         public override void OnStartClient()

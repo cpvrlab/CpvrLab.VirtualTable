@@ -30,6 +30,7 @@ namespace CpvrLab.VirtualTable
 
         void Start()
         {
+            Debug.Log("TEST TEST TEST");
             GameManager.instance.scoreBoardData.OnDataChanged += UpdateDisplay;
         }
 
@@ -44,6 +45,8 @@ namespace CpvrLab.VirtualTable
         //          this can be optimized
         public void UpdateDisplay(ScoreBoard sb)
         {
+            Debug.Log("UpdateDisplay");
+
             bool headersChanged = false;
             if (_headerCache.Count == sb.cols)
             {
