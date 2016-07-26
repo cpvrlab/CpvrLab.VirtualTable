@@ -43,7 +43,6 @@ namespace CpvrLab.VirtualTable
 
         public override void OnStartServer()
         {
-            Debug.Log("BalloonStartServer");
             base.OnStartServer();
             
             var shootable = gameObject.AddComponent<Shootable>();
