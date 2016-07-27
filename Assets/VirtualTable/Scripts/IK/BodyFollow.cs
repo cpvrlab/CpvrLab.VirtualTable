@@ -116,9 +116,8 @@ namespace CpvrLab.VirtualTable {
             Vector3 localVelocity = Quaternion.Inverse(transform.rotation) * velocityInfo.avrgVelocity;  //velocityInfo.averageVelocity;
             Vector3 localAngularVelocity = Quaternion.Inverse(transform.rotation) * velocityInfo.avrgAngularVelocity;
             
-            // remember the magnitude of the velocities
+            // remember the magnitude before normalizing the velocity
             float velocityMag = velocityInfo.avrgVelocity.magnitude;
-            float angVelocityMag = velocityInfo.avrgAngularVelocity.magnitude;
 
             // now normalize our velocity
             // these values serve as the maximum possible values of strafe and forward in our animator

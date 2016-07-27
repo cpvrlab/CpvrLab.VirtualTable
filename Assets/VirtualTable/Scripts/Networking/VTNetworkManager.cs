@@ -28,7 +28,6 @@ namespace CpvrLab.VirtualTable
     {
 
         //public NetworkPlayer playerPrefab;
-        Dictionary<string, int> usernameCount = new Dictionary<string, int>();
         Dictionary<NetworkConnection, GamePlayer> players = new Dictionary<NetworkConnection, GamePlayer>();
 
         public int networkPrefabIndex = 0;
