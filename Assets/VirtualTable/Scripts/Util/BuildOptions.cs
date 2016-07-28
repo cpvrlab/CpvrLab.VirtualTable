@@ -89,7 +89,10 @@ namespace CpvrLab.VirtualTable {
             if (selectedOption.offlineMenu != null) selectedOption.offlineMenu.SetActive(true);
             if (logOutput) { Log("Changing offline menu to " + selectedOption.offlineMenu.name); }
 
+#if UNITY_EDITOR
+            Debug.Log("Setting VR support to " + selectedOption.virtualRealitySupportedChecked);
             UnityEditor.PlayerSettings.virtualRealitySupported = selectedOption.virtualRealitySupportedChecked;
+#endif
         }
 
         private void Log(string msg)

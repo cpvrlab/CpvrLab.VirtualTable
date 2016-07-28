@@ -14,16 +14,25 @@ namespace CpvrLab.VirtualTable {
         [Header("Rift Player Properties")]
         public GameObject head;
         public GameObject cam;
+        public GameObject handLeftTemp;
+        public GameObject handRightTemp;
 
         public override void OnStartClient()
         {
             base.OnStartClient();
         }
 
+        new public void Start()
+        {
+            base.Start();
+            handLeftTemp.SetActive(true);
+            handRightTemp.SetActive(true);
+        }
+
         public override void OnStartLocalPlayer()
         {
             base.OnStartLocalPlayer();
-            //cam.SetActive(true);
+            cam.SetActive(true);
         }
         
         void Update()

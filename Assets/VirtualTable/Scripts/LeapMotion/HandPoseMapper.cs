@@ -62,7 +62,9 @@ namespace CpvrLab.VirtualTable {
             fingerForward = (fingersAvrgPosition - palm.position).normalized;
             fingerForward = Quaternion.Inverse(palm.rotation) * fingerForward;
 
+#if UNITY_EDITOR
             SceneView.RepaintAll();
+#endif
         }
 
         public Quaternion Reorientation()
