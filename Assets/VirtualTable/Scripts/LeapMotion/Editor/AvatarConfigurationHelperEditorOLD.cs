@@ -61,7 +61,7 @@
 //            modelInstance.transform.position = Vector3.zero;
 //            modelInstance.transform.rotation = Quaternion.identity;
 //            modelInstance.transform.SetParent(modelRoot.transform, false);
-            
+
 //            // 2. set up finalIK on the model
 //            SetupFBBIK();
 
@@ -70,7 +70,7 @@
 
 //            // 4. set up ik goals (pole targets for elbows and knees etc.)
 //            SetupIKGoals();
-            
+
 //            DestroyImmediate(script);
 //        }
 
@@ -212,7 +212,7 @@
 //            // 1. Add a container object for our hand goals below modelRoot
 //            handContainer = CopyTransform(modelRoot.transform, script.handContainerName);
 //            handContainer.SetParent(transform);
-            
+
 //            // 2. Get the references for left and right hand in the models skeleton       
 //            Transform leftHand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
 //            Transform rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
@@ -268,7 +268,7 @@
 //            setupData.handPoseLerpRight.poseRootA = setupData.relaxedHandRight;
 //            setupData.handPoseLerpRight.poseRootB = setupData.leapHandRight;
 //        }
-        
+
 //        void SetupFBBIK()
 //        {
 

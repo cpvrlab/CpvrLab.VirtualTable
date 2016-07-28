@@ -23,7 +23,7 @@ namespace CpvrLab.VirtualTable {
         public override void OnStartLocalPlayer()
         {
             base.OnStartLocalPlayer();
-            cam.SetActive(true);
+            //cam.SetActive(true);
         }
         
         void Update()

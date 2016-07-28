@@ -689,7 +689,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 663ddc74395783444a9ebb9da3302a87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildTarget: 2
+  buildTarget: 3
   advancedSettings:
     networkManager: {fileID: 1611454715}
   targetOptions:
@@ -702,6 +702,10 @@ MonoBehaviour:
     offlineMenu: {fileID: 1930152764}
     virtualRealitySupportedChecked: 0
   - playerPrefab: {fileID: 129346, guid: 367e04d6c8afade46bc5fd50e3fb3c0a, type: 2}
+    offlineCamera: {fileID: 761510298}
+    offlineMenu: {fileID: 2082222615}
+    virtualRealitySupportedChecked: 1
+  - playerPrefab: {fileID: 139920, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
     offlineCamera: {fileID: 761510298}
     offlineMenu: {fileID: 2082222615}
     virtualRealitySupportedChecked: 1
@@ -911,7 +915,7 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 129346, guid: 367e04d6c8afade46bc5fd50e3fb3c0a, type: 2}
+  m_PlayerPrefab: {fileID: 139920, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
   m_AutoCreatePlayer: 0
   m_PlayerSpawnMethod: 1
   m_OfflineScene: OfflineScene
@@ -961,11 +965,12 @@ MonoBehaviour:
   matchMaker: {fileID: 0}
   matchName: default
   matchSize: 4
-  networkPrefabIndex: 2
+  networkPrefabIndex: 3
   playerPrefabs:
   - {fileID: 102668, guid: cf2561fbf1eac1c4cb35b67910949e0f, type: 2}
   - {fileID: 121874, guid: e7befb9b5b272634f8fb691fda57e389, type: 2}
   - {fileID: 129346, guid: 367e04d6c8afade46bc5fd50e3fb3c0a, type: 2}
+  - {fileID: 139920, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
   localPlayerName: player
 --- !u!4 &1611454716
 Transform:

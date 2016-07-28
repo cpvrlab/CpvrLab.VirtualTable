@@ -20,6 +20,7 @@ namespace CpvrLab.VirtualTable {
             DefaultPC,    // normal PC game build
             Vive,       // vive with motion controls
             Rift,        // rift with touch controls(?) not implemented yet
+            RiftLeap,        // rift with touch controls(?) not implemented yet
         }
 
         [Serializable]
