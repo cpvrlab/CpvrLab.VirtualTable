@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
-namespace CpvrLab.AVRtar {
+
+namespace CpvrLab.VirtualTable {
     [CustomEditor(typeof(HandPoseMapper))]
     public class HandPoseMapperEditor : Editor {
 
@@ -8,7 +9,6 @@ namespace CpvrLab.AVRtar {
 
         public override void OnInspectorGUI()
         {
-
             DrawDefaultInspector();
 
             if(GUILayout.Button("Auto detect axes")) {

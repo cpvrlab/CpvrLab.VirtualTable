@@ -2,7 +2,7 @@
 using System.Collections;
 using Leap;
 
-namespace CpvrLab.AVRtar {
+namespace CpvrLab.VirtualTable {
 
     public class HandMapping : MonoBehaviour {
 
@@ -40,19 +40,19 @@ namespace CpvrLab.AVRtar {
         }
         public Transform GetIndexBone(Bone.BoneType boneType)
         {
-            return thumb[(int)boneType];
+            return index[(int)boneType];
         }
         public Transform GetMiddleBone(Bone.BoneType boneType)
         {
-            return thumb[(int)boneType];
+            return middle[(int)boneType];
         }
         public Transform GetRingBone(Bone.BoneType boneType)
         {
-            return thumb[(int)boneType];
+            return ring[(int)boneType];
         }
         public Transform GetLittleBone(Bone.BoneType boneType)
         {
-            return thumb[(int)boneType];
+            return little[(int)boneType];
         }
     }
 }

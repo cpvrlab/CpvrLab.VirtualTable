@@ -5,7 +5,7 @@ using UnityEditor;
 using System.Collections.Generic;
 
 
-namespace CpvrLab.AVRtar {
+namespace CpvrLab.VirtualTable {
     public class DebugTransformTree : MonoBehaviour {
 
         Stack<Transform> stack = new Stack<Transform>();

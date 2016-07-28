@@ -41,15 +41,7 @@ namespace CpvrLab.VirtualTable
         public Text gameStatusText;
         public Renderer goalIndicator;
         
-        enum GameState
-        {
-            Spawning,
-            Countdown,
-            Shooting
-        };
-
         private float _startTime;
-        private GameState _state;
         private GameObject[] _balloons;
         private Color _goalColor;
 
@@ -189,7 +181,6 @@ namespace CpvrLab.VirtualTable
 
             EnableInput(false);
             
-            _state = GameState.Countdown;
             StartCoroutine(Countdown());
         }
 

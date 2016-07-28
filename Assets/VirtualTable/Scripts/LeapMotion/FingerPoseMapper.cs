@@ -3,7 +3,7 @@
 using UnityEditor;
 #endif
 
-namespace CpvrLab.AVRtar {
+namespace CpvrLab.VirtualTable {
     public class FingerPoseMapper : MonoBehaviour {
 
         public Vector3 fingerForward = Vector3.forward;

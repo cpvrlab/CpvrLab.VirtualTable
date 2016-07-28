@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEditor;
 #endif
 
-namespace CpvrLab.AVRtar {
+namespace CpvrLab.VirtualTable {
     /// <summary>
     /// @todo rename
     /// maps the hand pose from the aVRtar hand setup to an arbitrary other hand setup
