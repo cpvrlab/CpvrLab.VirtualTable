@@ -22,13 +22,19 @@ namespace CpvrLab.VirtualTable {
         public bool invertPalm = false;
 
 
+        // todo:    could we also auto detect if we need to invert the palm direction?
+        //          I guess that depends on how the fingers are layed out
+        //          and if we're right or left handed.
         public void CalculateAxes()
         {
-            // @todo auto detect palm forward and palm direction and call the same function for all the connected fingers
-
             //1. estimate palm direction
             Vector3 AB = fingers[1].transform.position - palm.position;
             Vector3 AC = fingers[4].transform.position - palm.position;
+
+            AB.Normalize();
+            AC.Normalize();
+
+            Debug.Log("Auto detecting palm direction " + AB + " " + AC);
 
             palmDirection = Vector3.Cross(AB, AC).normalized;
             palmDirection = Quaternion.Inverse(palm.rotation) * palmDirection;
@@ -56,7 +62,7 @@ namespace CpvrLab.VirtualTable {
             fingerForward = (fingersAvrgPosition - palm.position).normalized;
             fingerForward = Quaternion.Inverse(palm.rotation) * fingerForward;
 
-            // SceneView.RepaintAll();
+            SceneView.RepaintAll();
         }
 
         public Quaternion Reorientation()
