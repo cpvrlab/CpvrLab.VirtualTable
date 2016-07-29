@@ -389,48 +389,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
---- !u!1001 &526246540
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 471642, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 471642, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 471642, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 471642, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 471642, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 471642, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 471642, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 471642, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-      propertyPath: m_RootOrder
-      value: 5
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
-  m_IsPrefabParent: 0
 --- !u!224 &602831620 stripped
 RectTransform:
   m_PrefabParentObject: {fileID: 22439782, guid: 2acdff3a037d39b4bbaed692920d36c0,
@@ -451,7 +409,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &761510299
 Transform:
   m_ObjectHideFlags: 0
@@ -546,7 +504,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &831462006
 AudioListener:
   m_ObjectHideFlags: 0
@@ -655,7 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 663ddc74395783444a9ebb9da3302a87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildTarget: 0
+  buildTarget: 3
   advancedSettings:
     networkManager: {fileID: 1611454715}
   targetOptions:
@@ -1009,7 +967,7 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 102668, guid: cf2561fbf1eac1c4cb35b67910949e0f, type: 2}
+  m_PlayerPrefab: {fileID: 139920, guid: 4611cc30d0b79d84f99cf35554a27422, type: 2}
   m_AutoCreatePlayer: 0
   m_PlayerSpawnMethod: 1
   m_OfflineScene: OfflineScene
@@ -1061,7 +1019,7 @@ MonoBehaviour:
   matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
-  networkPrefabIndex: 0
+  networkPrefabIndex: 3
   playerPrefabs:
   - {fileID: 102668, guid: cf2561fbf1eac1c4cb35b67910949e0f, type: 2}
   - {fileID: 121874, guid: e7befb9b5b272634f8fb691fda57e389, type: 2}
