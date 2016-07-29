@@ -15,13 +15,20 @@ namespace CpvrLab.VirtualTable
         private Transform[] _children;
         
 
+        void LateUpdate()
+        {
+        // always sync 
+        // todo: only update if something changed
+            SetDirtyBit(1);
+        }
+
         // todo: optimize the syncing by only syncing the rotations that actually changed!
         //       
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             if(_children == null)
                 _children = (Transform[])root.GetComponentsInChildren<Transform>();
-
+            
             if (initialState)
             {
                 // always write initial state, no dirty bits
