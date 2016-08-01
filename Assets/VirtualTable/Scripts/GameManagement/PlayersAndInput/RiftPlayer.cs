@@ -17,10 +17,19 @@ namespace CpvrLab.VirtualTable {
         public GameObject leftHandGoal;
         public GameObject rightHandGoal;
         public GameObject localHands;
+        public PlayerInput leftPlayerInput;
+        public PlayerInput rightPlayerInput;
+
+        public GameObject attachPointLeft;
+        public GameObject attachPointRight;
 
         public override void OnStartClient()
         {
             base.OnStartClient();
+
+
+            AddAttachmentSlot(attachPointLeft, leftPlayerInput);
+            AddAttachmentSlot(attachPointRight, rightPlayerInput);
         }
         
         public override void OnStartLocalPlayer()
@@ -34,6 +43,7 @@ namespace CpvrLab.VirtualTable {
             leftHandGoal.GetComponent<HandConfidenceWeightFade>().enabled = true;
             rightHandGoal.GetComponent<HandPoseLerp>().enabled = true;
             rightHandGoal.GetComponent<HandConfidenceWeightFade>().enabled = true;
+
         }
         
         void Update()
