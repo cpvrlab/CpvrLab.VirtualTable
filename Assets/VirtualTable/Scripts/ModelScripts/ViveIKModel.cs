@@ -10,17 +10,12 @@ namespace CpvrLab.VirtualTable
         public GameObject headGoal;
         public GameObject leftHandGoal;
         public GameObject rightHandGoal;
-        public RootMotion.FinalIK.FullBodyBipedIK ik;
 
         protected VivePlayer _player;
 
         public override void InitializeModel(GamePlayer player)
         {
             _player = (VivePlayer)player;
-            
-            ik.solver.leftHandEffector.target = leftHandGoal.transform;
-            ik.solver.rightHandEffector.target = rightHandGoal.transform;
-
         }
 
         void LateUpdate()

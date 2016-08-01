@@ -5,16 +5,22 @@ using System;
 namespace CpvrLab.VirtualTable {
 
 
-    // this script handles the switching between
-    // different build targets
-    // it will adjust GUI setups and correct player prefab usage
-    // etc...
-    // todo: implement
+    
+    /// <summary>
+    /// this script handles switching between
+    /// different build targets
+    /// it will adjust GUI setups and correct player prefab usage
+    /// etc...
+    /// 
+    /// todo:   try a different approach where all of the versions are in one build and can be switched
+    ///         by selecting the target platform in the offline menu.
+    /// </summary>
     public class BuildOptions : MonoBehaviour {
         public enum Target {
             DefaultPC,    // normal PC game build
             Vive,       // vive with motion controls
-            // Rift,        // rift with touch controls(?) not implemented yet
+            Rift,        // rift with touch controls(?) not implemented yet
+            RiftLeap,        // rift with touch controls(?) not implemented yet
         }
 
         [Serializable]
@@ -27,6 +33,7 @@ namespace CpvrLab.VirtualTable {
             public GameObject playerPrefab;
             public GameObject offlineCamera;
             public GameObject offlineMenu;
+            public bool virtualRealitySupportedChecked;
         }
 
         public Target buildTarget = Target.DefaultPC;
@@ -81,6 +88,11 @@ namespace CpvrLab.VirtualTable {
             // enable offline menu for selected target
             if (selectedOption.offlineMenu != null) selectedOption.offlineMenu.SetActive(true);
             if (logOutput) { Log("Changing offline menu to " + selectedOption.offlineMenu.name); }
+
+#if UNITY_EDITOR
+            Debug.Log("Setting VR support to " + selectedOption.virtualRealitySupportedChecked);
+            UnityEditor.PlayerSettings.virtualRealitySupported = selectedOption.virtualRealitySupportedChecked;
+#endif
         }
 
         private void Log(string msg)

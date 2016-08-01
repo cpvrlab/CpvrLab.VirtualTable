@@ -186,7 +186,8 @@ namespace CpvrLab.VirtualTable
                 }
             }
 
-            EnableInput(false);            
+            EnableInput(false);
+            
             StartCoroutine(Countdown());
         }
 
@@ -267,7 +268,7 @@ namespace CpvrLab.VirtualTable
 
             UpdateScoreGUI();
 
-
+            
             foreach (var balloon in _balloons)
             {
                 if (balloon != null)

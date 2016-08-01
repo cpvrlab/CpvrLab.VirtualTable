@@ -70,16 +70,7 @@ namespace CpvrLab.VirtualTable {
             Log("OnClientSceneChanged");
             base.OnClientSceneChanged(conn);
         }
-        public override void OnMatchCreate(CreateMatchResponse matchInfo)
-        {
-            Log("OnMatchCreate");
-            base.OnMatchCreate(matchInfo);
-        }
-        public override void OnMatchList(ListMatchResponse matchList)
-        {
-            Log("OnMatchList");
-            base.OnMatchList(matchList);
-        }
+
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
         {
             Log("OnServerAddPlayer");

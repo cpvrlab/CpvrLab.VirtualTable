@@ -57,7 +57,7 @@ namespace CpvrLab.VirtualTable {
                 if (shoot)
                     _audioSource.PlayOneShot(dryFireSound);
             }
-            // todo: this seems tedious, can't we just subscribe to buttons and receive input?
+
             else if (shoot)
             {
                 Debug.Log("Calling Shoot from local player button press");

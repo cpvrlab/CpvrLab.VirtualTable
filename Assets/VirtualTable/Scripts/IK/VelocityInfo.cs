@@ -9,7 +9,7 @@ namespace CpvrLab.VirtualTable {
 
     public class VelocityInfo : MonoBehaviour {
 
-        private int _sampleCount = 5;
+        public int sampleCount = 5;
         private float _sampleCountReciproc = 1.0f;
 
         public Vector3 avrgVelocity { get { return _avrgVelocity; } }
@@ -28,22 +28,33 @@ namespace CpvrLab.VirtualTable {
 
         Queue<Vector3> _velocityCache = new Queue<Vector3>();
         Queue<Vector3> _angularVelocityCache = new Queue<Vector3>();
-        
+
         void Awake()
         {
             UpdatePrevState();
-            _sampleCountReciproc = 1.0f / (float)_sampleCount;
+            _sampleCountReciproc = 1.0f / (float)sampleCount;            
         }
 
         void LateUpdate()
         {
             _velocity = (transform.position - _prevPosition) / Time.deltaTime;
-            _angularVelocity = (transform.rotation.eulerAngles - _prevRotation.eulerAngles) / Time.deltaTime;
 
-
-            //Debug.Log("Vel: " + _velocity + " Avrg. vel: " + avrgVelocity + " Avrg. vel. mag.: " + avrgVelocityMagnitude + " Avrg. angular vel.: " + avrgAngularVelocity + " Avrg. angular vel. mag.: " + avrgAngularVelocityMagnitude);
+            _angularVelocity.x = CalcAngleDiff(transform.rotation.eulerAngles.x, _prevRotation.eulerAngles.x);
+            _angularVelocity.y = CalcAngleDiff(transform.rotation.eulerAngles.y, _prevRotation.eulerAngles.y);
+            _angularVelocity.z = CalcAngleDiff(transform.rotation.eulerAngles.z, _prevRotation.eulerAngles.z);
+            _angularVelocity /= Time.deltaTime;
+            
+                        
             
             UpdatePrevState();
+        }
+
+        float CalcAngleDiff(float a, float b)
+        {
+            float result = b - a;
+            while (result < -180) result += 360;
+            while (result > 180) result -= 360;
+            return result;
         }
 
         void UpdatePrevState()
@@ -53,10 +64,10 @@ namespace CpvrLab.VirtualTable {
             _prevRotation = transform.rotation;
 
             // update velocity rolling average
-            _avrgVelocity = CalcRollingAvrgVec3(_velocity, ref _velocityCache, ref _velocitySum, _sampleCount);
+            _avrgVelocity = CalcRollingAvrgVec3(_velocity, ref _velocityCache, ref _velocitySum, sampleCount);
             
             // update angular velocity average
-            _averageAngularVelocity = CalcRollingAvrgVec3(_angularVelocity, ref _angularVelocityCache, ref _angularVelocitySum, _sampleCount);            
+            _averageAngularVelocity = CalcRollingAvrgVec3(_angularVelocity, ref _angularVelocityCache, ref _angularVelocitySum, sampleCount);            
         }
 
 
@@ -75,7 +86,7 @@ namespace CpvrLab.VirtualTable {
             // calculate average and mean
             return (float)(sum * (double)_sampleCountReciproc);
         }
-
+        
         // calculate running average over a set of samples given the sum of that set
         Vector3 CalcRollingAvrgVec3(Vector3 newSample, ref Queue<Vector3> samples, ref Vector3 sum, int maxSamples = 20)
         {
@@ -91,7 +102,6 @@ namespace CpvrLab.VirtualTable {
             // calculate average and mean
             return sum * _sampleCountReciproc;
         }
-
 
             static void Swap<T>(ref T lhs, ref T rhs)
         {

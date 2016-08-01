@@ -26,7 +26,7 @@ namespace CpvrLab.VirtualTable
         // temporary only for testing. we'll use a better solution later
         public GameObject tempCameraRig;
 
-        protected GameObject hmd = null;
+        public GameObject hmd = null;
 
 
         // unsure if these variables are necessary 
@@ -108,17 +108,7 @@ namespace CpvrLab.VirtualTable
             // finally we want to find the gameobject representation
             // of the actual vive HMD
             // todo: can we do this a bit cleaner?
-            var trackedObjects = FindObjectsOfType<SteamVR_TrackedObject>();
-            foreach (var obj in trackedObjects)
-            {
-                if (obj.index == SteamVR_TrackedObject.EIndex.Hmd)
-                {
-                    hmd = obj.gameObject;
-                }
-            }
-
-            if (hmd == null)
-                Debug.LogError("VivePlayer: couldn't find a hmd for the local player");
+            
 
         }
 

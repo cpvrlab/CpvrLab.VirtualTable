@@ -6,7 +6,7 @@ using UnityEngine.Networking.Match;
 
 namespace CpvrLab.VirtualTable
 {
-
+    
 
     public class VTMsgType
     {
