@@ -53,13 +53,7 @@ namespace CpvrLab.VirtualTable {
                 {
                     state.Value.prevState = state.Value.state;
                 }
-            }
-
-
-            if (GetActionDown(ActionCode.Button0))
-                Debug.Log("Button0 DOWN");
-            else if (GetActionUp(ActionCode.Button0))
-                Debug.Log("Button0 UP");
+            }            
         }
 
         public override bool GetAction(ActionCode ac)

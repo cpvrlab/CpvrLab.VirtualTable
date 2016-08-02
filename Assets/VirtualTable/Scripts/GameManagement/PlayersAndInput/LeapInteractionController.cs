@@ -1,26 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Valve.VR;
 
 
-namespace CpvrLab.VirtualTable {
+namespace CpvrLab.VirtualTable
+{
 
 
-    public delegate void UsableItemInteraction(PlayerInput input, UsableItem target);
-    public delegate void MovableItemInteraction(PlayerInput input, MovableItem target);
 
-    // todo:    separation of usable and movable items is tedious
-    //          could this be simplified?
-    // 
-    // note:    at the moment only usable items work
-
-    /// <summary>
-    /// ViveInteractionController can be added to a vive controller to interact with UsableItems.
-    /// This class will notify VivePlayer about picked up items etc.
-    /// </summary>
-    [RequireComponent(typeof(SphereCollider), typeof(Rigidbody))]
-    public class ViveInteractionController : MonoBehaviour {
-
+    public class LeapInteractionController : MonoBehaviour
+    {
         public event UsableItemInteraction UsableItemPickedUp;
         public event UsableItemInteraction UsableItemDropped;
         public event MovableItemInteraction MovableItemPickedUp;
@@ -28,22 +16,14 @@ namespace CpvrLab.VirtualTable {
 
         public PlayerInput input;
         public float pickupRadius = 0.1f;
-        private SteamVR_Controller.Device _device;
 
         // currently holding an item?
         private bool _holdingItem = false;
         private UsableItem _currentlyEquipped = null;
         private MovableItem _activeMovableItem = null;
 
-
-        // Use this for initialization
         void Start()
         {
-            // todo: sanity checks
-            var trackedObject = GetComponent<SteamVR_TrackedObject>();
-            var index = (int)trackedObject.index;
-            _device = SteamVR_Controller.Input(index);
-
             var col = GetComponent<SphereCollider>();
             col.radius = pickupRadius;
             col.isTrigger = true;
@@ -51,25 +31,26 @@ namespace CpvrLab.VirtualTable {
             var rb = GetComponent<Rigidbody>();
             rb.isKinematic = true;
         }
-        
+
+
         void OnTriggerEnter(Collider other)
         {
-            if(other.attachedRigidbody == null)
+            if (other.attachedRigidbody == null)
                 return;
-            
-            
+
 
             // todo: store these tags in a global common file as static const etc...
             bool usable = other.attachedRigidbody.CompareTag("UsableItem");
             bool movable = other.attachedRigidbody.CompareTag("MovableItem");
-            
-            if(!usable && !movable)
+
+            if (!usable && !movable)
                 return;
 
-            if(_holdingItem)
+            if (_holdingItem)
                 return;
-                                    
-            if(usable) {
+
+            if (usable)
+            {
 
                 var item = other.attachedRigidbody.gameObject.GetComponent<UsableItem>();
                 if (item != null)
@@ -84,36 +65,28 @@ namespace CpvrLab.VirtualTable {
                     _holdingItem = true;
                 }
             }
-            else if(movable)
+            else if (movable)
             {
+                Debug.Log("MovableItem passed");
                 _activeMovableItem = other.attachedRigidbody.gameObject.GetComponent<MovableItem>();
             }
         }
-        
+
 
         void Update()
         {
-            if (_device.GetPressDown(EVRButtonId.k_EButton_Grip))
-            {
-                if (_holdingItem)
-                {
-                    if (UsableItemDropped != null)
-                        UsableItemDropped(input, _currentlyEquipped);
-
-                    _currentlyEquipped = null;
-                    _holdingItem = false;
-                }
-            }
+            // todo: add functionality to drop the item
 
             if (_activeMovableItem != null)
             {
-                if (_device.GetPressDown(EVRButtonId.k_EButton_SteamVR_Trigger))
+                if (input.GetActionDown(PlayerInput.ActionCode.Button0))
                 {
+                    Debug.Log("Grabbing");
                     _holdingItem = true;
-                    if(MovableItemPickedUp != null)
+                    if (MovableItemPickedUp != null)
                         MovableItemPickedUp(input, _activeMovableItem);
                 }
-                else if (_device.GetPressUp(EVRButtonId.k_EButton_SteamVR_Trigger))
+                else if (input.GetActionUp(PlayerInput.ActionCode.Button0))
                 {
                     _holdingItem = false;
 
@@ -125,5 +98,6 @@ namespace CpvrLab.VirtualTable {
                 }
             }
         }
-    }
-}
+    } // class
+
+}// namespace
