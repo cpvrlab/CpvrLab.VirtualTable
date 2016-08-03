@@ -12,6 +12,8 @@ namespace CpvrLab.VirtualTable
         public GameObject adminSettings;
         public GameObject container;
 
+        public float[] heights;
+
         public float edgeActivationRange = 10.0f;
 
 
@@ -21,6 +23,11 @@ namespace CpvrLab.VirtualTable
         void Awake()
         {
             _animator = GetComponent<Animator>();
+        }
+
+        void Start()
+        {
+
         }
 
         void Update()
