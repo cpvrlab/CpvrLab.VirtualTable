@@ -2,9 +2,12 @@
 using UnityEngine.Networking;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
 namespace CpvrLab.VirtualTable {
     
+
+
     /// <summary>
     /// Abstract base class for all game players. It is responsible for interacting with UsableItems
     /// and routing player input to the necessary receivers.
@@ -23,7 +26,10 @@ namespace CpvrLab.VirtualTable {
     ///         know it is owned by a player. This can lead to other players trying to pick up items already in use.
     /// </summary>
     public abstract class GamePlayer : NetworkBehaviour {
-        
+
+        public static GamePlayer localPlayer = null;
+        public static Action<GamePlayer> OnLocalPlayerCreated;
+
         /// <summary>
         /// defines an attachment slot where UsableItems can be attached to
         /// later by the concrete player implementation.
@@ -36,8 +42,10 @@ namespace CpvrLab.VirtualTable {
         }
         protected List<AttachmentSlot> _attachmentSlots = new List<AttachmentSlot>();
         
-        [SyncVar]
-        public string displayName = "player";
+        [HideInInspector]
+        [SyncVar] public string displayName = "player";
+        [HideInInspector]
+        [SyncVar] public bool isObserver = false;
 
         /// <summary>
         /// List of possible representations of this player
@@ -54,7 +62,16 @@ namespace CpvrLab.VirtualTable {
             // add ourselves to the current game manager server instance
             GameManager.instance.AddPlayer(this);
         }
-        
+
+        public override void OnStartLocalPlayer()
+        {
+            base.OnStartLocalPlayer();
+
+            if (OnLocalPlayerCreated != null)
+                OnLocalPlayerCreated(this);
+            localPlayer = this;
+        }
+
 
         /// <summary>
         /// Here we instantiate player models for this GamePlayer. Both remote and local instances, which may have
@@ -404,28 +421,65 @@ namespace CpvrLab.VirtualTable {
         }
         
 
+        // todo: these functions don't need to be abstract anymore
+        protected virtual void OnEquip(AttachmentSlot slot) { }
+        protected virtual void OnUnequip(UsableItem item) { }
+        protected abstract PlayerInput GetMainInput();
+        
+        
         //public override bool OnSerialize(NetworkWriter writer, bool initialState)
         //{
-        //    bool wroteSync = base.OnSerialize(writer, initialState);
+        //    base.OnSerialize(writer, initialState);
 
-        //    writer.Write(synctest);
+        //    if (initialState)
+        //    {
+        //        // always write initial state, no dirty bits
+        //    }
+        //    else if (syncVarDirtyBits == 0)
+        //    {
+        //        writer.WritePackedUInt32(0);
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        // dirty bits
+        //        writer.WritePackedUInt32(1);
+        //    }
 
-        //    return wroteSync;
+        //    Debug.Log("Serializing");
+            
+        //    // serialize currently equipped items
+        //    for(int i = 0; i < _attachmentSlots.Count; i++)
+        //    {
+        //        writer.Write(_attachmentSlots[i].item.gameObject);
+        //    }
+
+        //    return true;
         //}
 
         //public override void OnDeserialize(NetworkReader reader, bool initialState)
         //{
         //    base.OnDeserialize(reader, initialState);
 
-        //    synctest = reader.ReadInt32();
-        //    Debug.Log("Deserialize " + synctest);
+        //    if (isServer && NetworkServer.localClientActive)
+        //        return;
+
+        //    if (!initialState)
+        //    {
+        //        if (reader.ReadPackedUInt32() == 0)
+        //            return;
+        //    }
+
+        //    Debug.Log("Deserializing");
+
+        //    // serialize currently equipped items
+        //    for (int i = 0; i < _attachmentSlots.Count; i++)
+        //    {
+        //        var item = reader.ReadGameObject().GetComponent<UsableItem>();
+
+        //        if(item.ow)
+        //    }
         //}
-
-
-        // todo: these functions don't need to be abstract anymore
-        protected virtual void OnEquip(AttachmentSlot slot) { }
-        protected virtual void OnUnequip(UsableItem item) { }
-        protected abstract PlayerInput GetMainInput();
     }
 
 }

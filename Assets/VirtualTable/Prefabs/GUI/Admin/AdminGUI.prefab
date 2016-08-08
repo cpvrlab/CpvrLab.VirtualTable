@@ -365,7 +365,7 @@ GameObject:
   - 114: {fileID: 114000010726876280}
   - 114: {fileID: 114000012024781054}
   m_Layer: 5
-  m_Name: BFHDropdown
+  m_Name: GameSelectDropdown
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1069,7 +1069,7 @@ GameObject:
   - 114: {fileID: 114000012009994074}
   - 114: {fileID: 114000010738740192}
   m_Layer: 5
-  m_Name: BFHButton
+  m_Name: KickPlayerButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1136,7 +1136,7 @@ GameObject:
   - 114: {fileID: 114000013925887500}
   - 114: {fileID: 114000011292952316}
   m_Layer: 5
-  m_Name: BFHButton
+  m_Name: GameStartButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1498,10 +1498,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8c36692c72413d41a47b971c7a9fc1c, type: 3}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -1509,7 +1509,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Option A
+  m_Text: 
 --- !u!114 &114000010609153856
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2029,10 +2029,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8c36692c72413d41a47b971c7a9fc1c, type: 3}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -2468,13 +2468,7 @@ MonoBehaviour:
   m_ItemImage: {fileID: 0}
   m_Value: 0
   m_Options:
-    m_Options:
-    - m_Text: Option A
-      m_Image: {fileID: 0}
-    - m_Text: Option B
-      m_Image: {fileID: 0}
-    - m_Text: Option C
-      m_Image: {fileID: 0}
+    m_Options: []
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2639,10 +2633,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8c36692c72413d41a47b971c7a9fc1c, type: 3}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -3149,13 +3143,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7e43255d0f976740b4baf0772b4bbf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localPlayerSettings: {fileID: 1000012989377608}
-  SpectatorSettings: {fileID: 1000011541822402}
-  GameSettings: {fileID: 1000013453154030}
-  adminSettings: {fileID: 1000014138951000}
-  container: {fileID: 1000010308499108}
+  localPlayerSettings: {fileID: 224000014135603228}
+  spectatorSettings: {fileID: 224000014247307756}
+  gameSettings: {fileID: 224000014119226924}
+  adminSettings: {fileID: 224000013666260500}
+  container: {fileID: 224000012440039950}
+  gameSelect: {fileID: 114000012024781054}
+  gameStartButton: {fileID: 114000011292952316}
+  gameStopButton: {fileID: 114000012756084354}
+  kickPlayerButton: {fileID: 114000010738740192}
+  resetAllPlayersButton: {fileID: 114000011680096558}
+  resetAllItemsButton: {fileID: 114000012251049586}
+  spectateToggleButton: {fileID: 114000012051658622}
+  disconnectButton: {fileID: 114000014287981580}
   heights: []
-  edgeActivationRange: 10
+  edgeActivationRange: 50
 --- !u!114 &114000013412523506
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3249,10 +3251,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8c36692c72413d41a47b971c7a9fc1c, type: 3}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -3390,10 +3392,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8c36692c72413d41a47b971c7a9fc1c, type: 3}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
     m_AlignByGeometry: 0
@@ -3553,10 +3555,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: e8c36692c72413d41a47b971c7a9fc1c, type: 3}
-    m_FontSize: 14
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 3
     m_AlignByGeometry: 0

@@ -154,11 +154,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: player
+  isObserver: 0
   playerModels:
   - {fileID: 11484554, guid: a479b95e93db6574699b91a0cf99c81e, type: 2}
   - {fileID: 11484554, guid: a479b95e93db6574699b91a0cf99c81e, type: 2}
   head: {fileID: 168036}
   cam: {fileID: 144646}
+  leftHandGoal: {fileID: 0}
+  rightHandGoal: {fileID: 0}
+  localHands: {fileID: 0}
+  leftInteractionController: {fileID: 0}
+  rightInteractionController: {fileID: 0}
+  attachPointLeft: {fileID: 0}
+  attachPointRight: {fileID: 0}
 --- !u!114 &11473612
 MonoBehaviour:
   m_ObjectHideFlags: 1

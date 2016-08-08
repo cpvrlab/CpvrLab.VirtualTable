@@ -30,7 +30,6 @@ namespace CpvrLab.VirtualTable
 
         void Start()
         {
-            Debug.Log("TEST TEST TEST");
             GameManager.instance.scoreBoardData.OnDataChanged += UpdateDisplay;
         }
 

@@ -612,6 +612,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: player
+  isObserver: 0
   playerModels:
   - {fileID: 11422414, guid: 5a4f352bf58822642999487e81f72fce, type: 2}
   - {fileID: 11422414, guid: 5a4f352bf58822642999487e81f72fce, type: 2}

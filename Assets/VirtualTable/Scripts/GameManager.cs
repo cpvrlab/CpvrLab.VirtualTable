@@ -48,7 +48,7 @@ namespace CpvrLab.VirtualTable {
 
             _instance = this;
 
-            Debug.Log("GameMAnagerInstanceSet");
+            Debug.Log("GameManagerInstanceSet");
         }
 
         public override void OnStartClient()
@@ -134,7 +134,7 @@ namespace CpvrLab.VirtualTable {
                 Debug.LogError("GameManager: Trying to load a game with an invalid index.");
                 return;
             }
-
+            
             StartGame(games[index]);
         }
 

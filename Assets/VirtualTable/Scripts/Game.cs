@@ -6,16 +6,7 @@ using UnityEngine.SceneManagement;
 using System;
 
 namespace CpvrLab.VirtualTable {
-
-    /*
-        Unclear stuff:
-        1. how do we let the game manager know if the game has reached its player limit?
-        2. how will we handle player limits in the future? Do people have to sign up in the lobby?
-
-
-
-    */
-
+    
     /// <summary>
     /// Base class for game player data. This class contains at least a reference to the GamePlayer
     /// that this data is describing. A concrete implementation of the class could keep track
@@ -38,8 +29,8 @@ namespace CpvrLab.VirtualTable {
     /// </summary>
     public abstract class Game : NetworkBehaviour {
 
+        public string gameName;
         public event Action<Game> GameFinished;
-
 
         protected bool _usingCustomScene = false;
         protected string _customSceneName = "";
@@ -139,7 +130,8 @@ namespace CpvrLab.VirtualTable {
             _gameTime = 0.0f;
 
             // initialize score board
-            InitScoreBoard();
+            if(SupportsScoreboard())
+                InitScoreBoard();
 
 
             OnInitialize();
@@ -190,8 +182,9 @@ namespace CpvrLab.VirtualTable {
         }
 
         protected abstract string GetGameName();
-        protected abstract string[] GetScoreHeaders();
-        protected abstract string[] GetScoreValues(int playerIndex);
+        protected virtual bool SupportsScoreboard() { return true; }
+        protected virtual string[] GetScoreHeaders() { return null; }
+        protected virtual string[] GetScoreValues(int playerIndex) { return null; }
         protected virtual float[] GetScoreDimensionRatios()
         {
             var columns = GetScoreHeaders().Length;

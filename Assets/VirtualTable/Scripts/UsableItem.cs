@@ -24,6 +24,7 @@ namespace CpvrLab.VirtualTable {
         protected PlayerInput _input;
         protected Transform _prevParent = null;
         protected GamePlayer _owner = null;
+        [SyncVar] protected GameObject _ownerGameObject = null;
         public bool isInUse { get { return _owner != null; } }
         [SyncVar] protected bool _unequipDone;
         [SyncVar(hook ="OnVisibilityChanged")] public bool isVisible = true;
@@ -36,6 +37,15 @@ namespace CpvrLab.VirtualTable {
                 transform.GetChild(i).gameObject.SetActive(value);
             
             GetComponent<Rigidbody>().isKinematic = !value;
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            if (_ownerGameObject != null)
+                Debug.Log(name + " I belong to " + _ownerGameObject.name);
+            else
+                Debug.Log(name + " I have no owner");
         }
 
         // tempararily used for debugging purposes
@@ -99,6 +109,7 @@ namespace CpvrLab.VirtualTable {
         /// <param name="input"></param>
         [Client] public void AssignOwner(GamePlayer owner, PlayerInput input) {
             _owner = owner;
+            _ownerGameObject = _owner.gameObject;
             _input = input;
 
             OnEquip();
@@ -116,6 +127,7 @@ namespace CpvrLab.VirtualTable {
 
         [Client] public void ClearOwner() {
             _owner = null;
+            _ownerGameObject = null;
             _input = null;
 
             OnUnequip();

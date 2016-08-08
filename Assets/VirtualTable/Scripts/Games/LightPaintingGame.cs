@@ -41,9 +41,7 @@ namespace CpvrLab.VirtualTable {
 
                 // unequip all of the items the player is using
                 pd.player.UnequipAll();
-
-                // todo: disable item pickups for the player
-
+                
                 // equip a light painter to the players main slot
                 if (pd.lightPainter == null)
                 {
@@ -53,7 +51,7 @@ namespace CpvrLab.VirtualTable {
                 }
                 pd.lightPainter.isVisible = true;
                 pd.player.Equip(pd.lightPainter, true);
-            }
+            }           
         }
 
         protected override void OnStop()
@@ -69,36 +67,21 @@ namespace CpvrLab.VirtualTable {
                 // hide objects
                 pd.lightPainter.isVisible = false;
                 
+                // old version where we destroyed the light painter objects
                 //NetworkServer.Destroy(pd.lightPainter.gameObject);
                 //Destroy(pd.lightPainter.gameObject);
                 //pd.lightPainter = null;           
             }
         }
 
-        public override void OnUpdate()
+        protected override bool SupportsScoreboard()
         {
-            base.OnUpdate();
-            // automatically stop the game after 60 seconds
-            // this is just a test
-            Debug.Log(_gameTime);
-
-            if(_gameTime > 10.0f)
-                Stop();
+            return false;
         }
 
         protected override string GetGameName()
         {
-            throw new NotImplementedException();
-        }
-
-        protected override string[] GetScoreHeaders()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override string[] GetScoreValues(int playerIndex)
-        {
-            throw new NotImplementedException();
+            return "Light Painting";
         }
         
     }
