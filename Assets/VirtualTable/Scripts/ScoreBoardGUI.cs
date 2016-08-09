@@ -10,6 +10,7 @@ namespace CpvrLab.VirtualTable
     /// <summary>
     /// Generic score board that can hold any kind of table data and sync over the network
     /// </summary>
+    [RequireComponent(typeof(CanvasGroup))]
     public class ScoreBoardGUI : MonoBehaviour
     {
         public Text title;
@@ -31,13 +32,26 @@ namespace CpvrLab.VirtualTable
         void Start()
         {
             GameManager.instance.scoreBoardData.OnDataChanged += UpdateDisplay;
+            GameManager.instance.scoreBoardData.OnShow += Show;
+            GameManager.instance.scoreBoardData.OnHide += Hide;
+
+            Hide();
         }
 
         void OnDestroy()
         {
             GameManager.instance.scoreBoardData.OnDataChanged -= UpdateDisplay;
         }
-        
+
+        public void Show()
+        {
+            GetComponent<CanvasGroup>().alpha = 1.0f;
+        }
+
+        public void Hide()
+        {
+            GetComponent<CanvasGroup>().alpha = 0.0f;
+        }
 
         // todo:    only update what has changed!
         //          currently we throw away everything and just redo the whole thing
@@ -51,6 +65,11 @@ namespace CpvrLab.VirtualTable
             {
 
             }
+
+            if (sb.show)
+                Show();
+            else
+                Hide();
 
             title.text = sb.title;
 

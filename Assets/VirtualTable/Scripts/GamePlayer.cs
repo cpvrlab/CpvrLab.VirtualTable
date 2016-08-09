@@ -447,6 +447,18 @@ namespace CpvrLab.VirtualTable {
         protected abstract PlayerInput GetMainInput();
 
 
+        /// <summary>
+        /// Note:   we override on serialize and deserialize here to 
+        ///         be able to sync attachment slot item states.
+        ///         this means we also need to sync the sync vars by
+        ///         ourselves. 
+        ///         
+        /// todo:   optimize the syncing of sync vars by utilizing 
+        ///         the dirty bits correctly.
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="initialState"></param>
+        /// <returns></returns>
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             bool wroteSync = base.OnSerialize(writer, initialState);
@@ -465,7 +477,11 @@ namespace CpvrLab.VirtualTable {
                 // dirty bits
                 writer.WritePackedUInt32(1);
             }
-            
+
+            writer.Write(displayName);
+            writer.Write(isObserver);
+
+
             // serialize currently equipped items
             for (int i = 0; i < _attachmentSlots.Count; i++)
             {
@@ -491,6 +507,10 @@ namespace CpvrLab.VirtualTable {
             }
 
             Debug.Log("Deserializing attachment slots: " + _attachmentSlots.Count);
+            
+
+            displayName = reader.ReadString();
+            isObserver = reader.ReadBoolean();
 
             // serialize currently equipped items
             for (int i = 0; i < _attachmentSlots.Count; i++)

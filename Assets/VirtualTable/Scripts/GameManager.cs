@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections.Generic;
+using System;
 
 namespace CpvrLab.VirtualTable {
 
@@ -29,6 +30,10 @@ namespace CpvrLab.VirtualTable {
         public ScoreBoard scoreBoardData;
         public Game[] games;
         protected Game _currentGame;
+
+        public Action<Game> OnGameChanged;
+
+        public Game currentGame { get { return _currentGame; } }
 
         // list of players currently able to play
         protected List<GamePlayer> _players = new List<GamePlayer>();
@@ -63,6 +68,8 @@ namespace CpvrLab.VirtualTable {
 
             NetworkServer.RegisterHandler(VTMsgType.StartGame, StartGameMsgHandler);
             NetworkServer.RegisterHandler(VTMsgType.StopGame, StopGameMsgHandler);
+
+            scoreBoardData.Show(false);
         }
 
 
@@ -134,6 +141,11 @@ namespace CpvrLab.VirtualTable {
             }
             
             StartGame(games[index]);
+
+
+            scoreBoardData.Show(games[index].SupportsScoreboard());
+            if (OnGameChanged != null)
+                OnGameChanged(games[index]);
         }
 
         // todo:    allow for graceful starting and stopping of games
@@ -162,6 +174,11 @@ namespace CpvrLab.VirtualTable {
                 return;
 
             _currentGame.Stop();
+            scoreBoardData.Show(false);
+
+            // only gets sent on the server!
+            if (OnGameChanged != null)
+                OnGameChanged(null);
         }
 
         protected virtual void GameFinished(Game game)
@@ -175,7 +192,7 @@ namespace CpvrLab.VirtualTable {
                 return;
             
             // todo: this dirty flag stuff is temporary... probably
-            if(_dirty)
+            if(_dirty && _currentGame == null)
             {
                 foreach (var game in games)
                 {

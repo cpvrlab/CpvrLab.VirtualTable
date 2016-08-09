@@ -54,6 +54,14 @@ namespace CpvrLab.VirtualTable {
             }           
         }
 
+        protected override void OnRemovePlayer(GamePlayerData dataBase)
+        {
+            var data = (LightPaintingPlayerData)dataBase;
+
+            NetworkServer.Destroy(data.lightPainter.gameObject);
+            data.lightPainter = null;
+        }
+
         protected override void OnStop()
         {
             base.OnStop();
@@ -74,7 +82,7 @@ namespace CpvrLab.VirtualTable {
             }
         }
 
-        protected override bool SupportsScoreboard()
+        public override bool SupportsScoreboard()
         {
             return false;
         }

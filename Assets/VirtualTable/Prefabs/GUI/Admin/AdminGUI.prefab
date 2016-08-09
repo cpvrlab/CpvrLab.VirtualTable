@@ -3156,6 +3156,8 @@ MonoBehaviour:
   resetAllItemsButton: {fileID: 114000012251049586}
   spectateToggleButton: {fileID: 114000012051658622}
   disconnectButton: {fileID: 114000014287981580}
+  currentGameName: {fileID: 114000010333654974}
+  currentGameTime: {fileID: 114000013505923730}
   heights: []
   edgeActivationRange: 50
 --- !u!114 &114000013412523506

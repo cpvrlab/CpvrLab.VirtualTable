@@ -26,9 +26,8 @@ namespace CpvrLab.VirtualTable
     ///                     Grey balloons reveal to the player that they aren't the target. As the timer nears zero
     ///                     so shrinks the possible number of balloons to shoot. Players have exactly three shots
     ///                     and a cooldown after each shot. So the players have to decide if they want to waste shots early
-    ///                     for a possible win or save them for when theres only about 5 balloons left.
-    ///                     
-    ///                     remaining time and shots used could both count toward an overall score for the player.
+    ///                     for a possible win or save them for when they can be sure they have the right target.                      
+    ///                     Remaining time and shots used could both count toward an overall score for the player.
     /// </summary>
     public class BalloonShooterGame : Game
     {
@@ -72,6 +71,8 @@ namespace CpvrLab.VirtualTable
             for (int i = 0; i < _playerData.Count; i++)
             {
                 var pd = GetConcretePlayerData(i);
+                pd.bestTime = -1.0f;
+                pd.roundsWon = 0;
 
                 // unequip all of the items the player is using
                 pd.player.UnequipAll();
@@ -90,12 +91,12 @@ namespace CpvrLab.VirtualTable
 
             RpcSetStatusText("Get ready!");
             HandleSpawning();
+            UpdateScoreGUI();
         }
 
         protected override void OnStop()
         {
             base.OnStop();
-            Debug.Log("BalloonShooterGame: Stopping");
             StopAllCoroutines();
 
             for (int i = 0; i < _playerData.Count; i++)
@@ -103,16 +104,16 @@ namespace CpvrLab.VirtualTable
                 var pd = GetConcretePlayerData(i);
                 pd.player.UnequipAll();
 
-                // hide objects
-                pd.gun.isVisible = false;
-
 
                 foreach (var balloon in _balloons)
                 {
-                    Debug.Log("Removing balloons");
                     if (balloon != null)
                         NetworkServer.Destroy(balloon);
                 }
+
+                // hide objects
+                if(pd.gun != null)
+                    pd.gun.isVisible = false;
             }
         }
         
@@ -226,8 +227,6 @@ namespace CpvrLab.VirtualTable
             EnableInput(true);
         }
         
-
-
         [ClientRpc] void RpcAttachBalloon(GameObject go, Vector3 position)
         {
             if (isServer) return; // don't do this if we're a host client
@@ -248,6 +247,7 @@ namespace CpvrLab.VirtualTable
         {
             gameStatusText.text = text;
         }
+
         [ClientRpc] void RpcSetGoalColor(Color color)
         {
             goalIndicator.material.SetColor("_EmissionColor", color);
@@ -267,7 +267,6 @@ namespace CpvrLab.VirtualTable
                 pd.bestTime = timeUsed;
 
             UpdateScoreGUI();
-
             
             foreach (var balloon in _balloons)
             {
@@ -278,6 +277,8 @@ namespace CpvrLab.VirtualTable
             // auto restart the game after a certain time
             StartCoroutine(AutoRestartGame(4.0f));
             //Stop();            
+
+            // todo: add a winstate after a player has won a certain amount of rounds
         }
 
         IEnumerator AutoRestartGame(float waitTime)
@@ -307,7 +308,7 @@ namespace CpvrLab.VirtualTable
             {
                 pd.player.displayName,
                 pd.roundsWon.ToString(),
-                ((pd.bestTime > 0.0f) ? pd.bestTime.ToString() + "s" : "NAN")
+                ((pd.bestTime > 0.0f) ? pd.bestTime.ToString("F2") + "s" : "NAN")
             };
         }
     }

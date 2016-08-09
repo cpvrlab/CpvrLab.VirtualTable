@@ -49,7 +49,13 @@ namespace CpvrLab.VirtualTable
             
             var shootable = gameObject.AddComponent<Shootable>();
             shootable.OnHit.AddListener(OnHit);
+            _renderer.material.color = color;
+        }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            _renderer.material.color = color;
         }
 
         void OnHit(Vector3 position, GamePlayer shooter)

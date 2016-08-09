@@ -23,6 +23,9 @@ namespace CpvrLab.VirtualTable
         public Button spectateToggleButton;
         public Button disconnectButton;
 
+        public Text currentGameName;
+        public Text currentGameTime;
+
         public float[] heights;
 
         public float edgeActivationRange = 10.0f;
@@ -37,7 +40,7 @@ namespace CpvrLab.VirtualTable
         private GamePlayer _localPlayer = null;
         private bool _isAdmin = false;
         private bool _isObserver = false;
-
+        private Game _currentGame = null;
 
 
         void Awake()
@@ -74,6 +77,8 @@ namespace CpvrLab.VirtualTable
             disconnectButton.onClick.AddListener(OnDisconnectClicked);
 
             StartCoroutine(tempGetGameManagerInstance());
+
+            _gameManager.OnGameChanged += GameChanged;
         }
 
         IEnumerator tempGetGameManagerInstance()
@@ -134,6 +139,7 @@ namespace CpvrLab.VirtualTable
         {
 
             UpdateVisible();
+            UpdateCurrentGameStats();
             if (_rebuild) RebuildMenu();
         }
 
@@ -206,6 +212,25 @@ namespace CpvrLab.VirtualTable
             }
         }
 
+        void GameChanged(Game game)
+        {
+            _currentGame = game;
+
+            // todo: hide the current game line entirely if no game is running
+            var gameName = (game == null) ? "none" : game.gameName;
+            currentGameName.text = gameName;
+        }
+
+        void UpdateCurrentGameStats()
+        {
+            if (_currentGame == null)
+                return;
+
+            int minutes = (int)Mathf.Floor(_currentGame.gameTime / 60.0f);
+            int seconds = ((int)_currentGame.gameTime) % 60;
+
+            currentGameTime.text = minutes.ToString() + " min " + seconds.ToString() + " sec";
+        }
 
         void HideMenu()
         {

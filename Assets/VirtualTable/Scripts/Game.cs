@@ -32,6 +32,8 @@ namespace CpvrLab.VirtualTable {
         public string gameName;
         public event Action<Game> GameFinished;
 
+        public float gameTime { get { return _gameTime; } }
+
         protected bool _usingCustomScene = false;
         protected string _customSceneName = "";
         protected bool _isRunning = false;
@@ -87,12 +89,22 @@ namespace CpvrLab.VirtualTable {
         {
             var element = _playerData.Find(e => e.player == player);
 
-            if(element != null)
+            OnRemovePlayer(element);
+
+            if (element != null)
                 _playerData.Remove(element);
             else
                 Debug.LogWarning("Game WARNING: Careful, someone tried to remove a player that is not in the list!");
         }
 
+        /// <summary>
+        /// Use this function in your concrete implementation to clean up anything related
+        /// to player data
+        /// </summary>
+        protected virtual void OnRemovePlayer(GamePlayerData data)
+        {
+        }
+        
         public void RemovePlayers(GamePlayer[] players)
         {
             foreach(var p in players) {
@@ -182,7 +194,7 @@ namespace CpvrLab.VirtualTable {
         }
 
         protected abstract string GetGameName();
-        protected virtual bool SupportsScoreboard() { return true; }
+        public virtual bool SupportsScoreboard() { return true; }
         protected virtual string[] GetScoreHeaders() { return null; }
         protected virtual string[] GetScoreValues(int playerIndex) { return null; }
         protected virtual float[] GetScoreDimensionRatios()
@@ -208,6 +220,7 @@ namespace CpvrLab.VirtualTable {
         protected virtual void InitScoreBoard()
         {
             var sb = GameManager.instance.scoreBoardData;
+            sb.ClearData();
             sb.SetTitle(GetGameName());
             sb.SetHeaders(GetScoreHeaders());
             for(int i = 0; i < _playerData.Count; i++)

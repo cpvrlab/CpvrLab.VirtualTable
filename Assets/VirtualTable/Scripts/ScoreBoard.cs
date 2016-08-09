@@ -23,30 +23,43 @@ namespace CpvrLab.VirtualTable
     public class ScoreBoard : NetworkBehaviour
     {
         public Action<ScoreBoard> OnDataChanged;
-                
+        public Action OnShow;
+        public Action OnHide;
+
         private bool _dataChanged = false; // dirty flag for event listeners
         private bool _newClient = false; // flag telling us if a new client connected and needs data
 
         private string _title = "";
+        private bool _show = false;
         private List<string> _headers = new List<string>();
         private List<List<string>> _rowData = new List<List<string>>();
         private List<float> _cellSizeRatios = new List<float>(); // todo
 
         public string title { get { return _title; } }
+        public bool show { get { return _show; } }
         public List<string> headers { get { return _headers; } }
         public List<List<string>> rowData { get { return _rowData; } }
         public int rows { get { return _rowData.Count; } }
         public int cols { get { return headers.Count; } }
-        
-        [Server] public void SetTitle(string title)
+
+        [Server]
+        public void SetTitle(string title)
         {
             _title = title;
             RpcUpdateTitle(title);
             _dataChanged = true;
             Debug.Log("SetTitle");
         }
-        
-        [Server] public void SetHeaders(string[] data)
+
+        [Server]
+        public void Show(bool val)
+        {
+            ShowLocal(val);
+            RpcShow(val);
+        }
+
+        [Server]
+        public void SetHeaders(string[] data)
         {
             _headers = new List<string>(data);
             RpcUpdateHeaders(Serialize(_headers));
@@ -54,7 +67,8 @@ namespace CpvrLab.VirtualTable
             Debug.Log("SetHeaders");
         }
 
-        [Server] public void AddRow(string[] data)
+        [Server]
+        public void AddRow(string[] data)
         {
             var row = new List<string>(data);
             _rowData.Add(row);
@@ -63,7 +77,8 @@ namespace CpvrLab.VirtualTable
             Debug.Log("AddRow");
         }
 
-        [Server] public void SetRowData(int rowNum, string[] data)
+        [Server]
+        public void SetRowData(int rowNum, string[] data)
         {
             _rowData[rowNum] = new List<string>(data);
             RpcUpdateRow(rowNum, Serialize(_rowData[rowNum]));
@@ -71,14 +86,24 @@ namespace CpvrLab.VirtualTable
             Debug.Log("SetRowData");
         }
 
-        [Server] public void SetCellData(int rowNum, int colNum, string data)
+        [Server]
+        public void SetCellData(int rowNum, int colNum, string data)
         {
             _rowData[rowNum][colNum] = data;
             RpcUpdateCellData(rowNum, colNum, data);
             _dataChanged = true;
             Debug.Log("SetCellData");
         }
-        
+
+        [Server]
+        public void ClearData()
+        {
+            _rowData.Clear();
+            _dataChanged = true;
+            RpcClearData();
+            Debug.Log("ClearData");
+        }
+
         byte[] Serialize(List<string> list)
         {
             var binFormatter = new BinaryFormatter();
@@ -97,7 +122,8 @@ namespace CpvrLab.VirtualTable
 
             return binFormatter.Deserialize(mStream) as List<string>;
         }
-        [ClientRpc] void RpcUpdateTitle(string title)
+        [ClientRpc]
+        void RpcUpdateTitle(string title)
         {
             if (isServer) return;
 
@@ -105,14 +131,15 @@ namespace CpvrLab.VirtualTable
             _dataChanged = true;
         }
 
-        [ClientRpc] void RpcInitScoreboard(int colCount, int rowCount)
+        [ClientRpc]
+        void RpcInitScoreboard(int colCount, int rowCount)
         {
             if (isServer) return;
 
             Debug.Log("RpcInitScoreboard");
             if (cols == colCount && rows == rowCount)
                 return;
-            
+
             // initialize the arrays with the new dimensions
             _headers.Clear();
             for (int i = 0; i < colCount; i++)
@@ -128,7 +155,8 @@ namespace CpvrLab.VirtualTable
             }
         }
 
-        [ClientRpc] void RpcAddRow(byte[] data)
+        [ClientRpc]
+        void RpcAddRow(byte[] data)
         {
             if (isServer) return;
 
@@ -136,7 +164,8 @@ namespace CpvrLab.VirtualTable
             _rowData.Add(Deserialize(data));
             _dataChanged = true;
         }
-        [ClientRpc] void RpcUpdateRow(int index, byte[] data)
+        [ClientRpc]
+        void RpcUpdateRow(int index, byte[] data)
         {
             if (isServer) return;
 
@@ -144,7 +173,8 @@ namespace CpvrLab.VirtualTable
             _rowData[index] = Deserialize(data);
             _dataChanged = true;
         }
-        [ClientRpc] void RpcUpdateCellData(int rowNum, int colNum, string data)
+        [ClientRpc]
+        void RpcUpdateCellData(int rowNum, int colNum, string data)
         {
             if (isServer) return;
 
@@ -152,7 +182,8 @@ namespace CpvrLab.VirtualTable
             _rowData[rowNum][colNum] = data;
             _dataChanged = true;
         }
-        [ClientRpc] void RpcUpdateHeaders(byte[] data)
+        [ClientRpc]
+        void RpcUpdateHeaders(byte[] data)
         {
             if (isServer) return;
 
@@ -160,7 +191,8 @@ namespace CpvrLab.VirtualTable
             _headers = Deserialize(data);
             _dataChanged = true;
         }
-        [ClientRpc] void RpcClearData()
+        [ClientRpc]
+        void RpcClearData()
         {
             if (isServer) return;
 
@@ -168,7 +200,28 @@ namespace CpvrLab.VirtualTable
             _rowData.Clear();
             _dataChanged = true;
         }
-             
+
+        [ClientRpc]
+        void RpcShow(bool val)
+        {
+            ShowLocal(show);
+        }
+
+        private void ShowLocal(bool val)
+        {
+            _show = val;
+            if (_show)
+            {
+                if (OnShow != null)
+                    OnShow();
+            }
+            else
+            {
+                if (OnHide != null)
+                    OnHide();
+            }
+        }
+
         public override bool OnSerialize(NetworkWriter writer, bool initialState)
         {
             if (initialState)
@@ -189,10 +242,10 @@ namespace CpvrLab.VirtualTable
             // we only end up here if a new client connects and needs the current scoreboard data
             // so we'll send over the entire thing
             _newClient = true;
-            
+
             return true;
         }
-        
+
         // the approach below didn't work because the data is too large
         // but I'll keep it around for later
         //public override bool OnSerialize(NetworkWriter writer, bool initialState)
@@ -319,8 +372,8 @@ namespace CpvrLab.VirtualTable
 
                 _dataChanged = false;
             }
-                        
-            if(isServer && _newClient)
+
+            if (isServer && _newClient)
             {
                 RpcInitScoreboard(cols, rows);
                 RpcUpdateTitle(_title);
@@ -332,7 +385,7 @@ namespace CpvrLab.VirtualTable
 
                 _newClient = false;
             }
-        }        
+        }
     }
 
 }
