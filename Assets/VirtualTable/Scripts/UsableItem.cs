@@ -43,9 +43,9 @@ namespace CpvrLab.VirtualTable {
         {
             base.OnStartClient();
             if (_ownerGameObject != null)
-                Debug.Log(name + " I belong to " + _ownerGameObject.name);
-            else
-                Debug.Log(name + " I have no owner");
+            {
+                _owner = _ownerGameObject.GetComponent<GamePlayer>();
+            }
         }
 
         // tempararily used for debugging purposes

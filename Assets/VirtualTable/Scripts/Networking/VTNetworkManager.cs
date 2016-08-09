@@ -47,16 +47,7 @@ namespace CpvrLab.VirtualTable
         /// </summary>
         [HideInInspector]
         public string localPlayerName = "player";
-
         
-
-        void Start()
-        {
-            // change log filter level for easier debugging
-            //LogFilter.currentLogLevel = (int)LogFilter.FilterLevel.Debug;
-        }
-
-
 
 
         /// <summary>

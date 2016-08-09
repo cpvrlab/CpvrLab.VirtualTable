@@ -41,14 +41,12 @@ namespace CpvrLab.VirtualTable {
             DontDestroyOnLoad(this);
 
             if(_instance != null) {
-                Debug.LogError("GameManager: You are trying to instanciate multiple game managers, only one is allowed!");
+                Debug.LogError("GameManager: You are trying to instantiate multiple game managers, only one is allowed!");
                 DestroyImmediate(this);
                 return;
             }
 
             _instance = this;
-
-            Debug.Log("GameManagerInstanceSet");
         }
 
         public override void OnStartClient()

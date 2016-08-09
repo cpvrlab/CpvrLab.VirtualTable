@@ -26,12 +26,17 @@ namespace CpvrLab.VirtualTable {
         protected Quaternion _currentlyEquippedInitialRot = Quaternion.identity;
         protected FirstPersonPlayerInput _playerInput;
 
+        public void Awake()
+        {
+
+            AddAttachmentSlot(attachPoint);
+        }
+
         public override void OnStartClient()
         {
             base.OnStartClient();
 
             // add attachment slots on all clients
-            AddAttachmentSlot(attachPoint);
         }
 
         public override void OnStartLocalPlayer()

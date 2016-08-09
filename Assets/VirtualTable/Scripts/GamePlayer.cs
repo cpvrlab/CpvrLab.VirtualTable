@@ -295,6 +295,26 @@ namespace CpvrLab.VirtualTable {
                         
             OnEquip(slot);
         }
+
+        /// <summary>
+        /// Note: Bad design!
+        /// This function is currently used by UsableItem to equip itself to late connecting clients if a player
+        /// on the server has an item equipped.
+        /// 
+        /// todo: find a better solution for this.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="attachPoint"></param>
+        public void EquipLocal(UsableItem item, GameObject attachPoint)
+        {
+            var slot = FindAttachmentSlot(attachPoint);
+
+            slot.item = item;
+            slot.item.AssignOwner(this, slot.input);
+            slot.item.Attach(slot.attachPoint);
+
+            OnEquip(slot);
+        }
         
         /// <summary>
         /// Can be called on client or server to unequip an item
@@ -425,61 +445,73 @@ namespace CpvrLab.VirtualTable {
         protected virtual void OnEquip(AttachmentSlot slot) { }
         protected virtual void OnUnequip(UsableItem item) { }
         protected abstract PlayerInput GetMainInput();
-        
-        
-        //public override bool OnSerialize(NetworkWriter writer, bool initialState)
-        //{
-        //    base.OnSerialize(writer, initialState);
 
-        //    if (initialState)
-        //    {
-        //        // always write initial state, no dirty bits
-        //    }
-        //    else if (syncVarDirtyBits == 0)
-        //    {
-        //        writer.WritePackedUInt32(0);
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        // dirty bits
-        //        writer.WritePackedUInt32(1);
-        //    }
 
-        //    Debug.Log("Serializing");
+        public override bool OnSerialize(NetworkWriter writer, bool initialState)
+        {
+            bool wroteSync = base.OnSerialize(writer, initialState);
+
+            if (initialState)
+            {
+                // always write initial state, no dirty bits
+            }
+            else if (syncVarDirtyBits == 0)
+            {
+                writer.WritePackedUInt32(0);
+                return wroteSync;
+            }
+            else
+            {
+                // dirty bits
+                writer.WritePackedUInt32(1);
+            }
             
-        //    // serialize currently equipped items
-        //    for(int i = 0; i < _attachmentSlots.Count; i++)
-        //    {
-        //        writer.Write(_attachmentSlots[i].item.gameObject);
-        //    }
+            // serialize currently equipped items
+            for (int i = 0; i < _attachmentSlots.Count; i++)
+            {
+                GameObject go = (_attachmentSlots[i].item == null) ? null : _attachmentSlots[i].item.gameObject;
+                writer.Write(go);
+                Debug.Log("Serializing item: " + go);
+            }
 
-        //    return true;
-        //}
+            return true;
+        }
 
-        //public override void OnDeserialize(NetworkReader reader, bool initialState)
-        //{
-        //    base.OnDeserialize(reader, initialState);
+        public override void OnDeserialize(NetworkReader reader, bool initialState)
+        {
+            base.OnDeserialize(reader, initialState);
 
-        //    if (isServer && NetworkServer.localClientActive)
-        //        return;
+            if (isServer && NetworkServer.localClientActive)
+                return;
 
-        //    if (!initialState)
-        //    {
-        //        if (reader.ReadPackedUInt32() == 0)
-        //            return;
-        //    }
+            if (!initialState)
+            {
+                if (reader.ReadPackedUInt32() == 0)
+                    return;
+            }
 
-        //    Debug.Log("Deserializing");
+            Debug.Log("Deserializing attachment slots: " + _attachmentSlots.Count);
 
-        //    // serialize currently equipped items
-        //    for (int i = 0; i < _attachmentSlots.Count; i++)
-        //    {
-        //        var item = reader.ReadGameObject().GetComponent<UsableItem>();
+            // serialize currently equipped items
+            for (int i = 0; i < _attachmentSlots.Count; i++)
+            {
+                var itemGO = reader.ReadGameObject();
+                var item = (itemGO != null) ? itemGO.GetComponent<UsableItem>() : null;
 
-        //        if(item.ow)
-        //    }
-        //}
+                //Debug.Log("item " + item);
+                if (item != null)
+                {
+                    Debug.Log("OMG I HAVE AN ITEM EQUIPPED? " + item.name);
+                    var slot = _attachmentSlots[i];
+                    slot.item = item;
+                    slot.item.AssignOwner(this, null);
+                    slot.item.Attach(slot.attachPoint);
+
+                    OnEquip(slot);
+                }
+
+            }
+        }
     }
 
 }
