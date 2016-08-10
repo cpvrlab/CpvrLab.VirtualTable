@@ -146,6 +146,15 @@ namespace CpvrLab.VirtualTable
             NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
         }
 
+        public void Disconnect()
+        {
+            Debug.Log("NetworkManager: Disconnect");
+
+            if (NetworkServer.active)
+                StopHost();
+            else
+                StopClient();
+        }
         
         /// <summary>
         /// Called on the client when ever the scene changes.

@@ -45,7 +45,9 @@ namespace CpvrLab.VirtualTable {
         [HideInInspector]
         [SyncVar] public string displayName = "player";
         [HideInInspector]
-        [SyncVar] public bool isObserver = false;
+        [SyncVar(hook= "IsObserverHook")] public bool isObserver = false;
+
+
 
         /// <summary>
         /// List of possible representations of this player
@@ -101,15 +103,36 @@ namespace CpvrLab.VirtualTable {
             _playerModelInstance = Instantiate(playerModels[index], transform.position, transform.rotation) as PlayerModel;
             _playerModelInstance.InitializeModel(this);
             _playerModelInstance.playerText.text = displayName;
+            
+            _playerModelInstance.playerText.enabled = !isLocalPlayer;
+            
         }
+
+        void IsObserverHook(bool val)
+        {
+            isObserver = val;
+            // hide player model if we're in observer mode
+            if(_playerModelInstance != null)
+                _playerModelInstance.gameObject.SetActive(!val);
+            OnObserverStateChanged(val);
+        }
+
+        protected virtual void OnObserverStateChanged(bool val) { }
 
         protected void DestroyPlayerModel()
         {
             if (_playerModelInstance == null)
                 return;
 
+            Debug.Log("Removing player model instance");
             Destroy(_playerModelInstance.gameObject);
             _playerModelInstance = null;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            Debug.Log("OnDestroy");
+            DestroyPlayerModel();
         }
 
         [Client] protected void NextLocalModel()
@@ -138,15 +161,9 @@ namespace CpvrLab.VirtualTable {
 
         public override void OnNetworkDestroy()
         {
-            if (!isServer)
-            {
-                UnequipAllLocal();
-                DestroyPlayerModel();
-            }
-            base.OnNetworkDestroy();
-
-
+            UnequipAllLocal();
             GameManager.instance.RemovePlayer(this);
+            base.OnNetworkDestroy();            
         }
         
 

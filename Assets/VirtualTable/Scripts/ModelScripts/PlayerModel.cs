@@ -21,6 +21,7 @@ namespace CpvrLab.VirtualTable
         /// </summary>
         /// <param name="player"></param>
         public abstract void InitializeModel(GamePlayer player);
+        
     }
 
 }

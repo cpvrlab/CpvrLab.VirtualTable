@@ -59,9 +59,16 @@ namespace CpvrLab.VirtualTable {
             _fpsGUIInstance = Instantiate(fpsGUIPrefab);
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             Destroy(_fpsGUIInstance);
+        }
+
+        protected override void OnObserverStateChanged(bool val)
+        {
+            base.OnObserverStateChanged(val);
+            _fpsGUIInstance.SetActive(!val);
         }
 
         void Update()

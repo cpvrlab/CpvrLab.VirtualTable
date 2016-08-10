@@ -26,8 +26,7 @@ namespace CpvrLab.VirtualTable {
         public override void OnStartClient()
         {
             base.OnStartClient();
-
-
+            
             AddAttachmentSlot(attachPointLeft);
             AddAttachmentSlot(attachPointRight);
         }

@@ -14,6 +14,7 @@ namespace CpvrLab.VirtualTable
         public RectTransform adminSettings;
         public RectTransform container;
 
+        public Dropdown spectateCamSelect;
         public Dropdown gameSelect;
         public Button gameStartButton;
         public Button gameStopButton;
@@ -22,6 +23,7 @@ namespace CpvrLab.VirtualTable
         public Button resetAllItemsButton;
         public Button spectateToggleButton;
         public Button disconnectButton;
+        public Text spectateToggleButtonText;
 
         public Text currentGameName;
         public Text currentGameTime;
@@ -42,6 +44,7 @@ namespace CpvrLab.VirtualTable
         private bool _isObserver = false;
         private Game _currentGame = null;
 
+        private ObserverCamera[] _observerCameras;
 
         void Awake()
         {
@@ -76,9 +79,22 @@ namespace CpvrLab.VirtualTable
             spectateToggleButton.onClick.AddListener(OnSpectateClicked);
             disconnectButton.onClick.AddListener(OnDisconnectClicked);
 
+            spectateCamSelect.onValueChanged.AddListener(OnSpectateCamChanged);
+
             StartCoroutine(tempGetGameManagerInstance());
 
             _gameManager.OnGameChanged += GameChanged;
+
+
+            // find all observer cameras in the scene
+            // todo: account for level changes.
+            _observerCameras = FindObjectsOfType<ObserverCamera>();
+            spectateCamSelect.options.Clear();
+            for (int i = 0; i < _observerCameras.Length; i++) {
+                var cam = _observerCameras[i];
+                spectateCamSelect.options.Add(new Dropdown.OptionData(cam.name));
+            }
+            spectateCamSelect.RefreshShownValue();
         }
 
         IEnumerator tempGetGameManagerInstance()
@@ -121,11 +137,28 @@ namespace CpvrLab.VirtualTable
         void OnSpectateClicked()
         {
             Debug.Log("OnSpectateClicked");
+            if (_localPlayer == null)
+                return;
+            
+            _localPlayer.isObserver = !_localPlayer.isObserver;
+            _isObserver = _localPlayer.isObserver;
+            _rebuild = true;
+            
+            if (!_isObserver)
+                ObserverCamera.Deactivate();
+            else
+                _observerCameras[spectateCamSelect.value].Activate();
+        }
+
+        void OnSpectateCamChanged(int index)
+        {
+            _observerCameras[index].Activate();
         }
 
         void OnDisconnectClicked()
         {
             Debug.Log("OnDisconnectClicked");
+            _networkManager.Disconnect();
         }
         
         void LocalPlayerCreated(GamePlayer player)
@@ -170,7 +203,9 @@ namespace CpvrLab.VirtualTable
             float margin = 10.0f;
             float currentY = 0.0f;
             currentY -= localPlayerSettings.rect.height + margin;
-            
+
+            spectateToggleButtonText.text = (_isObserver) ? "SPAWN" : "SPECTATE";
+
             // show or hide spectator settings
             spectatorSettings.gameObject.SetActive(_isObserver);
             if (_isObserver)

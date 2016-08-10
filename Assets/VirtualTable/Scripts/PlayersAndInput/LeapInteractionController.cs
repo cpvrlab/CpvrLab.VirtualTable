@@ -5,8 +5,6 @@ using System.Collections;
 namespace CpvrLab.VirtualTable
 {
 
-
-
     public class LeapInteractionController : MonoBehaviour
     {
         public event UsableItemInteraction UsableItemPickedUp;
@@ -37,8 +35,7 @@ namespace CpvrLab.VirtualTable
         {
             if (other.attachedRigidbody == null)
                 return;
-
-
+            
             // todo: store these tags in a global common file as static const etc...
             bool usable = other.attachedRigidbody.CompareTag("UsableItem");
             bool movable = other.attachedRigidbody.CompareTag("MovableItem");
@@ -51,7 +48,6 @@ namespace CpvrLab.VirtualTable
 
             if (usable)
             {
-
                 var item = other.attachedRigidbody.gameObject.GetComponent<UsableItem>();
                 if (item != null)
                 {
