@@ -4,6 +4,6 @@
 [submodule "Assets/ThirdParty/Payed"]
 	path = Assets/ThirdParty/Payed
 	url = https://github.com/wacki/VirtualTable-ThirdPartyPayed.git
-[submodule "VirtualTableLevels"]
-	path = VirtualTableLevels
+[submodule "Assets/VirtualTableLevels"]
+	path = Assets/VirtualTableLevels
 	url = https://github.com/cpvrlab/VirtualTable-LevelData.git
