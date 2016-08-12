@@ -23,16 +23,21 @@ namespace CpvrLab.VirtualTable {
         public GameObject attachPointLeft;
         public GameObject attachPointRight;
 
-        public override void OnStartClient()
+        void Awake()
         {
-            base.OnStartClient();
-            
+            Debug.Log("Awake " + transform.position);
             AddAttachmentSlot(attachPointLeft);
             AddAttachmentSlot(attachPointRight);
         }
-        
+        //public override void OnStartClient()
+        //{
+        //    AddAttachmentSlot(attachPointLeft);
+        //    AddAttachmentSlot(attachPointRight);
+        //}
+
         public override void OnStartLocalPlayer()
         {
+
             base.OnStartLocalPlayer();
             cam.SetActive(true);
             localHands.SetActive(true);
@@ -42,7 +47,7 @@ namespace CpvrLab.VirtualTable {
             leftHandGoal.GetComponent<HandConfidenceWeightFade>().enabled = true;
             rightHandGoal.GetComponent<HandPoseLerp>().enabled = true;
             rightHandGoal.GetComponent<HandConfidenceWeightFade>().enabled = true;
-            
+
             // Update teh input slots added in OnStartClient
             // todo: maybe do this a bit differently, we can't rely on OnStartClient
             //       to run before OnStartLocalPlayer, even though it probably always will.
@@ -58,6 +63,7 @@ namespace CpvrLab.VirtualTable {
             rightInteractionController.MovableItemPickedUp += MovableItemPickedUp;
             leftInteractionController.MovableItemDropped += MovableItemDropped;
             rightInteractionController.MovableItemDropped += MovableItemDropped;
+            Debug.Log("LocalPlazerStart " + transform.position);
         }
 
         /// <summary>
@@ -102,7 +108,7 @@ namespace CpvrLab.VirtualTable {
 
         protected override PlayerInput GetMainInput()
         {
-            return null;
+            return leftInteractionController.input;
         }
 
         protected override void OnEquip(AttachmentSlot slot)

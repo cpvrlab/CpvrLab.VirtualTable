@@ -73,7 +73,7 @@ namespace CpvrLab.VirtualTable {
                 OnLocalPlayerCreated(this);
             localPlayer = this;
         }
-
+         
 
         /// <summary>
         /// Here we instantiate player models for this GamePlayer. Both remote and local instances, which may have

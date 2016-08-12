@@ -172,6 +172,8 @@ namespace CpvrLab.VirtualTable {
             return _playerInput;
         }
 
+
+
         protected override void OnEquip(AttachmentSlot slot)
         {
             _currentlyEquipped = slot.item;

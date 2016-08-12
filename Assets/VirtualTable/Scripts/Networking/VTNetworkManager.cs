@@ -17,6 +17,8 @@ namespace CpvrLab.VirtualTable
 
         public static short ScoreBoard = MsgType.Highest + 4;
         public static short ScoreBoardRowData = MsgType.Highest + 5;
+
+        public static short NetworkTransformTree = MsgType.Highest + 6;
     };
     public class AddPlayerMessage : MessageBase
     {
@@ -115,7 +117,8 @@ namespace CpvrLab.VirtualTable
 
             var gamePlayer = player.GetComponent<GamePlayer>();
             gamePlayer.transform.position = startPositions[numPlayers%startPositions.Count].transform.position;
-                        
+            Debug.Log("Start position: " + gamePlayer.transform.position);
+
             // choose a unique user name for the player
             string uniqueName = msg.name;
             bool nameIsUnique = false;
