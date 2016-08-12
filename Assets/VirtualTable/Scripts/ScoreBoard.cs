@@ -204,7 +204,7 @@ namespace CpvrLab.VirtualTable
         [ClientRpc]
         void RpcShow(bool val)
         {
-            ShowLocal(show);
+            ShowLocal(val);
         }
 
         private void ShowLocal(bool val)

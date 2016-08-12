@@ -11,9 +11,13 @@ namespace CpvrLab.VirtualTable
         public Vector3 rootPos;
         public Quaternion rootRot;
         public Quaternion[] children;
-        
+        public NetworkInstanceId netId;
+        public int num;
+
         public override void Serialize(NetworkWriter writer)
         {
+            writer.Write(netId);
+            writer.Write(num);
             writer.Write(rootPos);
             writer.Write(rootRot);
 
@@ -27,6 +31,9 @@ namespace CpvrLab.VirtualTable
         public override void Deserialize(NetworkReader reader)
         {
             base.Deserialize(reader);
+
+            netId = reader.ReadNetworkId();
+            num = reader.ReadInt32();
 
             rootPos = reader.ReadVector3();
             rootRot = reader.ReadQuaternion();
@@ -44,14 +51,19 @@ namespace CpvrLab.VirtualTable
     /// </summary>
     public class NetworkedTransformTree : NetworkBehaviour
     {
-
+        static bool receiverInit = false;
         public Transform root;
         private Transform[] _children;
+        public int num = 0;
 
         public override void OnStartServer()
         {
             base.OnStartServer();
-            NetworkServer.RegisterHandler(VTMsgType.NetworkTransformTree, HandleNetworkTransformTree);
+            if (!receiverInit)
+            {
+                receiverInit = true;
+                NetworkServer.RegisterHandler(VTMsgType.NetworkTransformTree, HandleNetworkTransformTree);
+            }
         }
 
         void LateUpdate()
@@ -64,13 +76,18 @@ namespace CpvrLab.VirtualTable
 
             if (isServer)
             {
-                Debug.Log("FUUUCK");
                 SetDirtyBit(1);
             }
             else
             {
                 // send new state to the server
                 var msg = new TransformTreeMsg();
+
+                msg.netId = netId;
+                msg.num = num;
+
+                Debug.Log("Sending message " + netId.ToString() + " " + num);
+
                 msg.rootPos = root.position;
                 msg.rootRot = root.rotation;
 
@@ -79,21 +96,32 @@ namespace CpvrLab.VirtualTable
                     msg.children[i] = _children[i].rotation;
 
                 connectionToServer.Send(VTMsgType.NetworkTransformTree, msg);
+                //CmdHandSyncTest(msg);
             }
         }
+        
 
-
-        void HandleNetworkTransformTree(NetworkMessage netMsg)
+        static void HandleNetworkTransformTree(NetworkMessage netMsg)
         {
             var msg = netMsg.ReadMessage<TransformTreeMsg>();
-
-            root.position = msg.rootPos;
-            root.rotation = msg.rootRot;
-
-            for (int i = 0; i < _children.Length; i++)
-                _children[i].rotation = msg.children[i];
+            var foundObject = NetworkServer.FindLocalObject(msg.netId);
+            var ntt = foundObject.GetComponents<NetworkedTransformTree>();
             
-            SetDirtyBit(1);
+            for(int i = 0; i < ntt.Length; i++)
+            {
+                if(ntt[i].num == msg.num)
+                {
+                    ntt[i].root.position = msg.rootPos;
+                    ntt[i].root.rotation = msg.rootRot;
+
+                    for (int j = 0; j < ntt[i]._children.Length; j++)
+                        ntt[i]._children[j].rotation = msg.children[j];
+
+                    ntt[i].SetDirtyBit(1);
+                    break;
+                }
+            }
+            
         }
 
 

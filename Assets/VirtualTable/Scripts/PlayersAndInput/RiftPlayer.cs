@@ -37,9 +37,9 @@ namespace CpvrLab.VirtualTable {
 
         public override void OnStartLocalPlayer()
         {
-
             base.OnStartLocalPlayer();
             cam.SetActive(true);
+            cam.GetComponent<Camera>().enabled = true;
             localHands.SetActive(true);
 
             // enable hand goal scripts necessary for the local player to work
@@ -63,7 +63,6 @@ namespace CpvrLab.VirtualTable {
             rightInteractionController.MovableItemPickedUp += MovableItemPickedUp;
             leftInteractionController.MovableItemDropped += MovableItemDropped;
             rightInteractionController.MovableItemDropped += MovableItemDropped;
-            Debug.Log("LocalPlazerStart " + transform.position);
         }
 
         /// <summary>
@@ -99,6 +98,7 @@ namespace CpvrLab.VirtualTable {
 
         void Update()
         {
+            Debug.Log("update");
             if(!isLocalPlayer)
                 return;
 
