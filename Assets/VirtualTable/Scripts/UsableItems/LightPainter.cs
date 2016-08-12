@@ -119,7 +119,6 @@ namespace CpvrLab.VirtualTable {
         [ClientRpc] void RpcStartNewLine(Color color) { if(!hasAuthority) StartNewLineClient(color); }
         void StartNewLineClient(Color color)
         {
-            Debug.Log("StartNEwLine");
             _currentLinePoints.Clear();
 
             var go = new GameObject("Line");

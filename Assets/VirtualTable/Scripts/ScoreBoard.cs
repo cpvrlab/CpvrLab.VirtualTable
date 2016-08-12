@@ -48,7 +48,6 @@ namespace CpvrLab.VirtualTable
             _title = title;
             RpcUpdateTitle(title);
             _dataChanged = true;
-            Debug.Log("SetTitle");
         }
 
         [Server]
@@ -64,7 +63,6 @@ namespace CpvrLab.VirtualTable
             _headers = new List<string>(data);
             RpcUpdateHeaders(Serialize(_headers));
             _dataChanged = true;
-            Debug.Log("SetHeaders");
         }
 
         [Server]
@@ -74,7 +72,6 @@ namespace CpvrLab.VirtualTable
             _rowData.Add(row);
             RpcAddRow(Serialize(row));
             _dataChanged = true;
-            Debug.Log("AddRow");
         }
 
         [Server]
@@ -83,7 +80,6 @@ namespace CpvrLab.VirtualTable
             _rowData[rowNum] = new List<string>(data);
             RpcUpdateRow(rowNum, Serialize(_rowData[rowNum]));
             _dataChanged = true;
-            Debug.Log("SetRowData");
         }
 
         [Server]
@@ -92,7 +88,6 @@ namespace CpvrLab.VirtualTable
             _rowData[rowNum][colNum] = data;
             RpcUpdateCellData(rowNum, colNum, data);
             _dataChanged = true;
-            Debug.Log("SetCellData");
         }
 
         [Server]
@@ -101,7 +96,6 @@ namespace CpvrLab.VirtualTable
             _rowData.Clear();
             _dataChanged = true;
             RpcClearData();
-            Debug.Log("ClearData");
         }
 
         byte[] Serialize(List<string> list)
@@ -135,8 +129,7 @@ namespace CpvrLab.VirtualTable
         void RpcInitScoreboard(int colCount, int rowCount)
         {
             if (isServer) return;
-
-            Debug.Log("RpcInitScoreboard");
+            
             if (cols == colCount && rows == rowCount)
                 return;
 
@@ -159,8 +152,7 @@ namespace CpvrLab.VirtualTable
         void RpcAddRow(byte[] data)
         {
             if (isServer) return;
-
-            Debug.Log("RpcAddRow");
+            
             _rowData.Add(Deserialize(data));
             _dataChanged = true;
         }
@@ -168,8 +160,7 @@ namespace CpvrLab.VirtualTable
         void RpcUpdateRow(int index, byte[] data)
         {
             if (isServer) return;
-
-            Debug.Log("RpcUpdateRow");
+            
             _rowData[index] = Deserialize(data);
             _dataChanged = true;
         }
@@ -177,8 +168,7 @@ namespace CpvrLab.VirtualTable
         void RpcUpdateCellData(int rowNum, int colNum, string data)
         {
             if (isServer) return;
-
-            Debug.Log("RpcUpdateCellData");
+            
             _rowData[rowNum][colNum] = data;
             _dataChanged = true;
         }
@@ -186,8 +176,7 @@ namespace CpvrLab.VirtualTable
         void RpcUpdateHeaders(byte[] data)
         {
             if (isServer) return;
-
-            Debug.Log("RpcUpdateHeaders");
+            
             _headers = Deserialize(data);
             _dataChanged = true;
         }
@@ -195,8 +184,7 @@ namespace CpvrLab.VirtualTable
         void RpcClearData()
         {
             if (isServer) return;
-
-            Debug.Log("RpcClearData");
+            
             _rowData.Clear();
             _dataChanged = true;
         }
@@ -365,8 +353,6 @@ namespace CpvrLab.VirtualTable
 
             if (_dataChanged)
             {
-                Debug.Log("DATA CHANGED " + isServer + " " + isClient);
-
                 if (OnDataChanged != null)
                     OnDataChanged(this);
 

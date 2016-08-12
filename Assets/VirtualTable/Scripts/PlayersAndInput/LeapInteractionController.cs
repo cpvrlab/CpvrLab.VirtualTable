@@ -63,7 +63,6 @@ namespace CpvrLab.VirtualTable
             }
             else if (movable)
             {
-                Debug.Log("MovableItem passed");
                 _activeMovableItem = other.attachedRigidbody.gameObject.GetComponent<MovableItem>();
             }
         }
@@ -77,7 +76,6 @@ namespace CpvrLab.VirtualTable
             {
                 if (input.GetActionDown(PlayerInput.ActionCode.Button0))
                 {
-                    Debug.Log("Grabbing");
                     _holdingItem = true;
                     if (MovableItemPickedUp != null)
                         MovableItemPickedUp(input, _activeMovableItem);

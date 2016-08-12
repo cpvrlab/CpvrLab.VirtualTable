@@ -51,14 +51,12 @@ namespace CpvrLab.VirtualTable {
         // tempararily used for debugging purposes
         public override void OnStartAuthority()
         {
-            Debug.Log("Start authority");
             base.OnStartAuthority();
         }
 
         // tempararily used for debugging purposes
         public override void OnStopAuthority()
         {
-            Debug.Log("Stop authority");
             base.OnStopAuthority();
         }
 
@@ -92,10 +90,7 @@ namespace CpvrLab.VirtualTable {
             // return if we're not attached to anything.
             if (transform.parent == _prevParent)
                 return;
-
-            // todo: remove debug output
-            Debug.Log("Detach " + ((_prevParent != null) ? _prevParent.name : "null"));
-
+            
             transform.parent = _prevParent;
             var rb = GetComponent<Rigidbody>();
             rb.isKinematic = false;
@@ -122,7 +117,6 @@ namespace CpvrLab.VirtualTable {
         /// </summary>
         [Client] protected virtual void OnEquip()
         {
-            Debug.Log("OnEquip");
         }
 
         [Client] public void ClearOwner() {
@@ -138,7 +132,6 @@ namespace CpvrLab.VirtualTable {
         /// </summary>
         [Client] protected virtual void OnUnequip()
         {
-            Debug.Log("OnUnequip");
         }
 
 
@@ -160,7 +153,6 @@ namespace CpvrLab.VirtualTable {
         [ClientRpc] private void RpcReleaseAuthorityDelay() { if(hasAuthority) CmdReleaseAuthority(); }        
         [Command] private void CmdReleaseAuthority()
         {
-            Debug.Log("Releasing client authority");
             var nId = GetComponent<NetworkIdentity>();
             nId.RemoveClientAuthority(nId.clientAuthorityOwner);
         }

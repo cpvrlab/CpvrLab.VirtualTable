@@ -55,11 +55,7 @@ namespace CpvrLab.VirtualTable
         {
             _networkManager = NetworkManager.singleton as VTNetworkManager;
             _gameManager = GameManager.instance;
-
-            if(GameManager.instance == null)
-                Debug.Log("GAME MANAGER IS NULL");
-            else
-                Debug.Log("Game manager is not null");
+            
 
             if (GamePlayer.localPlayer != null)
                 _isObserver = GamePlayer.localPlayer.isObserver;
@@ -108,14 +104,12 @@ namespace CpvrLab.VirtualTable
 
         void OnStartGameClicked()
         {
-            Debug.Log("OnStartGameClicked");
             if (_gameManager == null) Debug.Log("GameManger is NULL");   
             _gameManager.StartGame(gameSelect.value);
         }
 
         void OnStopGameClicked()
         {
-            Debug.Log("OnStopGameClicked");
             _gameManager.StopGame();
         }
 
@@ -136,7 +130,6 @@ namespace CpvrLab.VirtualTable
 
         void OnSpectateClicked()
         {
-            Debug.Log("OnSpectateClicked");
             if (_localPlayer == null)
                 return;
             
@@ -157,7 +150,6 @@ namespace CpvrLab.VirtualTable
 
         void OnDisconnectClicked()
         {
-            Debug.Log("OnDisconnectClicked");
             _networkManager.Disconnect();
         }
         

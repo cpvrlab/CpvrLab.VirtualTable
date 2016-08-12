@@ -39,8 +39,7 @@ namespace CpvrLab.VirtualTable
         {
             color = col;
             _renderer.material.color = color;
-
-            Debug.Log("SET COLOR " + col);
+            
         }
 
         public override void OnStartServer()

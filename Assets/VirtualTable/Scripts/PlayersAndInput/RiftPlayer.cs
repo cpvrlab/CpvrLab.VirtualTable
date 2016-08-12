@@ -25,7 +25,6 @@ namespace CpvrLab.VirtualTable {
 
         void Awake()
         {
-            Debug.Log("Awake " + transform.position);
             AddAttachmentSlot(attachPointLeft);
             AddAttachmentSlot(attachPointRight);
         }
@@ -87,18 +86,15 @@ namespace CpvrLab.VirtualTable {
         
         void MovableItemPickedUp(PlayerInput input, MovableItem item)
         {
-            Debug.Log("Grabbing " + GetSlotIndex(FindAttachmentSlot(input)) + " " + item.name);
             CmdGrabMovableItem(item.gameObject, GetSlotIndex(FindAttachmentSlot(input)));
         }
         void MovableItemDropped(PlayerInput input, MovableItem item)
         {
-            Debug.Log("Releasing");
             CmdReleaseMovableItem(item.gameObject, GetSlotIndex(FindAttachmentSlot(input)));
         }
 
         void Update()
         {
-            Debug.Log("update");
             if(!isLocalPlayer)
                 return;
 

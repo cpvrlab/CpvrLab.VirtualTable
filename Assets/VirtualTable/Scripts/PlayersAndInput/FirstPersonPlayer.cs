@@ -96,11 +96,6 @@ namespace CpvrLab.VirtualTable {
                 NextLocalModel();
                 NextRemoteModel();
             }
-
-            if(Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                Debug.Log("Mouse1");
-            }
         }
 
         void HandleItemInteractions()

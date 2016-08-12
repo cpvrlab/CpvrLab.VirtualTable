@@ -85,9 +85,7 @@ namespace CpvrLab.VirtualTable
 
                 msg.netId = netId;
                 msg.num = num;
-
-                Debug.Log("Sending message " + netId.ToString() + " " + num);
-
+                
                 msg.rootPos = root.position;
                 msg.rootRot = root.rotation;
 

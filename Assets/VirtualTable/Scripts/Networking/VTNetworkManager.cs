@@ -73,7 +73,6 @@ namespace CpvrLab.VirtualTable
             var usableItems = FindObjectsOfType<UsableItem>();
             foreach(var item in usableItems)
             {
-                Debug.Log("Removing authority from " + item.name + " " + item.GetComponent<NetworkIdentity>().clientAuthorityOwner + "  " + conn);
                 var networkId = item.GetComponent<NetworkIdentity>();
                 if (networkId.clientAuthorityOwner != null && conn == networkId.clientAuthorityOwner)
                 {
@@ -142,9 +141,7 @@ namespace CpvrLab.VirtualTable
 
             // add player to the servers dictionary
             players.Add(conn, gamePlayer);
-
-            Debug.Log("spawning player #" + numPlayers + " at start position " + numPlayers % startPositions.Count + " startPositions.Count " + startPositions.Count);
-
+            
 
             NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
         }

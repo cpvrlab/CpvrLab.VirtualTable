@@ -126,7 +126,6 @@ namespace CpvrLab.VirtualTable {
         
         [Server] private void StartGameMsgHandler(NetworkMessage netMsg)
         {
-            Debug.Log("GameManager: Received StartGameMsg");
             var msg = netMsg.ReadMessage<StartGameMessage>();
             StartGameInternal(msg.gameIndex);
         }
@@ -211,7 +210,6 @@ namespace CpvrLab.VirtualTable {
 
         [Server] private void StopGameMsgHandler(NetworkMessage netMsg)
         {
-            Debug.Log("Received StopGameMsg");
             StopGame();
         }
     }

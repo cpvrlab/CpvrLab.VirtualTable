@@ -60,7 +60,6 @@ namespace CpvrLab.VirtualTable {
 
             else if (shoot)
             {
-                Debug.Log("Calling Shoot from local player button press");
                 Shoot();
                 CmdShoot();
 
@@ -91,7 +90,6 @@ namespace CpvrLab.VirtualTable {
             // only call shoot for non local players
             if (!hasAuthority)
             {
-                Debug.Log("Calling Shoot from RpcShoot");
                 Shoot();
             }
         }
@@ -121,7 +119,6 @@ namespace CpvrLab.VirtualTable {
                 }
 
                 distance = rayInfo.distance;
-                // Debug.Log("Hit! " + rayInfo.distance);
 
                 //_audioSource.PlayOneShot(ricochetSounds[Random.Range(0, ricochetSounds.Length - 1)]);
             }

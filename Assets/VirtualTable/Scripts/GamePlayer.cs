@@ -123,15 +123,13 @@ namespace CpvrLab.VirtualTable {
         {
             if (_playerModelInstance == null)
                 return;
-
-            Debug.Log("Removing player model instance");
+            
             Destroy(_playerModelInstance.gameObject);
             _playerModelInstance = null;
         }
 
         protected virtual void OnDestroy()
         {
-            Debug.Log("OnDestroy");
             DestroyPlayerModel();
         }
 
@@ -406,9 +404,7 @@ namespace CpvrLab.VirtualTable {
 
 
             slot.item = null;
-
-            Debug.Log("UNEQUIPPING item");
-
+            
             item.Detach();
             item.ClearOwner();
             item.ReleaseAuthority();
@@ -504,7 +500,6 @@ namespace CpvrLab.VirtualTable {
             {
                 GameObject go = (_attachmentSlots[i].item == null) ? null : _attachmentSlots[i].item.gameObject;
                 writer.Write(go);
-                Debug.Log("Serializing item: " + go);
             }
 
             return true;
@@ -522,8 +517,6 @@ namespace CpvrLab.VirtualTable {
                 if (reader.ReadPackedUInt32() == 0)
                     return;
             }
-
-            Debug.Log("Deserializing attachment slots: " + _attachmentSlots.Count);
             
 
             displayName = reader.ReadString();
@@ -538,7 +531,6 @@ namespace CpvrLab.VirtualTable {
                 //Debug.Log("item " + item);
                 if (item != null)
                 {
-                    Debug.Log("OMG I HAVE AN ITEM EQUIPPED? " + item.name);
                     var slot = _attachmentSlots[i];
                     slot.item = item;
                     slot.item.AssignOwner(this, null);
