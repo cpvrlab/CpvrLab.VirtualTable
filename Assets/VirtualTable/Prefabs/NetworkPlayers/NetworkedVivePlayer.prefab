@@ -78,6 +78,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 474296}
   - 114: {fileID: 11440898}
+  - 114: {fileID: 114000012898577948}
   m_Layer: 0
   m_Name: Controller (right)
   m_TagString: Untagged
@@ -110,6 +111,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 499846}
   - 114: {fileID: 11431470}
+  - 114: {fileID: 114000013272069522}
   m_Layer: 0
   m_Name: Controller (left)
   m_TagString: Untagged
@@ -851,3 +853,39 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 121874}
   m_IsPrefabParent: 1
+--- !u!114 &114000012898577948
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 134440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0058751fee3ae7b40b122177295228dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teleportOnClick: 0
+  teleportLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  playAreaVisPrefab: {fileID: 11429914, guid: 0c35d5d9a4115f0468d772d34a785df3, type: 2}
+  legalAreaColor: {r: 0, g: 1, b: 0, a: 1}
+  illegalAreaColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!114 &114000013272069522
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 171186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0058751fee3ae7b40b122177295228dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  teleportOnClick: 0
+  teleportLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  playAreaVisPrefab: {fileID: 11429914, guid: 0c35d5d9a4115f0468d772d34a785df3, type: 2}
+  legalAreaColor: {r: 0, g: 1, b: 0, a: 1}
+  illegalAreaColor: {r: 1, g: 0, b: 0, a: 1}
